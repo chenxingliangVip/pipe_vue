@@ -18,7 +18,7 @@
                     <span>Mpa（绝压）</span>
                 </el-form-item>
                 <el-form-item class="floatForm">
-                    <el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">确 定</el-button>
+                    <el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>
                 </el-form-item>
                 <div class="clearBoth"></div>
             </div>
@@ -30,7 +30,7 @@
                     <el-input v-model="node.label"></el-input>
                 </el-form-item>
                 <el-form-item class="floatForm">
-                    <el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">确 定</el-button>
+                    <el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>
                 </el-form-item>
                 <div class="clearBoth"></div>
             </div>
@@ -54,9 +54,10 @@
                     </el-col>
                     <el-col :span="4" class="middle_flex">
                        <div class="buttonnav">
-                            <el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">确 定</el-button>
+                            <el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>
                             <el-button round class="button_list set" @click="setLoad()">24h负载设置</el-button>
-                            <el-button round class="button_list log" @click="logResult()">用户输出结果</el-button>
+                            <el-button round class="button_list log" @click="logResult()" v-show="isShow">用户输出结果</el-button>
+                            <el-button round  type="info" class="button_list" disabled v-show="!isShow">用户输出结果</el-button>
                        </div>
                     </el-col>
                     <el-col :span="16">
@@ -82,6 +83,7 @@
         },
         data() {
             return {
+                isShow: false,
                 typeTitle: '',
                 node: {},
                 TypeList: [{ Value: 1, Text: '起点' }, { Value: 2, Text: '终点' }, { Value: 3, Text: '人工活动' }, { Value: 4, Text: '自由活动' }],
@@ -171,6 +173,7 @@
     margin: 0 auto;
     color: #fff;
     margin-bottom: 20px;
+    font-size: 14px;
 }
 .user_nav .middle_flex .button_list.sure {
     background: #409eff;
@@ -191,5 +194,6 @@
     margin: 0 auto;
     color: #fff;
     background: #409eff;
+    font-size: 14px;
 }
 </style>

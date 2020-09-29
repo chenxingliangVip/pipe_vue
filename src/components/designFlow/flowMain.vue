@@ -651,10 +651,10 @@ export default {
         },
         editFlow() {
             // this.drawer = true
-            this.editType = "flow";
-            this.$nextTick(function () {
-                this.$refs.flowEdit.init(this.data.flowInfo);
-            });
+            // this.editType = "flow";
+            // this.$nextTick(function () {
+            //     this.$refs.flowEdit.init(this.data.flowInfo);
+            // });
         },
         togglePanel () { //点击显示参数设置
             this.drawer ? this.hide() : this.show()
@@ -681,9 +681,20 @@ export default {
                 this.loading = true
                 sessionStorage.removeItem('isAdd')
                 isAdd = sessionStorage.getItem('isAdd')
+                
+                this.data = {
+                    flowInfo: {
+                        Id: this.getUUID(),
+                        Name: "我的流程",
+                        Remark: "",
+                    },
+                    nodeList: [],
+                    lineList: [],
+                }
                 if(!isAdd) {
                     this.isAdd = false
                     this.isDraggable = false
+                    this.drawer = false
                 }else {
                     this.isAdd = true
                     this.isDraggable = true

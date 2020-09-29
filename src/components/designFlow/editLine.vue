@@ -72,8 +72,9 @@
                 </el-col>
                 <el-col :span="3" class="middle_flex">
                     <div class="buttonnav">
-                        <el-button round class="button_list sure"  @click="Submit('dataForm')">确 定</el-button>
-                        <el-button round class="button_list set" @click="logResult()">管线输出结果</el-button>
+                        <el-button round class="button_list sure"  @click="Submit('dataForm')">修 改</el-button>
+                        <el-button round class="button_list set" @click="logResult()" v-show="isShow">管线输出结果</el-button>
+                        <el-button round  type="info" class="button_list" disabled v-show="!isShow">用户输出结果</el-button>
                     </div>
                 </el-col>
             </el-row>
@@ -86,6 +87,7 @@
         name:'editLine',
         data() {
             return {
+                isShow: false,
                 line: { label: '' },
                 isUpdate: false,
                 table: [{}, {},{},{},{},{},]

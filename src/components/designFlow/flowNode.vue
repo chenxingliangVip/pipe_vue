@@ -118,7 +118,7 @@ export default {
 
 .node-con {
     text-align: center;
-    line-height: 20px;
+    line-height: 15px;
 }
 .node-con .imgsrc {
     width: 50px;
