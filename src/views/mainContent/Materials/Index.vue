@@ -156,12 +156,12 @@ export default {
                     { "columnValue": "index", "columnName": "序号", width: '50px' },
                     {"columnValue": "tableNum1", "columnName": "材料名称", width: "100"},
                     {"columnValue": "tableNum2", "columnName": "密度kg/m³", width: "100"},
-                    {"columnValue": "tableNum3", "columnName": "导热常数项系数"},
-                    {"columnValue": "tableNum4", "columnName": "导热方程一次项系数"},
-                    {"columnValue": "tableNum5", "columnName": "导热方程二次项系数"},
-                    {"columnValue": "tableNum6", "columnName": "衰减方程常数项系数"},
-                    {"columnValue": "tableNum7", "columnName": "衰减方程常数项系数"},
-                    {"columnValue": "tableNum8", "columnName": "衰减方程二次项系数"},
+                    {"columnValue": "tableNum3", "columnName": "导热常数项系数", width: "150" },
+                    {"columnValue": "tableNum4", "columnName": "导热方程一次项系数", width: "150" },
+                    {"columnValue": "tableNum5", "columnName": "导热方程二次项系数", width: "150" },
+                    {"columnValue": "tableNum6", "columnName": "衰减方程常数项系数", width: "150" },
+                    {"columnValue": "tableNum7", "columnName": "衰减方程常数项系数", width: "150" },
+                    {"columnValue": "tableNum8", "columnName": "衰减方程二次项系数", width: "150" },
                 ]
                 this.tableData = JSON.parse(JSON.stringify(this.tableData))
                 this.tableLoading = false;

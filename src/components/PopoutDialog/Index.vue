@@ -226,7 +226,7 @@ export default {
     .popout-main {
         font-size: 12px;
         width: 30%;
-        height: 380px;
+        height: 350px;
         left: 35%;
         top: calc(50% - 250px);
     }
@@ -246,16 +246,16 @@ export default {
 .adddesign_dialog {
     .popout-main {
         width: 50%;
-        height: 550px;
+        height: 500px;
         left: 25%;
     }
 }
 .computer_dialog {
     .popout-main {
         width: 60%;
-        height: 685px;
+        height: 650px;
         left: 20%;
-        top: calc(50% - 350px);
+        top: calc(50% - 300px);
         .content {
             padding: 20px 30px 0px 30px;
         }

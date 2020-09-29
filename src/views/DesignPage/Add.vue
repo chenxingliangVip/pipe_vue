@@ -17,7 +17,7 @@
                             <el-input clearable class="input_right" placeholder="请输入管道等值粗糙度" v-model="addForm.addformdata4" style="width: calc(100% - 60px)"></el-input> 
                             <span class="danwei">mm</span>
                         </el-form-item>
-                        <el-form-item class="formList" style="height: 5px"></el-form-item>
+                        <el-form-item class="formList" style="height: 15px"></el-form-item>
                         <el-form-item class="formList" prop="addformdata5" label="设计：">
                             <el-input clearable class="input_right" placeholder="请输入设计" v-model="addForm.addformdata5"></el-input>
                         </el-form-item>
@@ -109,51 +109,51 @@ export default {
                 addformdata15: '',
             },
             rules: {
-                // addformdata1:[
-                //     { required: true, message: '请输入客户名称', trigger: 'blur' },
-                // ],
-                // addformdata2:[
-                //     { required: true, message: '请输入项目名称', trigger: 'blur' },
-                // ],
-                // addformdata3:[
-                //     { required: true, message: '请输入管线计算精度', trigger: 'blur' },
-                // ],
-                // addformdata4:[
-                //     { required: true, message: '请输入管道等值粗糙度', trigger: 'blur' },
-                // ],
-                // addformdata5:[
-                //     { required: true, message: '请输入设计', trigger: 'blur' },
-                // ],
-                // addformdata6:[
-                //     { required: true, message: '请输入校对', trigger: 'blur' },
-                // ],
-                // addformdata7:[
-                //     { required: true, message: '请输入审查', trigger: 'blur' },
-                // ],
-                // addformdata8:[
-                //     { required: true, message: '请输入审批', trigger: 'blur' },
-                // ],
-                // addformdata9:[
-                //     { required: true, message: '请输入环境温度', trigger: 'blur' },
-                // ],
-                // addformdata10:[
-                //     { required: true, message: '请输入平均风速', trigger: 'blur' },
-                // ],
-                // addformdata11:[
-                //     { required: true, message: '请输入空气温度：', trigger: 'blur' },
-                // ],
-                // addformdata12:[
-                //     { required: true, message: '请输入土壤温度', trigger: 'blur' },
-                // ],
-                // addformdata13:[
-                //     { required: true, message: '请输入土壤深度', trigger: 'blur' },
-                // ],
-                // addformdata14:[
-                //     { required: true, message: '请输入土壤导热系数', trigger: 'blur' },
-                // ],
-                // addformdata15:[
-                //     { required: true, message: '请输入空气导热系数', trigger: 'blur' },
-                // ],
+                addformdata1:[
+                    { required: true, message: '请输入客户名称', trigger: 'blur' },
+                ],
+                addformdata2:[
+                    { required: true, message: '请输入项目名称', trigger: 'blur' },
+                ],
+                addformdata3:[
+                    { required: true, message: '请输入管线计算精度', trigger: 'blur' },
+                ],
+                addformdata4:[
+                    { required: true, message: '请输入管道等值粗糙度', trigger: 'blur' },
+                ],
+                addformdata5:[
+                    { required: true, message: '请输入设计', trigger: 'blur' },
+                ],
+                addformdata6:[
+                    { required: true, message: '请输入校对', trigger: 'blur' },
+                ],
+                addformdata7:[
+                    { required: true, message: '请输入审查', trigger: 'blur' },
+                ],
+                addformdata8:[
+                    { required: true, message: '请输入审批', trigger: 'blur' },
+                ],
+                addformdata9:[
+                    { required: true, message: '请输入环境温度', trigger: 'blur' },
+                ],
+                addformdata10:[
+                    { required: true, message: '请输入平均风速', trigger: 'blur' },
+                ],
+                addformdata11:[
+                    { required: true, message: '请输入空气温度：', trigger: 'blur' },
+                ],
+                addformdata12:[
+                    { required: true, message: '请输入土壤温度', trigger: 'blur' },
+                ],
+                addformdata13:[
+                    { required: true, message: '请输入土壤深度', trigger: 'blur' },
+                ],
+                addformdata14:[
+                    { required: true, message: '请输入土壤导热系数', trigger: 'blur' },
+                ],
+                addformdata15:[
+                    { required: true, message: '请输入空气导热系数', trigger: 'blur' },
+                ],
             },
         }
     },

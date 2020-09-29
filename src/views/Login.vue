@@ -106,7 +106,7 @@ export default {
         }
         .header {
             width: 100%;
-            padding-top: 120px;
+            padding-top: 6%;
             padding-bottom: 10px;
             position: relative;
             z-index: 11111;

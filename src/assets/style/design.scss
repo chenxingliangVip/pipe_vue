@@ -17,6 +17,9 @@
             text-align: center;
             cursor: pointer;
             position: relative;
+            &.close {
+                color: #d81e06;
+            }
             img {
                 width: 20px;
                 height: 20px;
@@ -76,6 +79,10 @@
                     opacity: 1 !important;
                 }
             }
+        }
+        &.nodrop {
+            cursor: no-drop;
+            color: #bfbfbf;
         }
         &:hover {
             opacity: .8;

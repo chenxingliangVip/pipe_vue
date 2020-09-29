@@ -34,6 +34,7 @@
         <div class="page_right" >
             <div style="height: 100%">
                 <div class="add_design">
+                    <div class="nav-item close">{{ name }}</div>
                     <div class="middle">
                         <div class="nav-item" @click="addDesign()" v-show="!isAdd"><!-- 可新建设计 -->
                             <img src="@/assets/img/add.png"> 
@@ -59,7 +60,7 @@
                             <img src="@/assets/img/save2.png"> 
                             <span>保存</span>
                         </div>
-                        <div class="nav-item" v-show="isAdd" @click="closeProject()">
+                        <div class="nav-item close" v-show="isAdd" @click="closeProject()">
                             <img src="@/assets/img/close.png"> 
                             <span>关闭</span>
                         </div>
@@ -113,6 +114,7 @@
         <div class="drawer_bottom" v-show="drawer"  ref="drawer">
             <div class="flow-edit">
                 <div class="flow-edit-content">
+                    <edit-flow ref="nodeFfloworm" v-show="editType=='flow'"></edit-flow>
                     <edit-node ref="nodeForm" v-show="editType=='node'" :isShowEchart="isShowEchart" @LoadSet="getLoad" @showLog="showLog"></edit-node>
                     <edit-line ref="lineForm" v-show="editType=='line'" @line-save="lineLabelSave"></edit-line>
                 </div>
@@ -165,6 +167,7 @@ export default {
     name: "flowMain",
     data() {
         return {
+            name: '',
             type: '',
             loading: false,
             addDialog: false,//新建设计弹框
@@ -662,13 +665,17 @@ export default {
         },
         editFlow() {
             // this.drawer = true
-            // this.editType = "flow";
+            this.editType = "flow";
             // this.$nextTick(function () {
             //     this.$refs.flowEdit.init(this.data.flowInfo);
             // });
         },
         togglePanel () { //点击显示参数设置
-            this.drawer ? this.hide() : this.show()
+            if(this.editType == 'flow') {
+                this.drawer = false
+            }else {
+                this.drawer ? this.hide() : this.show()
+            }
         },
         show () {
             this.drawer = true
@@ -729,6 +736,7 @@ export default {
             }else {
                 this.isAdd = true
                 this.isDraggable = true
+                this.name ='中国大唐电力股份有限公司 新生河2期热电站热源工程 P20090005'
             }
             setTimeout(() => {
                 this.loading = false
