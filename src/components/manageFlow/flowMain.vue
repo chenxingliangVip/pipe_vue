@@ -96,11 +96,6 @@ export default {
                     name: "项目信息",
                     img: require("@/assets/img/xmxinxi.png"),
                     noDropImg: require("@/assets/img/xmxinxi2.png"),
-                    isShow: true,
-                }, {
-                    name: "管网计算",
-                    img: require("@/assets/img/jisuan.png"),
-                    noDropImg: require("@/assets/img/jisuan2.png"),
                     isShow: false,
                 }, {
                     name: "统计分析",

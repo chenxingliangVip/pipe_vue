@@ -347,6 +347,7 @@ export default {
         });
         this.editFlow();
 
+        isAdd = sessionStorage.getItem('isAdd')
         this.loading = true
         if(!isAdd) {
             this.isAdd = false
