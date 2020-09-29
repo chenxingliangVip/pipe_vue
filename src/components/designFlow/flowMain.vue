@@ -20,7 +20,7 @@
             </div>
             <hr style="margin-bottom: 20px" />
             <div class="menu-item item2" v-for="(item, index) in navList" :key="'val' + index" :class="{'isDraggable': !isDraggable }">
-                <div v-if="item.isShow" @click="goPage(item.url)">
+                <div v-if="item.isShow" @click="goPage(item.name)">
                     <img class="imgsrc" :src="item.img" v-show="isDraggable">
                     <img class="imgsrc" :src="item.noDropImg" v-show="!isDraggable">
                     <div>{{item.name}}</div>
@@ -136,6 +136,15 @@
                 </template>
             </popout>
         </div>
+        <!-- 项目信息弹框 -->
+        <div class="zll-dialog">
+            <popout title="项目信息" :visible.sync="projectDialog" v-if="projectDialog" class="">
+                <ProjectInfo ref="result" slot="content"></ProjectInfo>
+                <template slot="bottom">
+                    <p class="zll-botton cancal" @click="projectDialog = false">取 消</p>
+                </template>
+            </popout>
+        </div>
     </div>
 </template>
 
@@ -166,6 +175,7 @@ export default {
             setDialog: false,//24h负载设置弹框
             isShowEchart: false,//24h负载echart
             logDialog: false,//用户输出结果弹框
+            projectDialog: false,//项目信息弹框
             menueList: [
                 {
                     type: 1,
@@ -742,8 +752,9 @@ export default {
             this.$message.success('提交成功!');
         },
         goPage(val){
-            console.log(val)
-            this.type = val
+           if( val == '项目信息' ){
+               this.projectDialog = true
+           }
         }   
     },
 };

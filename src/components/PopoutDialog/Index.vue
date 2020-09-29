@@ -11,11 +11,11 @@
                     <div class="text">{{title || '提示'}}</div>
                     <div class="tool" @mousedown.stop>
                         <!--最小化-->
-                        <i class="el-icon-minus" v-show="isMax == 1" @click="setIsMax(0)"></i>
+                        <!-- <i class="el-icon-minus" v-show="isMax == 1" @click="setIsMax(0)"></i> -->
                         <!--最大化-->
-                        <i class="el-icon-top-right" @click="setIsMax(2)" v-show="isMax == 1"></i>
+                        <!-- <i class="el-icon-top-right" @click="setIsMax(2)" v-show="isMax == 1"></i> -->
                         <!--正常化-->
-                        <i class="el-icon-copy-document" @click="setIsMax(1)" v-show="isMax != 1"></i>
+                        <!-- <i class="el-icon-copy-document" @click="setIsMax(1)" v-show="isMax != 1"></i> -->
                         <!--关闭-->
                         <i class="el-icon-close" @click="close()"></i>
                     </div>
