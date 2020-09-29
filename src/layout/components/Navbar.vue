@@ -17,7 +17,7 @@
               </div>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="modifyPass">
-                  <span style="display:block;"><i class="el-icon-lock" style="color: #409EFF"></i>修改密码</span>
+                  <span style="display:block;"><i class="el-icon-lock" style="color: #1397de"></i>修改密码</span>
                 </el-dropdown-item>
                 <el-dropdown-item divided
                                   @click.native="logout">

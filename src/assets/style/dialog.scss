@@ -1,0 +1,198 @@
+$baseColor: #1397de;
+
+.addProject {
+    h3 {
+        font-weight: 400;
+        text-align: center;padding: 10px 0;
+        border-bottom: 1px solid;
+        padding-top: 0px;
+        font-size: 20px;
+    }
+    .formList {
+        height: 32px;
+        line-height: 32px;
+        margin-top: 15px;
+        .form_left {
+            width: 100px;
+            text-align: right;
+            font-size: 12px;
+        }
+        .input_right {
+            float: left;
+            width: calc(100% - 20px)
+        }
+        .el-select {
+            width: calc(100% - 20px)
+        }
+    }
+    .NOnum {
+        margin-top: 15px;
+        height: 30px;line-height: 30px;
+        text-align: center;
+        font-size: 16px;
+        color: #1397de;
+    }
+    .topMess {
+        height: 32px;
+        line-height: 32px;
+    }
+    .search_left {
+        width: 72px;
+        height: 32px;
+        line-height: 32px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-right: 0;
+        font-size: 12px;
+        display: inline-table;
+        text-align: right;
+        color: #606266;
+        &.float {
+            float: left;
+        }
+    }
+    .bottom_icon {
+        position: absolute;
+        right: 10px;
+        bottom: 0;
+        span {
+            font-size: 25px;
+            margin-left: 10px;
+            color: $baseColor;
+            cursor: pointer;
+            &:hover{
+                transition: all .3s;
+                opacity: .7;
+            }
+        }
+    }
+    .mine-add {
+        float: right;
+        margin: 10px 0;
+        position: relative;
+        z-index: 1111;
+        span {
+            font-size: 22px;
+            margin-left: 10px;
+            color: $baseColor;
+            cursor: pointer;
+            &:hover{
+                transition: all .3s;
+                opacity: .7;
+            }
+        }
+    }
+    .tableList {
+        margin-top: 20px;
+        position: relative;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border:1px solid #ffffff;
+            text-align: center;
+            table-layout: fixed;
+            th {
+                background: #d2deef;
+                padding: 3px;
+                font-weight: normal;
+                height: 26px;
+                line-height: 26px;
+            }
+            td {
+                height: 35px;
+                line-height: 35px;
+                overflow: hidden;
+                text-overflow:ellipsis;
+                white-space: nowrap;
+                color: #F56C6C;
+            }
+            tr {
+                background: #eaeff7;
+            }
+            .el-date-editor {
+                width: 100%
+            }
+            .checkStyle {
+                i {
+					font-size: 14px;
+					vertical-align: middle;
+                    cursor: pointer;
+					&.el-icon-success {
+						color: #1397de;
+					}
+					&.no-check {
+						display: inline-block;
+						width: 14px;
+						height: 14px;
+						border: 1px solid #cccccc;
+                        background: #fff;
+                    }
+                    &.el-icon-check {
+                        color: #ffffff;
+                        background-color: #1397de;
+                        font-size: 14px;
+						border: 1px solid #DCDFE6;
+                    }
+				}
+            }
+        }
+    }
+    
+    &.computer_add {
+        padding-top: 20px;
+        .item_list {
+            .top {
+                position: relative;
+                line-height: 30px;
+                // text-align: center;
+                height: 30px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                padding-left: 40px;
+                img {
+                    width: 26px;
+                    position: absolute;
+                }
+                span {
+                    padding-left: 30px;
+                    font-size: 16px;
+                    color: #d81e06;
+                }
+            }
+            .danwei {
+                padding-left: 5px;
+            }
+            .botton {
+                // text-align: center;
+                margin: 15px 0;
+                padding-left: 40px;
+                .comp_botton {
+                    width: 100%;
+                    padding: 8px 40px;
+                    background-color: #d81e06;
+                    border-color: #d81e06;
+                }
+
+            }
+            &.item_list2 {
+                .top {
+                    span {
+                        color: #1296db;
+                    }
+                }
+                .botton {
+                    .comp_botton {
+                        background-color: #1296db;
+                        border-color: #1296db;
+                    }
+    
+                }
+            }
+        }
+    }
+    .danwei {
+        padding-left: 5px;
+    }
+}

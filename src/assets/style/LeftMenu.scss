@@ -1,0 +1,36 @@
+.leftMenu::-webkit-scrollbar {display:none}
+.leftMenu {
+    width: 170px;
+    height: 100%;
+    background: #284358;
+    color: #fff;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    transition: width 0.3s;
+    &.min{
+        width: 64px;
+        .top_logo {
+            width: 65px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img{
+                width: 50px;height: auto;margin: 0;
+            }
+        }
+    }
+    .zll-Menu {
+        margin-bottom: 20px;
+    }
+    .zll-meun-nav {
+        background: #188b9c;
+    }
+    .time {
+        height: 50px;
+        line-height: 50px;
+        width: 170px;
+        text-align: center;
+        opacity: .7;
+    }
+}
