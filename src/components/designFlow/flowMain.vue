@@ -163,7 +163,6 @@ import LogResult from "@/views/DesignPage/LogResult.vue";
 import ProjectInfo from "@/views/DesignPage/ProjectInfo/index.vue";
 
 let isAdd = sessionStorage.getItem('isAdd')
-let userInfo = JSON.parse(localStorage.getItem('userInfo'))
 export default {
     name: "flowMain",
     data() {
@@ -696,38 +695,40 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(() => {
+                let userInfo = JSON.parse(localStorage.getItem('userInfo'))
                 console.log(userInfo.state)
                 if( userInfo.state == 0 ){
                     this.$router.push({
                         name:'User'
                     })
-                }
-                this.loading = true
-                this.name = ''
-                this.data = {
-                    flowInfo: {
-                        Id: this.getUUID(),
-                        Name: "我的流程",
-                        Remark: "",
-                    },
-                    nodeList: [],
-                    lineList: [],
-                }
+                } else {
+                    this.loading = true
+                    this.name = ''
+                    this.data = {
+                        flowInfo: {
+                            Id: this.getUUID(),
+                            Name: "我的流程",
+                            Remark: "",
+                        },
+                        nodeList: [],
+                        lineList: [],
+                    }
 
-                sessionStorage.removeItem('isAdd')
-                isAdd = sessionStorage.getItem('isAdd')
-                
-                if(!isAdd) {
-                    this.isAdd = false
-                    this.isDraggable = false
-                    this.drawer = false
-                }else {
-                    this.isAdd = true
-                    this.isDraggable = true
+                    sessionStorage.removeItem('isAdd')
+                    isAdd = sessionStorage.getItem('isAdd')
+                    
+                    if(!isAdd) {
+                        this.isAdd = false
+                        this.isDraggable = false
+                        this.drawer = false
+                    }else {
+                        this.isAdd = true
+                        this.isDraggable = true
+                    }
+                    setTimeout(() => {
+                        this.loading = false
+                    }, 500)
                 }
-                setTimeout(() => {
-                    this.loading = false
-                }, 500)
             })
             .catch(() => {});
         },
