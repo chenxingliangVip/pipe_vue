@@ -641,7 +641,7 @@ export default {
                 Type: this.currentItem.type,
             };
             this.addNode(temp);
-            this.editNode(temp.id);
+            // this.editNode(temp.id);
         },
         allowDrop(event) {
             event.preventDefault();

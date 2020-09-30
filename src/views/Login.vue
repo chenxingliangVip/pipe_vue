@@ -1,30 +1,32 @@
 <template>
 	<div class="Login">
         <div class="bg"></div>
-        <div class="header">
-            <div class="imgurl">
-                <img src="@/assets/img/title.png">
+        <div style=" height: 60%;">
+            <div class="header">
+                <div class="imgurl">
+                    <img src="@/assets/img/title.png">
+                </div>
+                <h2>全时段多用户蒸汽管网水力耦合计算系统</h2>
             </div>
-            <h2>全时段多用户蒸汽管网水力耦合计算系统</h2>
+            <div class="LoginBody Login_input">
+                <el-form :model="LoginForm" ref="LoginForm" class="demo-ruleForm LoginForm">
+                    <el-form-item>
+                        <el-input v-model="LoginForm.name" placeholder="账号" class="LoginInput">
+                            <i slot="prefix" class="el-input__icon el-icon-user"></i>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item prop="password">
+                        <el-input type="password" v-model="LoginForm.password" autocomplete="off" show-password placeholder="密码" @keyup.enter.native="LoginSubmit" class="LoginInput">
+                            <i slot="prefix" class="el-input__icon el-icon-lock"></i>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item prop="password">
+                        <el-checkbox class="remember" v-model="LoginForm.remember">记住用户</el-checkbox>
+                    </el-form-item>
+                        <div class="Login-button" @click="LoginSubmit">登 录</div>
+                </el-form>
+            </div>
         </div>
-		<div class="LoginBody Login_input">
-			<el-form :model="LoginForm" ref="LoginForm" class="demo-ruleForm LoginForm">
-				<el-form-item>
-					<el-input v-model="LoginForm.name" placeholder="账号" class="LoginInput">
-						<i slot="prefix" class="el-input__icon el-icon-user"></i>
-					</el-input>
-				</el-form-item>
-				<el-form-item prop="password">
-					<el-input type="password" v-model="LoginForm.password" autocomplete="off" show-password placeholder="密码" @keyup.enter.native="LoginSubmit" class="LoginInput">
-						<i slot="prefix" class="el-input__icon el-icon-lock"></i>
-					</el-input>
-				</el-form-item>
-				<el-form-item prop="password">
-					<el-checkbox class="remember" v-model="LoginForm.remember">记住用户</el-checkbox>
-				</el-form-item>
-					<div class="Login-button" @click="LoginSubmit">登 录</div>
-			</el-form>
-		</div>
 		<div class="footer">
 			<p>Copyright 2019 © Refull All rights reserved    建议使用“Chrome / IE / 搜狗高速” 浏览器</p>
 		</div>
@@ -99,6 +101,9 @@ export default {
 		height: 100%;
 		background-size: cover;
         width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         .bg {
             height: 100%;
             width: 100%;
@@ -109,7 +114,7 @@ export default {
         }
         .header {
             width: 100%;
-            padding-top: 6%;
+            // padding-top: calc(50vh - 350px);
             padding-bottom: 10px;
             position: relative;
             z-index: 11111;

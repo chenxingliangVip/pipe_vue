@@ -253,6 +253,7 @@ export default {
 .computer_dialog {
     .popout-main {
         width: 60%;
+        min-width: 800px;
         height: 650px;
         left: 20%;
         top: calc(50% - 300px);

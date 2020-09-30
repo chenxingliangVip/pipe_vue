@@ -6,7 +6,7 @@
         @mouseenter="showDelete"
         @mouseleave="hideDelete"
         @mouseup="changeNodeSite"
-        @click.stop="editNode"
+        @dblclick.stop="editNode"
     >
         <!-- <div class="node-titel">
             <div class="node-icon" v-show="mouseEnter">

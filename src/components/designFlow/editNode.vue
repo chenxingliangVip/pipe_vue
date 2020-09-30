@@ -1,7 +1,7 @@
 <template>
     <div>
         <p class="type_title">{{ typeTitle }}</p>
-        <el-form :model="node" ref="dataForm" label-width="100px" class="flowEditForm margin13" size="mini">
+        <el-form :model="node" ref="dataForm" label-width="80px" class="flowEditForm margin13" size="mini">
             <div v-if="node.Type == 1">
                 <el-form-item label="编号：" class="floatForm">
                     <el-input v-model="node.id"></el-input>
@@ -48,8 +48,8 @@
                             <span>℃ </span>
                         </el-form-item>
                         <el-form-item label="压力：">
-                            <el-input v-model="node.pressure" style="width: calc(100% - 100px)"></el-input>
-                            <span>Mpa（绝压）</span>
+                            <el-input v-model="node.pressure" style="width: calc(100% - 40px)"></el-input>
+                            <span>Mpa</span>
                         </el-form-item>
                     </el-col>
                     <el-col :span="4" class="middle_flex">
