@@ -700,34 +700,33 @@ export default {
                     this.$router.push({
                         name:'User'
                     })
-                } else {
-                    this.loading = true
-                    this.name = ''
-                    this.data = {
-                        flowInfo: {
-                            Id: this.getUUID(),
-                            Name: "我的流程",
-                            Remark: "",
-                        },
-                        nodeList: [],
-                        lineList: [],
-                    }
-
-                    sessionStorage.removeItem('isAdd')
-                    isAdd = sessionStorage.getItem('isAdd')
-                    
-                    if(!isAdd) {
-                        this.isAdd = false
-                        this.isDraggable = false
-                        this.drawer = false
-                    }else {
-                        this.isAdd = true
-                        this.isDraggable = true
-                    }
-                    setTimeout(() => {
-                        this.loading = false
-                    }, 500)
+                } 
+                this.loading = true
+                this.name = ''
+                this.data = {
+                    flowInfo: {
+                        Id: this.getUUID(),
+                        Name: "我的流程",
+                        Remark: "",
+                    },
+                    nodeList: [],
+                    lineList: [],
                 }
+
+                sessionStorage.removeItem('isAdd')
+                isAdd = sessionStorage.getItem('isAdd')
+                
+                if(!isAdd) {
+                    this.isAdd = false
+                    this.isDraggable = false
+                    this.drawer = false
+                }else {
+                    this.isAdd = true
+                    this.isDraggable = true
+                }
+                setTimeout(() => {
+                    this.loading = false
+                }, 500)
             }).catch(() => {});
         },
         addDesign() { //新建设计弹框
