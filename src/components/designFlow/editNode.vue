@@ -168,7 +168,7 @@
     width: 120px;
 }
 .user_nav .middle_flex .button_list {
-    padding: 10px;
+    padding: 8px;
     width: 120px;
     margin: 0 auto;
     color: #fff;
@@ -189,7 +189,7 @@
     height: 200px;
 }
 .button_list.sure {
-    padding: 10px;
+    padding: 8px;
     width: 120px;
     margin: 0 auto;
     color: #fff;

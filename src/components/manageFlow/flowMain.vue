@@ -20,7 +20,7 @@
         </div>
         <div class="page_right">
             <div class="add_design">
-                <div class="nav-item close">{{ name }}</div>
+                <div class="nav-item title_name">{{ name }}</div>
                 <div class="middle">
                     <div class="nav-item close" @click="closeProject()"  v-show="isGoDetail">
                         <img src="@/assets/img/close.png"> 

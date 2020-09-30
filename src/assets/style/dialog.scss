@@ -140,7 +140,7 @@ $baseColor: #1397de;
     }
     
     &.computer_add {
-        padding-top: 20px;
+        padding-top: 8px;
         .item_list {
             .top {
                 position: relative;
@@ -163,18 +163,19 @@ $baseColor: #1397de;
             }
             .danwei {
                 padding-left: 5px;
+                font-size: 12px;
             }
             .botton {
                 // text-align: center;
                 margin: 15px 0;
-                padding-left: 10px;
+                padding-left: 40px;
                 .comp_botton {
                     width: 100%;
                     padding: 8px 40px;
                     background-color: #d81e06;
                     border-color: #d81e06;
+                    font-size: 12px;
                 }
-
             }
             &.item_list2 {
                 .top {
@@ -186,13 +187,14 @@ $baseColor: #1397de;
                     .comp_botton {
                         background-color: #1296db;
                         border-color: #1296db;
+                        font-size: 12px;
                     }
-    
                 }
             }
         }
     }
     .danwei {
         padding-left: 5px;
+        font-size: 12px;
     }
 }

@@ -187,7 +187,7 @@
     width: 120px;
 }
 .middle_flex .button_list {
-    padding: 10px;
+    padding: 8px;
     width: 120px;
     margin: 0 auto;
     color: #fff;

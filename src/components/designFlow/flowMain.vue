@@ -34,7 +34,7 @@
         <div class="page_right" >
             <div style="height: 100%">
                 <div class="add_design">
-                    <div class="nav-item close">{{ name }}</div>
+                    <div class="nav-item title_name">{{ name }}</div>
                     <div class="middle">
                         <div class="nav-item" @click="addDesign()" v-show="!isAdd"><!-- 可新建设计 -->
                             <img src="@/assets/img/add.png"> 
@@ -163,6 +163,7 @@ import LogResult from "@/views/DesignPage/LogResult.vue";
 import ProjectInfo from "@/views/DesignPage/ProjectInfo/index.vue";
 
 let isAdd = sessionStorage.getItem('isAdd')
+let userInfo = JSON.parse(localStorage.getItem('userInfo'))
 export default {
     name: "flowMain",
     data() {
@@ -398,6 +399,7 @@ export default {
                     })
                     .then(() => {
                         _this.jsPlumb.deleteConnection(conn);
+                        _this.drawer = false
                     })
                     .catch(() => {});
                 });
@@ -553,26 +555,26 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
                 closeOnClickModal: false,
-            })
-                .then(() => {
-                    // this.data.nodeList = this.data.nodeList.filter(function(node) {
-                    // 	if (node.id === nodeId) {
-                    // 		node.show = false
-                    // 	}
-                    // 	return true
-                    // })
-                    this.data.nodeList.forEach((item, index) => {
-                        if (item.id === nodeId) {
-                            this.data.nodeList.splice(index, 1);
-                        }
-                    });
+            }).then(() => {
+                // this.data.nodeList = this.data.nodeList.filter(function(node) {
+                // 	if (node.id === nodeId) {
+                // 		node.show = false
+                // 	}
+                // 	return true
+                // })
+                this.data.nodeList.forEach((item, index) => {
+                    if (item.id === nodeId) {
+                        this.data.nodeList.splice(index, 1);
+                    }
+                });
 
-                    this.$nextTick(function () {
-                        console.log("删除" + nodeId);
-                        this.jsPlumb.removeAllEndpoints(nodeId);
-                    });
-                })
-                .catch(() => {});
+                this.$nextTick(function () {
+                    console.log("删除" + nodeId);
+                    this.drawer = false
+                    this.jsPlumb.removeAllEndpoints(nodeId);
+                });
+            })
+            .catch(() => {});
             return true;
         },
         //编辑节点
@@ -606,8 +608,7 @@ export default {
                 type: "warning",
             }).then(() => {
                 this.jsPlumb.deleteConnection(conn);
-            })
-            .catch(() => {});
+            }).catch(() => {});
         },
         // 是否具有该线
         hasLine(from, to) {
@@ -695,10 +696,14 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(() => {
+                console.log(userInfo.state)
+                if( userInfo.state == 0 ){
+                    this.$router.push({
+                        name:'User'
+                    })
+                }
                 this.loading = true
-                sessionStorage.removeItem('isAdd')
-                isAdd = sessionStorage.getItem('isAdd')
-                
+                this.name = ''
                 this.data = {
                     flowInfo: {
                         Id: this.getUUID(),
@@ -708,7 +713,10 @@ export default {
                     nodeList: [],
                     lineList: [],
                 }
-                console.log(this.data)
+
+                sessionStorage.removeItem('isAdd')
+                isAdd = sessionStorage.getItem('isAdd')
+                
                 if(!isAdd) {
                     this.isAdd = false
                     this.isDraggable = false
@@ -730,15 +738,15 @@ export default {
             this.addDialog = false
             this.loading = true,
             isAdd = sessionStorage.getItem('isAdd')
-            if(!isAdd) {
-                this.isAdd = false
-                this.isDraggable = false
-            }else {
-                this.isAdd = true
-                this.isDraggable = true
-                this.name ='中国大唐电力股份有限公司 新生河2期热电站热源工程 P20090005'
-            }
             setTimeout(() => {
+                if(!isAdd) {
+                    this.isAdd = false
+                    this.isDraggable = false
+                }else {
+                    this.isAdd = true
+                    this.isDraggable = true
+                    this.name ='中国大唐电力股份有限公司 新生河2期热电站热源工程 P20090005'
+                }
                 this.loading = false
             }, 500)
         },

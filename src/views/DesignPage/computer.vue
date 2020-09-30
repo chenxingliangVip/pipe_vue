@@ -2,7 +2,7 @@
     <div class="addProject computer_add">
         <div class="addForm zll-form package_form">
             <el-form class="demo-ruleForm">
-                <el-row :gutter="20">
+                <el-row :gutter="10">
                     <el-col :span="8">
                         <div class="item_list item_list1">
                             <p class="top">
