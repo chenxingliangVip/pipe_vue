@@ -13,6 +13,10 @@ export default [
         title: '材料管理',
         icon: 'el-icon-document-copy'
     }, {
+        name: 'ProjectList',//路由name
+        title: '项目列表',
+        icon: 'el-icon-notebook-2'
+    }, {
         name: 'DesignPage',//路由name
         title: '设计',
         icon: 'el-icon-edit-outline'

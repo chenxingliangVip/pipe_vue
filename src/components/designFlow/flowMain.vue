@@ -696,7 +696,6 @@ export default {
                 type: "warning",
             }).then(() => {
                 let userInfo = JSON.parse(localStorage.getItem('userInfo'))
-                console.log(userInfo.state)
                 if( userInfo.state == 0 ){
                     this.$router.push({
                         name:'User'
@@ -729,8 +728,7 @@ export default {
                         this.loading = false
                     }, 500)
                 }
-            })
-            .catch(() => {});
+            }).catch(() => {});
         },
         addDesign() { //新建设计弹框
             this.addDialog = true
