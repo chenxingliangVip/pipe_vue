@@ -31,7 +31,6 @@ router.beforeEach((to, from, next) => {
     //     }
     // }
     let user = localStorage.getItem('userInfo')
-    console.log(user)
     if (user) {
         next();
     } else {

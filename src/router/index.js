@@ -8,9 +8,9 @@ import LeftMenuData from '@/components/LeftMenu/LeftMenuData' //左侧菜单数�
 import DesignPage from '@/views/DesignPage/index' 
 import ManagePage from '@/views/ManagePage/index' 
 
-export let getRoutePages = () => {//根据左侧菜单数据和登录状态 获取路由
-    let childrenRoute = [];//登陆后能访问的子路由
-    if (localStorage.getItem('LoginStatus') * 1 === 1) {//1 已登录 其它未登录
+    export let getRoutePages = () => {//根据左侧菜单数据和登录状态 获取路由
+        let childrenRoute = [];//登陆后能访问的子路由
+    if (localStorage.getItem('LoginStatus') * 1 == 1) {//1 已登录 其它未登录
         childrenRoute = getRouteData(LeftMenuData);//获取菜单的路由信息
     }
     return {
@@ -40,7 +40,11 @@ export default new Router({
             name: 'ManagePage',
             meta: {title: ''},
             component: ManagePage
-        },
+        }, {
+            path: '/*',
+            name: '404',
+            component: () => import("@/views/page403")
+        }
     ]
 })
 function getRouteData(menuData, routeData) {//获取菜单 的路由信息

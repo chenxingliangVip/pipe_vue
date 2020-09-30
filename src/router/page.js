@@ -1,4 +1,3 @@
-import DesignPage from '@/views/DesignPage/index' 
 import User from '@/views/mainContent/User/Index' //用户管理
 import Project from '@/views/mainContent/Project/Index' //项目借用授权
 import Materials from '@/views/mainContent/Materials/Index' //角色管理

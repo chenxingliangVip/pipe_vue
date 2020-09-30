@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import {getRoutePages} from '@/router'
 export default {
     name: 'Login',
     data() {
@@ -58,12 +59,13 @@ export default {
                     //登录成功
                     localStorage.setItem('LoginStatus',1) //设置登录状态为已登录
                     localStorage.setItem('userInfo', JSON.stringify(this.LoginForm)) //记录登录信息
+                    this.$router.addRoutes([getRoutePages()])//添加路由
+
                     if( this.LoginForm.state == 0 ) {
-                        this.$router.push({
-                            name:'User'
-                        })
+                            this.$router.push({
+                                name:'User'
+                            })
                     }else if ( this.LoginForm.state == 1 ){
-                        console.log(1)
                         this.$router.push({
                             name:'DesignPage'
                         })
@@ -81,7 +83,8 @@ export default {
             }
         }
     },
-    created() {
+    
+    beforeCreate() {
         localStorage.removeItem('LoginStatus')//设置登录状态为未登录
         localStorage.removeItem('userInfo')
         sessionStorage.removeItem('isAdd')

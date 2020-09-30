@@ -20,8 +20,8 @@
             </div>
             <hr style="margin-bottom: 20px" />
             <div class="menu-item item2" v-for="(item, index) in navList" :key="'val' + index" :class="{'isDraggable': !isDraggable }">
-                <div v-if="item.isShow" @click="goPage(item.name)">
-                    <img class="imgsrc" :src="item.img" v-show="isDraggable">
+                <div v-if="item.isShow">
+                    <img class="imgsrc" :src="item.img" v-show="isDraggable"  @click="goPage(item.name)">
                     <img class="imgsrc" :src="item.noDropImg" v-show="!isDraggable">
                     <div>{{item.name}}</div>
                 </div>
@@ -604,11 +604,10 @@ export default {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning",
+            }).then(() => {
+                this.jsPlumb.deleteConnection(conn);
             })
-                .then(() => {
-                    this.jsPlumb.deleteConnection(conn);
-                })
-                .catch(() => {});
+            .catch(() => {});
         },
         // 是否具有该线
         hasLine(from, to) {
@@ -709,6 +708,7 @@ export default {
                     nodeList: [],
                     lineList: [],
                 }
+                console.log(this.data)
                 if(!isAdd) {
                     this.isAdd = false
                     this.isDraggable = false

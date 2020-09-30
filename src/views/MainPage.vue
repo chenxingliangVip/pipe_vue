@@ -1,6 +1,6 @@
 <template>
     <div class="MainPage">
-        <div class="state" v-if="state == 0">
+        <div class="state" v-if="state === 0">
             <Header ref="Header"></Header>
             <div class="main_right">
                 <LeftMenu></LeftMenu>
@@ -11,15 +11,15 @@
                 </div>
             </div>
         </div>
-        <div class="main_right" v-if="state == 1">
-            <div class="mainContent" :class="$store.state.leftMenuMin && 'max'">
+        <div class="main_right" v-if="state === 1">
+            <div class="mainContent">
                 <div class="bodyContain">
                     <router-view></router-view>
                 </div>
             </div>
         </div>
-        <div class="main_right" v-if="state == 2">
-            <div class="mainContent" :class="$store.state.leftMenuMin && 'max'">
+        <div class="main_right" v-if="state === 2">
+            <div class="mainContent">
                 <div class="bodyContain">
                     <router-view></router-view>
                 </div>
