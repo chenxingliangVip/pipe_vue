@@ -287,6 +287,14 @@ li{
             width: calc(100% - 72px) !important;
         }
     }
+    &.add_new_form {
+        .el-form-item__label {
+            width: 105px !important;
+        }
+        .el-form-item__content {
+            width: calc(100% - 105px) !important;
+        }
+    }
 } 
 .line_form {
     .el-form-item__label {

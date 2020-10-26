@@ -1,9 +1,9 @@
 <template>
   <div class="addProject package">
-    <div class="addForm zll-form package_form">
+    <div class="addForm zll-form package_form add_new_form">
       <el-form :model="addForm" :rules="rules" ref="addForm" class="demo-ruleForm">
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :span="11">
             <el-form-item class="formList" prop="custom" label="客户名称：">
               <el-input clearable class="input_right" placeholder="请输入客户名称" v-model="addForm.custom"></el-input>
             </el-form-item>
@@ -34,7 +34,7 @@
               <el-input clearable class="input_right" placeholder="请输入审批" v-model="addForm.approver"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="13">
             <div class="pack_list pack_list1">
               <el-row>
                 <el-col :span="3">
