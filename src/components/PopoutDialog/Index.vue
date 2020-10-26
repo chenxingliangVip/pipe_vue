@@ -272,4 +272,9 @@ export default {
         height: 410px;
     }
 }
+.resultDialog_dialog {
+    .popout-main {
+        height: 310px;
+    }
+}
 </style>

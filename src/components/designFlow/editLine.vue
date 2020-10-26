@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="line_form">
     <p class="type_title">管道参数设定</p>
-    <el-form :model="line" ref="dataForm" label-width="100px" class="flowEditForm margin13" size="mini">
+    <el-form :model="line" ref="dataForm" label-width="90px" class="flowEditForm margin13" size="mini">
       <el-row :gutter="10">
-        <el-col :span="4">
+        <el-col :span="5">
           <el-form-item label="敷设方式：">
             <el-select v-model="line.psType" placeholder="" style="width: calc(100% - 40px)">
               <el-option label="架空" value="1"></el-option>
@@ -26,7 +26,7 @@
             <el-input v-model="line.localNum" style="width: calc(100% - 40px)"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="5">
           <el-form-item label="空气层外径：">
             <el-input v-model="line.airOutside" style="width: calc(100% - 40px)"></el-input>
             <span>mm</span>
@@ -46,12 +46,12 @@
             <el-input v-model="line.pipeName" style="width: calc(100% - 40px)" disabled></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="3">
           <div class="echart">
             <img src="@/assets/img/ceng.png">
           </div>
         </el-col>
-        <el-col :span="9">
+        <el-col :span="8">
           <div class="table_ceng">
             <table border="1">
               <tr>
@@ -63,10 +63,15 @@
               <tr v-for="(item , index) in line.pipeLineMaterials" :key="index">
                 <td width="12%">{{ index + 1 }}</td>
                 <td width="40%">
-                  <el-input v-model="item.materialType"></el-input>
+                  <el-select v-model="item.materialType" placeholder="请选择材质">
+                    <el-option value="材质" label="材质"></el-option>
+                  </el-select>
                 </td>
                 <td width="28%">
-                  <el-input v-model="item.reflect"  placeholder="请输入是或否"></el-input>
+                <el-select v-model="item.reflect" placeholder="请选择是或否">
+                  <el-option value="是" label="是"></el-option>
+                  <el-option value="否" label="否"></el-option>
+                </el-select>
                 </td>
                 <td width="20%">
                   <el-input v-model="item.lineWidth"></el-input>
@@ -79,7 +84,7 @@
           <div class="buttonnav">
             <!--<el-button round class="button_list sure"  @click="Submit('dataForm')">修 改</el-button>-->
             <el-button round class="button_list set" @click="logResult()">管线输出结果</el-button>
-            <el-button round  type="info" class="button_list"  >查看输出结果</el-button>
+            <el-button round  type="info" class="button_list" @click="checkResult()">查看输出结果</el-button>
           </div>
         </el-col>
       </el-row>
@@ -134,6 +139,9 @@
       },
       logResult() {
         this.$emit("lineCompute",this.line);
+      },
+      checkResult() {
+        this.$emit('checkResult', true)
       }
     }
   }
@@ -167,10 +175,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 240px;
   }
 
   .echart img {
-    width: 200px;
+    width: 100%;
   }
 
   .table_ceng table {
@@ -205,7 +214,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 200px;
+    height: 240px;
   }
 
   .middle_flex .buttonnav {

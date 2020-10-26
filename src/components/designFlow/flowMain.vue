@@ -119,7 +119,7 @@
           <edit-node ref="nodeForm" v-show="editType=='node'" :isShowEchart="isShowEchart" @LoadSet="getLoad"
                      @showLog="showLog"></edit-node>
           <edit-line ref="lineForm" v-show="editType=='line'" @line-save="lineLabelSave"
-                     @lineCompute="lineCompute"></edit-line>
+                     @lineCompute="lineCompute" @checkResult="checkLog"></edit-line>
         </div>
       </div>
     </div>
@@ -132,12 +132,21 @@
         </template>
       </popout>
     </div>
-    <!-- 24h负载设置 -->
+    <!-- 用户输出结果 -->
     <div class="zll-dialog">
-      <popout title="用户输出结果" :visible.sync="logDialog" v-show="logDialog" class="setDialog_dialog">
-        <LogResult ref="result" slot="content" @logForm="getLog"></LogResult>
+      <popout title="用户输出结果" :visible.sync="logDialog" v-show="logDialog" class="resultDialog_dialog">
+        <LogResult ref="result" slot="content"></LogResult>
         <template slot="bottom">
-          <p class="zll-botton" @click="()=>{this.$refs.result.setFormData('logForm')}">提 交</p>
+          <p class="zll-botton" @click="logDialog = false">确 定</p>
+        </template>
+      </popout>
+    </div>
+    <!-- 查看输出结果 -->
+    <div class="zll-dialog">
+      <popout title="查看输出结果" :visible.sync="checkDialog" v-show="checkDialog" class="resultDialog_dialog">
+        <CheckResult ref="result" slot="content"></CheckResult>
+        <template slot="bottom">
+          <p class="zll-botton" @click="checkDialog = false">确 定</p>
         </template>
       </popout>
     </div>
@@ -162,6 +171,7 @@
   import Add from "@/views/DesignPage/add.vue";
   import Computer from "@/views/DesignPage/computer.vue";
   import LoadSet from "@/views/DesignPage/loadSet.vue";
+  import CheckResult from "@/views/DesignPage/CheckResult.vue";
   import LogResult from "@/views/DesignPage/LogResult.vue";
   import ProjectInfo from "@/views/DesignPage/ProjectInfo/index.vue";
   import {getToken} from '@/utils/auth' // 验权
@@ -188,6 +198,7 @@
 
         isShowEchart: false,//24h负载echart
         logDialog: false,//用户输出结果弹框
+        checkDialog:false,//查看输出结果弹框
         projectDialog: false,//项目信息弹框
         menueList: [
           {
@@ -353,7 +364,8 @@
       Computer,
       LoadSet,
       LogResult,
-      ProjectInfo
+      ProjectInfo,
+      CheckResult
     },
     created() {
     },
@@ -937,11 +949,9 @@
       showLog(data) {//用户输出结果弹框
         this.logDialog = data
       },
-      getLog(data) {
-        this.logDialog = false //用户输出结果弹框——关闭
-        this.$message.success('提交成功!');
+      checkLog(data) {//查看输出结果弹框
+        this.checkDialog = data
       },
-
       iterPipeG(id,array,nodeMap){
         for(let _link of this.data.lineList){
            if(_link.from == id){

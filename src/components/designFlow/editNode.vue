@@ -56,8 +56,7 @@
             <div class="buttonnav">
               <!--<el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>-->
               <el-button round class="button_list set" @click="setLoad()">24h负载设置</el-button>
-              <el-button round class="button_list log" @click="logResult()" v-show="isShow">用户输出结果</el-button>
-              <el-button round type="info" class="button_list" disabled v-show="!isShow">用户输出结果</el-button>
+              <el-button round class="button_list log" @click="logResult()">用户输出结果</el-button>
             </div>
           </el-col>
           <el-col :span="16">
