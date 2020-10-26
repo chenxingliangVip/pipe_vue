@@ -32,12 +32,12 @@
 import LeftMenu from "@/components/LeftMenu/index";
 import Header from "@/components/Header/index";
 
-let userInfo = JSON.parse(localStorage.getItem('userInfo'))
+let userInfo = {state:0}
 export default {
     name: "MainPage",
     data() {
         return {
-            state: 0
+            state: 0,
         };
     },
     components: {

@@ -1,28 +1,46 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+
 Vue.use(Vuex)
 
 import colorDataList from '@/components/colorPopout/colorData'
+import LeftMenuData from '@/components/LeftMenu/LeftMenuData' //左侧菜单数据
 export default new Vuex.Store({
-    state: {
-        leftMenuMin: false, //左侧菜单最小化
-        //主题数据
-        colorData: localStorage.getItem('colorData') ? JSON.parse(localStorage.getItem('colorData')) : colorDataList[0],
+  state: {
+    leftMenuMin: false, //左侧菜单最小化
+    user: {},
+    //主题数据
+    colorData: localStorage.getItem('colorData') ? JSON.parse(localStorage.getItem('colorData')) : colorDataList[0],
+  },
+  mutations: {
+    SET_leftMenuMin(state, val) {
+      state.leftMenuMin = val;
     },
-    mutations: {
-        SET_leftMenuMin(state, val) {
-            state.leftMenuMin = val;
-        },
-        setColorData(state, data) {//设置主题数据
-            localStorage.setItem('colorData', JSON.stringify(data));
-            state.colorData = data;
-        },
+    setColorData(state, data) {//设置主题数据
+      localStorage.setItem('colorData', JSON.stringify(data));
+      state.colorData = data;
     },
-    actions: {
-
+    SET_USER_INFO(state, user) {
+      state.user = user;
     },
-    getters: {
-
-    }
+    SET_ROUTES: (state, routes) => {
+      state.addRoutes = routes;
+      state.routes = LeftMenuData
+    },
+  },
+  actions: {
+    setLoginUserDetail({commit}, user) {
+      return new Promise(resolve => {
+        commit('SET_USER_INFO', user);
+        resolve()
+      })
+    },
+    generateRoutes({commit}, roles) {
+      return new Promise(resolve => {
+        commit('SET_ROUTES', LeftMenuData);
+        resolve()
+      })
+    },
+  },
+  getters: {}
 })
-                                             

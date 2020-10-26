@@ -14,6 +14,7 @@ module.exports = {
                 target: "http://localhost:8080",//接口域名un
                 // target: "http://192.168.0.100:8081",//接口域名
                 "changeOrigin": true,//是否跨域
+                timeout: 600000,
                 pathRewrite: {
                     '^/api': ''//需要rewrite重写
                 }
@@ -79,10 +80,10 @@ module.exports = {
     release: {
         // Template for index.html
 
-        index: path.resolve(__dirname, '../../drug_web/src/main/webapp/index.html'),
+        index: path.resolve(__dirname, '../../pipe_web/src/main/webapp/index.html'),
 
         // Paths
-        assetsRoot: path.resolve(__dirname, '../../drug_web/src/main/webapp/dist'),
+        assetsRoot: path.resolve(__dirname, '../../pipe_web/src/main/webapp/dist'),
         assetsSubDirectory: 'static',
         assetsPublicPath: './dist/',
 
