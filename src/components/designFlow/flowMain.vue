@@ -46,12 +46,12 @@
               <span>新建设计</span>
             </div>
             <!--<div class="nav-item" v-show="!isAdd">&lt;!&ndash; 可打开 &ndash;&gt;-->
-              <!--<img src="@/assets/img/open.png">-->
-              <!--<span>打开</span>-->
+            <!--<img src="@/assets/img/open.png">-->
+            <!--<span>打开</span>-->
             <!--</div>-->
             <!--<div class="nav-item nosave" v-show="isAdd">&lt;!&ndash; 不可打开 &ndash;&gt;-->
-              <!--<img src="@/assets/img/open2.png">-->
-              <!--<span>打开</span>-->
+            <!--<img src="@/assets/img/open2.png">-->
+            <!--<span>打开</span>-->
             <!--</div>-->
             <div class="nav-item" v-show="isEdit" @click="saveData()"> <!-- 可保存 -->
               <img src="@/assets/img/save.png">
@@ -61,7 +61,7 @@
               <img src="@/assets/img/save2.png">
               <span>保存</span>
             </div>
-            <div class="nav-item close"  @click="closeProject()">
+            <div class="nav-item close" @click="closeProject()">
               <img src="@/assets/img/close.png">
               <span>关闭</span>
             </div>
@@ -72,7 +72,7 @@
             <div class="clearBoth"></div>
           </div>
         </div>
-        <div class="flow-detail" @click="togglePanel">
+        <div class="flow-detail" @click="togglePanel" id="flowParent">
           <div
             id="flowContent"
             ref="flowContent"
@@ -108,7 +108,7 @@
     <!-- 物性速算弹框 -->
     <div class="zll-dialog">
       <popout title="物性速算" :visible.sync="computerDialog" v-if="computerDialog" class="computer_dialog">
-        <Computer ref="add" slot="content"></Computer>
+        <Computer ref="add" slot="content" :isEdit="isEdit" :editData="programInfo"></Computer>
       </popout>
     </div>
     <!-- 参数 -->
@@ -159,6 +159,12 @@
         </template>
       </popout>
     </div>
+    <form action="/pipe/file/exportExcelData" method="post"
+          style="display: none;" ref="downloadTemplate">
+      <input name="json"  :value="templateWord.json"/>
+      <input name="imageUrl"  :value="templateWord.imageUrl"/>
+      <input name="title" :value="templateWord.programName"/>
+    </form>
   </div>
 </template>
 
@@ -175,14 +181,17 @@
   import LogResult from "@/views/DesignPage/LogResult.vue";
   import ProjectInfo from "@/views/DesignPage/ProjectInfo/index.vue";
   import {getToken} from '@/utils/auth' // 验权
+  import html2canvas from 'html2canvas';
+  import canvg from "canvg";
 
   let isAdd = sessionStorage.getItem('isAdd')
   export default {
     name: "flowMain",
     data() {
       return {
+        templateWord:{json:"",imageUrl:"",programName:""},
         //图形是否编辑
-        isEdit:false,
+        isEdit: false,
         programInfo: {},
         name: '',
         type: '',
@@ -193,12 +202,12 @@
         isDraggable: true,//
         drawer: false,//参数设定
 
-        loadSetData:{},
+        loadSetData: {},
         setDialog: false,//24h负载设置弹框
 
         isShowEchart: false,//24h负载echart
         logDialog: false,//用户输出结果弹框
-        checkDialog:false,//查看输出结果弹框
+        checkDialog: false,//查看输出结果弹框
         projectDialog: false,//项目信息弹框
         menueList: [
           {
@@ -241,7 +250,7 @@
             name: "统计分析",
             img: require("@/assets/img/tongji.png"),
             noDropImg: require("@/assets/img/tongji2.png"),
-            isShow: false,
+            isShow: true,
           },
         ],
         jsPlumb: null, // jsPlumb 实例
@@ -442,7 +451,7 @@
                 pipeOutside: "",
                 pipeWidth: "",
                 pipeSize: "",
-                pipeG:{},
+                pipeG: {},
                 localNum: "",
                 airOutside: "",
                 pressNum: "",
@@ -666,8 +675,8 @@
       origUser(from, to) {
         for (let i = 0; i < this.data.nodeList.length; i++) {
           let node = this.data.nodeList[i];
-          if(node.id == from){
-            if(node.Type == 3){
+          if (node.id == from) {
+            if (node.Type == 3) {
               return true;
             }
           }
@@ -683,7 +692,7 @@
         //this.$set(this.currentLine, 'label', line.label);
       },
 
-      fullScreenLoading(){
+      fullScreenLoading() {
         const loading = this.$loading({
           lock: true,
           text: 'Loading',
@@ -693,102 +702,117 @@
         return loading;
       },
 
-      validateLine(line){
+      validateLine(line) {
         let name = line.pipeName;
-        if(!line.psType){
-          this.$message.error("管道"+name+"敷设方式不能为空！");
+        if (!line.psType) {
+          this.$message.error("管道" + name + "敷设方式不能为空！");
           return false;
         }
-        if(!line.pipeOutside||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.pipeOutside))){
-          this.$message.error("管道"+name+"管道外径数据错误！");
+        if (!line.pipeOutside || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.pipeOutside))) {
+          this.$message.error("管道" + name + "管道外径数据错误！");
           return false;
         }
-        if(!line.pipeWidth||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.pipeWidth))){
-          this.$message.error("管道"+name+"管道壁厚数据错误！");
+        if (!line.pipeWidth || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.pipeWidth))) {
+          this.$message.error("管道" + name + "管道壁厚数据错误！");
           return false;
         }
-        if(!line.pipeSize||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.pipeSize))){
-          this.$message.error("管道"+name+"管道长度数据错误！");
+        if (!line.pipeSize || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.pipeSize))) {
+          this.$message.error("管道" + name + "管道长度数据错误！");
           return false;
         }
-        if(!line.localNum||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.localNum))){
-          this.$message.error("管道"+name+"局部阻系数数据错误！");
+        if (!line.localNum || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.localNum))) {
+          this.$message.error("管道" + name + "局部阻系数数据错误！");
           return false;
         }
-        if(!line.airOutside||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.airOutside))){
-          this.$message.error("管道"+name+"空气层外径数据错误！");
+        if (!line.airOutside || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.airOutside))) {
+          this.$message.error("管道" + name + "空气层外径数据错误！");
           return false;
         }
-        if(!line.pressNum||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.pressNum))){
-          this.$message.error("管道"+name+"压降系数数据错误！");
+        if (!line.pressNum || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.pressNum))) {
+          this.$message.error("管道" + name + "压降系数数据错误！");
           return false;
         }
-        if(!line.degreeNum||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.degreeNum))){
-          this.$message.error("管道"+name+"温降系数数据错误！");
+        if (!line.degreeNum || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.degreeNum))) {
+          this.$message.error("管道" + name + "温降系数数据错误！");
           return false;
         }
-        if(!line.degreeLevel||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.degreeLevel))){
-          this.$message.error("管道"+name+"保温层数数据错误！");
+        if (!line.degreeLevel || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.degreeLevel))) {
+          this.$message.error("管道" + name + "保温层数数据错误！");
           return false;
         }
         let table = line.pipeLineMaterials;
-        if(!table||table.length==0){
-          this.$message.error("管道"+name+"保温层数数据为空！");
+        if (!table || table.length == 0) {
+          this.$message.error("管道" + name + "保温层数数据为空！");
           return false;
         }
-        for(let _data of table){
-          if(!_data.materialType){
-            this.$message.error("管道"+name+"材质不能为空！");
+        for (let _data of table) {
+          if (!_data.materialType) {
+            this.$message.error("管道" + name + "材质不能为空！");
             return false;
           }
-          if(!_data.reflect){
-            this.$message.error("管道"+name+"反射层不能为空！");
+          if (!_data.reflect) {
+            this.$message.error("管道" + name + "反射层不能为空！");
             return false;
           }
-          if(!_data.lineWidth||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(_data.lineWidth))){
-            this.$message.error("管道"+name+"材料厚度数据错误！");
+          if (!_data.lineWidth || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(_data.lineWidth))) {
+            this.$message.error("管道" + name + "材料厚度数据错误！");
             return false;
           }
         }
         return true;
       },
-      lineCompute(line) {
-        if(!this.validateLine(line)){
+      async lineCompute(line) {
+        if (!this.validateLine(line)) {
           return;
         }
         let nodeArray = this.getPipeG(line);
-        if(nodeArray.length ==0){
-          this.$message.error("管道"+line.pipeName+"没有用户！");
+        if (nodeArray.length == 0) {
+          this.$message.error("管道" + line.pipeName + "没有用户！");
           return;
         }
         let pipeG = {};
-        for(let _u of nodeArray){
+        for (let _u of nodeArray) {
           let table = _u.table;
-          if(!table){
-            this.$message.error("管道"+line.pipeName+"24小时负载设置出错！");
+          if (!table) {
+            this.$message.error("管道" + line.pipeName + "24小时负载设置出错！");
             return;
           }
-          for(let key in table){
-            pipeG[key] = pipeG[key]?pipeG[key]:0;
-            let v = parseFloat(table[key]?table[key]:0);
-            pipeG[key] = pipeG[key] +v;
+          for (let key in table) {
+            pipeG[key] = pipeG[key] ? pipeG[key] : 0;
+            let v = parseFloat(table[key] ? table[key] : 0);
+            pipeG[key] = pipeG[key] + v;
           }
         }
         line.pipeG = pipeG;
         let startTime = new Date();
-        let loading = this.fullScreenLoading();
-        let from_id =  line.from;
+        let from_id = line.from;
         let nodes = this.data.nodeList;
-        for (let n of nodes) {
-          if (from_id == n.id) {
-            if(!n.temperature){
-              this.$message.error("管道"+n.name+"T0温度不可知！");
+        let initT0 = line.initT0;
+        if(!initT0){
+          for (let n of nodes) {
+            if (from_id == n.id) {
+              if(n.Type !='1'){
+                this.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
+                return;
+              }
+              if (!n.temperature) {
+                this.$message.error("热源" + n.name + "T0温度不可知！");
+              }
+              let tMap = {};
+              let pMap = {};
+              for(let i = 0;i<24;i++){
+                tMap[i+""] = n.temperature;
+                pMap[i+""] = n.pressure;
+              }
+              line.initT0 = tMap;
+              line.initP0 = pMap;
+              break;
             }
-            line.initT0 = n.temperature;
-            break;
           }
         }
+
         this.programInfo.pipeLine = line;
+        let loading = this.fullScreenLoading();
         let self = this;
         self.$http({
           url: "/pipe/program/queryComputeAir",
@@ -798,7 +822,29 @@
           contentType: "application/json",
         }).then(resp => {
           console.log(resp);
-          console.log((startTime - new Date())/1000);
+          self.templateWord.designer = self.programInfo.designer;
+          self.templateWord.checker = self.programInfo.checker;
+          self.templateWord.examiner = self.programInfo.examiner;
+          self.templateWord.approver = self.programInfo.approver;
+          self.templateWord.programName = self.programInfo.programName;
+          self.templateWord.custom = self.programInfo.custom;
+          self.templateWord.averDegree = self.programInfo.averDegree;
+          self.templateWord.averWind = self.programInfo.averWind;
+          self.templateWord.acuteValue = self.programInfo.acuteValue;
+          self.templateWord.rough = self.programInfo.rough;
+          self.templateWord.airDegree = self.programInfo.airDegree;
+          self.templateWord.groundDegree = self.programInfo.groundDegree;
+          self.templateWord.groundDeep = self.programInfo.groundDeep;
+          self.templateWord.groundHeat = self.programInfo.groundHeat;
+          self.templateWord.airHeat = self.programInfo.airHeat;
+          self.templateWord.originDegree = "20";
+          self.templateWord.originPress = "3";
+          let pipeParams = [];
+          let pipe = {pipeNum:line.pipeName,pipeWidth:line.pipeWidth,pipeLength:line.pipeSize};
+          pipeParams.push(pipe);
+          self.templateWord.pipeParams = pipeParams;
+
+          console.log((startTime - new Date()) / 1000);
           loading.close();
         });
       },
@@ -899,11 +945,11 @@
         }).then(resp => {
           if (!resp.success) {
             self.$message.error("查询建项目失败！");
-          }else{
+          } else {
             let code = resp.result;
-            let tip = data.programName + " " +code;
+            let tip = data.programName + " " + code;
             self.$message.success("新建项目成功！");
-            self.name = '中国大唐电力股份有限公司 '+tip;
+            self.name = '中国大唐电力股份有限公司 ' + tip;
             self.isEdit = true;
           }
           self.addDialog = false
@@ -930,7 +976,7 @@
       },
       getLoad(data) { //24h负载设置弹框
         this.setDialog = true;
-        this.loadSetData = Object.assign({},data);
+        this.loadSetData = Object.assign({}, data);
       },
       getLoadData(_n) {
         this.isShowEchart = false;
@@ -952,26 +998,26 @@
       checkLog(data) {//查看输出结果弹框
         this.checkDialog = data
       },
-      iterPipeG(id,array,nodeMap){
-        for(let _link of this.data.lineList){
-           if(_link.from == id){
-             let to_id = _link.to;
-             let node = nodeMap[to_id];
-             if(node.Type =='3'){
-               array.push(node);
-             }
-             this.iterPipeG(_link.to,array,nodeMap);
-           }
+      iterPipeG(id, array, nodeMap) {
+        for (let _link of this.data.lineList) {
+          if (_link.from == id) {
+            let to_id = _link.to;
+            let node = nodeMap[to_id];
+            if (node.Type == '3') {
+              array.push(node);
+            }
+            this.iterPipeG(_link.to, array, nodeMap);
+          }
         }
       },
-      getPipeG(line){
+      getPipeG(line) {
         let from_id = line.from;
         let nodeMap = {};
         let nodeArray = [];
-        for(let n of this.data.nodeList){
+        for (let n of this.data.nodeList) {
           nodeMap[n.id] = n;
         }
-        this.iterPipeG(from_id,nodeArray,nodeMap);
+        this.iterPipeG(from_id, nodeArray, nodeMap);
         return nodeArray;
       },
       goPage(val) {
@@ -979,53 +1025,140 @@
           this.projectDialog = true;
           return;
         }
+        this.navList[2].isShow = false;
         let lineList = this.data.lineList;
         let nodeList = this.data.nodeList;
-        if(nodeList.length == 0){
+        if (nodeList.length == 0) {
           this.$message.error('请添加节点!');
           return;
         }
-        if(lineList.length == 0){
+        if (lineList.length == 0) {
           this.$message.error('请添加管道!');
           return;
         }
         let linkSet = new Set();
-        for(let l of lineList){
+        for (let l of lineList) {
           linkSet.add(l.from);
           linkSet.add(l.to);
-          // if(!l.pipeG){
-          //   this.$message.error('请设置蒸汽流量!');
-          //   return;
-          // }
         }
-        for(let n of nodeList){
-          if(!linkSet.has(n.id)){
-            this.$message.error(n.name+"没有管道");
+        for (let n of nodeList) {
+          if (!linkSet.has(n.id)) {
+            this.$message.error(n.name + "没有管道");
             return;
           }
         }
-        if (val == '设计检查' || val =='网关计算') {
-          for(let n of nodeList){
+        let firstNodes = [];
+        if (val == '设计检查' || val == '管网计算') {
+          for (let n of nodeList) {
             let name = n.name;
-            if(n.Type =='1' || n.Type =='3'){
+            if (n.Type == '1' || n.Type == '3') {
               let temperature = n.temperature;
               let pressure = n.pressure;
-              if(!temperature||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(temperature))){
-                this.$message.error("节点"+name+"温度数据错误！");
+              if (!temperature || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(temperature))) {
+                this.$message.error("节点" + name + "温度数据错误！");
                 return;
               }
-              if(!pressure||(!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(pressure))){
-                this.$message.error("节点"+name+"压力数据错误！");
+              if (!pressure || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(pressure))) {
+                this.$message.error("节点" + name + "压力数据错误！");
                 return;
               }
             }
-            if(n.Type =='3'){
-
+            if (n.Type == '1') {
+              firstNodes.push(n.id);
             }
           }
+          for (let line of lineList) {
+            if (!this.validateLine(line)) {
+              return;
+            }
+            let nodeArray = this.getPipeG(line);
+            if (nodeArray.length == 0) {
+              this.$message.error("管道" + line.pipeName + "没有用户！");
+              return;
+            }
+            for (let _u of nodeArray) {
+              let table = _u.table;
+              if (!table) {
+                this.$message.error("管道" + line.pipeName + "24小时负载设置出错！");
+                return;
+              }
+            }
+          }
+          if (val == '设计检查') {
+            this.$message.success("检查通过！");
+          }
+          this.navList[2].isShow = true;
         }
-      }
-    },
+        if (val == '管网计算' && this.navList[2].isShow == true) {
+          let firstLines = [];
+          for (let n of firstNodes) {
+            for (let _lk of lineList) {
+              if (_lk.from == n) {
+                firstLines.push(_lk);
+              }
+            }
+          }
+          for (let link of firstLines) {
+            this.computeAnyLine(link, lineList);
+          }
+        }
+        if (val == "统计分析") {
+          this.handleGenerator();
+        }
+      },
+      computeAnyLine(link, lineList) {
+        let to = link.to;
+        let compare = [];
+        for (let l of lineList) {
+          if (l.from == to) {
+            compare.push(l);
+          }
+        }
+        this.lineCompute(link).then(result => {
+          for (let c of compare) {
+            this.computeAnyLine(c, lineList);
+          }
+        });
+      },
+      handleGenerator() {
+        let self = this;
+        // 最外层的容器
+        const treeContainnerElem = document.getElementById('flowParent');
+        // 要导出div
+        let treeElem = document.getElementById("flowContent")
+        // 从要导出的div克隆的临时div
+        const tempElem = treeElem.cloneNode(true);
+        treeContainnerElem.appendChild(tempElem)
+        // 在临时div上将svg都转换成canvas，并删除原有的svg节点
+        const svgElem = tempElem.querySelectorAll("svg");
+        svgElem.forEach((node) => {
+          var parentNode = node.parentNode;
+          var svg = node.outerHTML.trim();
+          var canvas = document.createElement("canvas");
+          canvg(canvas, svg);
+          canvas.style.zIndex = 9
+          if (node.style.position) {
+            canvas.style.position += node.style.position;
+            canvas.style.left += node.style.left;
+            canvas.style.top += node.style.top;
+          }
+          parentNode.removeChild(node);
+          parentNode.appendChild(canvas);
+        });
+        html2canvas(tempElem, {
+          useCORS: true // 允许CORS跨域
+        }).then(canvas => {
+          // 图片触发下载
+          const img = canvas.toDataURL("image/jpeg").replace("data:image/jpeg;base64,", "");
+          const finalImageSrc = "data:image/jpeg;base64," + img;
+          this.templateWord.imageUrl = finalImageSrc;
+          self.$nextTick(() => {
+            self.$refs.downloadTemplate.submit();
+          })
+          treeContainnerElem.removeChild(tempElem);
+        })
+      },
+    }
   };
 </script>
 

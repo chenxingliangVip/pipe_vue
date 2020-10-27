@@ -21,13 +21,17 @@
     "@turf/area": "^6.0.1",
     "@turf/length": "^6.0.2",
     "axios": "^0.18.0",
+    "canvas": "^2.6.1",
+    "canvg": "^2.0.0-beta.1",
     "css-loader": "^0.28.0",
     "echarts": "^4.7.0",
     "element-ui": "^2.6.3",
-    "html2canvas": "^1.0.0-rc.5",
+    "html2canvas": "^1.0.0-rc.7",
     "jquery": "^3.3.1",
     "js-cookie": "^2.2.1",
+    "jsdom": "^13.2.0",
     "jspdf": "^1.5.3",
+    "jsplumb": "^2.11.2",
     "leaflet": "^1.5.1",
     "less": "^2.7.2",
     "less-loader": "^4.0.5",
@@ -49,7 +53,7 @@
     "vuedraggable": "^2.16.0",
     "vuex": "^3.0.1",
     "xlsx": "^0.15.1",
-    "jsplumb": "^2.11.2"
+    "xmldom": "^0.3.0"
   },
   "devDependencies": {
     "ag-grid-community": "20.2.0",

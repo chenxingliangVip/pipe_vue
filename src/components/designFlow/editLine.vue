@@ -64,7 +64,8 @@
                 <td width="12%">{{ index + 1 }}</td>
                 <td width="40%">
                   <el-select v-model="item.materialType" placeholder="请选择材质">
-                    <el-option value="材质" label="材质"></el-option>
+                    <el-option value="陶瓷纤维" label="陶瓷纤维"></el-option>
+                    <el-option value="玻璃棉" label="玻璃棉"></el-option>
                   </el-select>
                 </td>
                 <td width="28%">

@@ -141,8 +141,10 @@
 
 <script>
   export default {
+    props:['isEdit','editData'],
     data() {
       return {
+        lns:false,
         formData1: {
           degree: '',
           press: '',
@@ -195,6 +197,10 @@
         this.computeForm2();
       },
       counter3() {
+        if(!this.isEdit){
+          this.$message.error('未创建项目，无法计算冷凝水!');
+          return;
+        }
         if (this.formData3.rootNum == '') {
           this.$message.error('请输入疏水器!');
           return false
@@ -247,7 +253,16 @@
       },
       computeForm3() {
         let self = this;
-        let param = {rootNum:parseInt(this.formData3.rootNum),press:parseFloat(this.formData3.press),width:parseFloat(this.formData3.width),length:parseFloat(this.formData3.len)};
+        let degree = this.editData.averDegree;
+        let averWeed = this.editData.averWind;
+        let param = {
+          rootNum:parseInt(this.formData3.rootNum),
+          press:parseFloat(this.formData3.press),
+          width:parseFloat(this.formData3.width),
+          length:parseFloat(this.formData3.len),
+          degree:parseFloat(degree),
+          averWeed:parseFloat(averWeed)
+        };
         self.$http({
           url: "/pipe/formula/queryCompute_water",
           method: "post",
@@ -260,6 +275,7 @@
       },
     },
     mounted() {
+
     }
   }
 </script>

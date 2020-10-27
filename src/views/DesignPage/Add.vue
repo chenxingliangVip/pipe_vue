@@ -169,9 +169,11 @@
     },
     methods: {
       setFormData(formName) {
+        let self = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.$emit('addForm', this.addForm)
+            self.$eventBus.$emit("startPipeCompute");
           } else {
             return false
           }
