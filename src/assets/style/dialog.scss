@@ -98,6 +98,7 @@ $baseColor: #1397de;
                 font-weight: normal;
                 height: 26px;
                 line-height: 26px;
+                color: #333;
             }
             td {
                 height: 35px;
@@ -135,6 +136,25 @@ $baseColor: #1397de;
 						border: 1px solid #DCDFE6;
                     }
 				}
+            }
+        }
+        &.normal {
+            margin-top: 0px;
+            table {
+                border:1px solid #cccccc;
+                th {
+                    background: #d2deef;
+                    border:1px solid #cccccc;
+                }
+                td {
+                    height: 30px;
+                    line-height: 30px;
+                    color: #333;
+                    border-right:1px solid #cccccc;
+                }
+                tr {
+                    background: #f7f7f7;
+                }
             }
         }
     }
