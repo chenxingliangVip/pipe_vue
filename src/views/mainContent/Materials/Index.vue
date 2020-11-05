@@ -52,6 +52,15 @@
               <el-input clearable v-model="addForm.twoNumDesc" placeholder=""></el-input>
             </el-form-item>
           </div>
+          <div class="list_nav">
+            <p>反射</p>
+            <el-form-item class="formList">
+              <el-select v-model="addForm.twoNumDesc" placeholder="">
+                <el-option value="是" label="是"></el-option>
+                <el-option value="否" label="否"></el-option>
+              </el-select>
+            </el-form-item>
+          </div>
           <div class="clearBoth"></div>
         </div>
         <div class="addNew">

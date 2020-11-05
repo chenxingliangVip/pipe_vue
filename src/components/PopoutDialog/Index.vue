@@ -269,7 +269,9 @@ export default {
 }
 .setDialog_dialog {
     .popout-main {
+        width: 950px;
         height: 410px;
+        left: calc(50% - 475px);
     }
 }
 .resultDialog_dialog {
