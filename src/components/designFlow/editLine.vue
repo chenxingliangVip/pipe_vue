@@ -64,15 +64,14 @@
                 <td width="12%">{{ index + 1 }}</td>
                 <td width="40%">
                   <el-select v-model="item.materialType" placeholder="请选择材质">
-                    <el-option value="陶瓷纤维" label="陶瓷纤维"></el-option>
-                    <el-option value="玻璃棉" label="玻璃棉"></el-option>
+                    <el-option :value="item.name" :label="item.name" v-for="(item,index) in materials" :key="index"></el-option>
                   </el-select>
                 </td>
                 <td width="28%">
-                <el-select v-model="item.reflect" placeholder="请选择是或否">
-                  <el-option value="是" label="是"></el-option>
-                  <el-option value="否" label="否"></el-option>
-                </el-select>
+                  <el-select v-model="item.reflect" placeholder="请选择是或否">
+                    <el-option value="是" label="是"></el-option>
+                    <el-option value="否" label="否"></el-option>
+                  </el-select>
                 </td>
                 <td width="20%">
                   <el-input v-model="item.lineWidth"></el-input>
@@ -99,6 +98,7 @@
     data() {
       return {
         isShow: false,
+        materials:[],
         line: {
           psType:"",
           pipeOutside:"",
@@ -118,7 +118,24 @@
     watch: {
 
     },
+    mounted(){
+      this.getMaterials();
+    },
     methods: {
+
+      getMaterials() {
+        let self = this;
+        self.tableLoading = true;
+        self.$http({
+          url: "/pipe/material/queryMaterialList",
+          method: "post",
+        }).then(resp => {
+          if (resp.success) {
+            self.materials = resp.result;
+          }
+        });
+      },
+
       init(item) {
         this.line = item;
         if(!this.line.pipeLineMaterials||this.line.pipeLineMaterials.length == 0){
@@ -142,7 +159,7 @@
         this.$emit("lineCompute",this.line);
       },
       checkResult() {
-        this.$emit('checkResult', true)
+        this.$emit('checkResult', this.line)
       }
     }
   }

@@ -32,13 +32,7 @@
     data() {
       return {
         tableLoading: true, //table刷新
-        tableData: [{
-          tableNum1: 'P20090001',//项目号
-          tableNum2: '北疆热电二期工程',//项目名称
-          tableNum3: '徐峰',//设计人
-          tableNum4: '李美然',//授权访问
-          tableNum5: '2020-10-26',//截止日期
-        }],
+        tableData: [],
         tableHeader: [],
         addDialog: false, //弹框
       }
@@ -84,7 +78,7 @@
           type = "save";
         }
         let name = "DesignPage";
-        this.$router.push({ name ,query: {type: type }});
+        this.$router.push({ name ,query: {type: type,id:val.id }});
       },
       getFormData(data) {
         this.addDialog = false

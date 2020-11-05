@@ -274,7 +274,7 @@ export default {
 }
 .resultDialog_dialog {
     .popout-main {
-        top: calc(50% - 350px);
+        top: calc(50% - 250px);
         max-height: 710px;
     }
 }

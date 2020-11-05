@@ -18,7 +18,7 @@
           <span>Mpa（绝压）</span>
         </el-form-item>
         <!--<el-form-item class="floatForm">-->
-          <!--<el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>-->
+        <!--<el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>-->
         <!--</el-form-item>-->
         <div class="clearBoth"></div>
       </div>
@@ -30,7 +30,7 @@
           <el-input v-model="node.name" disabled></el-input>
         </el-form-item>
         <!--<el-form-item class="floatForm">-->
-          <!--<el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>-->
+        <!--<el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>-->
         <!--</el-form-item>-->
         <div class="clearBoth"></div>
       </div>
@@ -99,7 +99,6 @@
             isShowEchart = this.node.isShowEchart?true:false;
           }
         });
-
         if (self.node.Type == 1) {
           self.typeTitle = '热源参数设定';
           if(!this.node.temperature){
@@ -111,15 +110,17 @@
         } else if (self.node.Type == 2) {
           self.typeTitle = '分支节点设定'
         } else if (self.node.Type == 3) {
-          if(isShowEchart){
-            self.getEchartData();
-          }else{
-            self.$nextTick(() => {
-              let echart = self.$echarts.init(self.$refs.echart);
-              echartOption.option.series[0].data = [];
-              echart.setOption(echartOption.option)
-            })
-          }
+          self.$nextTick(() => {
+            if(isShowEchart){
+              self.getEchartData();
+            }else{
+              self.$nextTick(() => {
+                let echart = self.$echarts.init(self.$refs.echart);
+                echartOption.option.series[0].data = [];
+                echart.setOption(echartOption.option)
+              })
+            }
+          });
           if(!self.node.temperature){
             self.$set(this.node, "temperature", "");
           }
@@ -144,7 +145,7 @@
         this.$emit('LoadSet', this.node);
       },
       logResult() {//用户输出结果
-        this.$emit('showLog', true)
+        this.$emit('showLog', this.node)
       },
       getEchartData() {  //echart
         let echart = this.$echarts.init(this.$refs.echart);

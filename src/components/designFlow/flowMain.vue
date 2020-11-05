@@ -37,7 +37,7 @@
         <div class="add_design">
           <div class="nav-item title_name">{{ name }}</div>
           <div class="middle">
-            <div class="nav-item" @click="addDesign()" v-show="!isEdit"><!-- 可新建设计 -->
+            <div class="nav-item" @click="addDesign()" v-show="!isEdit&&newBuild"><!-- 可新建设计 -->
               <img src="@/assets/img/add.png">
               <span>新建设计</span>
             </div>
@@ -45,14 +45,18 @@
               <img src="@/assets/img/add2.png">
               <span>新建设计</span>
             </div>
-            <!--<div class="nav-item" v-show="!isAdd">&lt;!&ndash; 可打开 &ndash;&gt;-->
+            <!--<div class="nav-item" v-show="programEdit" @click="editProgram">&lt;!&ndash; 可打开 &ndash;&gt;-->
             <!--<img src="@/assets/img/open.png">-->
-            <!--<span>打开</span>-->
+            <!--<span>编辑</span>-->
             <!--</div>-->
-            <!--<div class="nav-item nosave" v-show="isAdd">&lt;!&ndash; 不可打开 &ndash;&gt;-->
+            <!--<div class="nav-item nosave" v-show="!programEdit">&lt;!&ndash; 不可打开 &ndash;&gt;-->
             <!--<img src="@/assets/img/open2.png">-->
-            <!--<span>打开</span>-->
+            <!--<span>编辑</span>-->
             <!--</div>-->
+            <div class="nav-item"  @click="copyProgram"><!-- 可打开 -->
+              <img src="@/assets/img/open.png">
+               <span>复制</span>
+            </div>
             <div class="nav-item" v-show="isEdit" @click="saveData()"> <!-- 可保存 -->
               <img src="@/assets/img/save.png">
               <span>保存</span>
@@ -135,7 +139,7 @@
     <!-- 用户输出结果 -->
     <div class="zll-dialog">
       <popout title="用户输出结果" :visible.sync="logDialog" v-show="logDialog" class="resultDialog_dialog">
-        <LogResult ref="result" slot="content"></LogResult>
+        <LogResult ref="userResult" slot="content" :lineResult="lineResult"></LogResult>
         <template slot="bottom">
           <p class="zll-botton" @click="logDialog = false">确 定</p>
         </template>
@@ -144,7 +148,7 @@
     <!-- 查看输出结果 -->
     <div class="zll-dialog">
       <popout title="查看输出结果" :visible.sync="checkDialog" v-show="checkDialog" class="resultDialog_dialog">
-        <CheckResult ref="result" slot="content"></CheckResult>
+        <CheckResult ref="result" slot="content" ></CheckResult>
         <template slot="bottom">
           <p class="zll-botton" @click="checkDialog = false">确 定</p>
         </template>
@@ -153,17 +157,16 @@
     <!-- 项目信息弹框 -->
     <div class="zll-dialog">
       <popout title="项目信息" :visible.sync="projectDialog" v-if="projectDialog" class="adddesign_dialog">
-        <ProjectInfo ref="result" slot="content" :editData="programInfo"></ProjectInfo>
+        <Add ref="resultPro" slot="content" @updateForm="updateProgram" ></Add>
         <template slot="bottom">
-          <p class="zll-botton cancal" @click="projectDialog = false">取 消</p>
+          <p class="zll-botton cancal" @click="projectDialog = false" v-show="programEdit">关 闭</p>
+          <p class="zll-botton" @click="()=>{this.$refs.resultPro.setFormData('addForm','edit')}">修 改</p>
         </template>
       </popout>
     </div>
-    <form action="/pipe/file/exportExcelData" method="post"
-          style="display: none;" ref="downloadTemplate">
-      <input name="json"  :value="templateWord.json"/>
-      <input name="imageUrl"  :value="templateWord.imageUrl"/>
-      <input name="title" :value="templateWord.programName"/>
+    <form action="/pipe/file/downloadFile" method="post"
+          style="display: none;" ref="downloadFile">
+      <input name="path" :value="downPath"/>
     </form>
   </div>
 </template>
@@ -184,26 +187,45 @@
   import html2canvas from 'html2canvas';
   import canvg from "canvg";
 
-  let isAdd = sessionStorage.getItem('isAdd')
   export default {
     name: "flowMain",
     data() {
       return {
-        templateWord:{json:"",imageUrl:"",programName:""},
+        downPath:"",
         //图形是否编辑
         isEdit: false,
-        programInfo: {},
+        newBuild:true,
+        programEdit:false,
+        programInfo: {
+          id:"",
+          custom: '',
+          programName: '',
+          acuteValue: '',
+          rough: '',
+          designer: '',
+          checker: '',
+          examiner: '',
+          approver: '',
+          averDegree: '',
+          averWind: '',
+          airDegree: '',
+          groundDegree: '',
+          groundDeep: '',
+          groundHeat: '',
+          airHeat: '',
+        },
         name: '',
         type: '',
         loading: false,
         addDialog: false,//新建设计弹框
         computerDialog: false,//物性速算弹框
-        isAdd: false,//是否新建设计
-        isDraggable: true,//
+        // isAdd: false,//是否新建设计
+        // isDraggable: true,//
         drawer: false,//参数设定
 
         loadSetData: {},
         setDialog: false,//24h负载设置弹框
+        lineResult:{},
 
         isShowEchart: false,//24h负载echart
         logDialog: false,//用户输出结果弹框
@@ -379,24 +401,50 @@
     created() {
     },
     mounted() {
+      let self = this;
       this.jsPlumb = jsPlumb.getInstance();
-      this.$nextTick(() => {
-        this.init();
-      });
-      this.editFlow();
-
-      isAdd = sessionStorage.getItem('isAdd')
-      this.loading = true
-      if (!isAdd) {
-        this.isAdd = false
-        this.isDraggable = true
-      } else {
-        this.isAdd = true
-        this.isDraggable = true
+      let type  = this.$route.query.type;
+      let id  = this.$route.query.id;
+      if(type && id){
+        if(type =='all'){
+          self.isEdit = true;
+          self.programEdit = true;
+        }else{
+          self.newBuild = false;
+        }
+        self.$http({
+          url: "/pipe/program/queryPipeProgramNodeInfo",
+          method: "post",
+          params:{value:id}
+        }).then(resp => {
+          if (resp.success&&resp.result.length > 0) {
+            let node_info = resp.result[0];
+            for(let key in self.programInfo){
+              self.programInfo[key] = node_info[key];
+            }
+            self.data = JSON.parse(node_info.nodeInfo);
+            self.$nextTick(() => {
+              self.init();
+            });
+            self.editFlow();
+            setTimeout(() => {
+              self.loading = false
+            }, 500)
+          }else{
+            self.$message.error("获取管道信息失败！");
+            return;
+          }
+        });
+      }else{
+        self.programEdit = true;
+        self.$nextTick(() => {
+          self.init();
+        });
+        self.editFlow();
+        setTimeout(() => {
+          self.loading = false
+        }, 500)
       }
-      setTimeout(() => {
-        this.loading = false
-      }, 500)
     },
     methods: {
       init() {
@@ -441,7 +489,7 @@
             let from = evt.source.id;
             let to = evt.target.id;
             if (_this.loadEasyFlowFinish) {
-              _this.data.lineList.push({
+              let addLine = {
                 from: from,
                 to: to,
                 label: from + to,
@@ -452,13 +500,32 @@
                 pipeWidth: "",
                 pipeSize: "",
                 pipeG: {},
+                lineResult:{},
                 localNum: "",
                 airOutside: "",
                 pressNum: "",
                 degreeNum: "",
                 degreeLevel: "",
                 pipeName: from + to,
-              });
+              };
+              let json = {};
+              json.designer = _this.programInfo.designer;
+              json.checker = _this.programInfo.checker;
+              json.examiner = _this.programInfo.examiner;
+              json.approver = _this.programInfo.approver;
+              json.programName = _this.programInfo.programName;
+              json.custom = _this.programInfo.custom;
+              json.averDegree = _this.programInfo.averDegree;
+              json.averWind = _this.programInfo.averWind;
+              json.acuteValue = _this.programInfo.acuteValue;
+              json.rough = _this.programInfo.rough;
+              json.airDegree = _this.programInfo.airDegree;
+              json.groundDegree = _this.programInfo.groundDegree;
+              json.groundDeep = _this.programInfo.groundDeep;
+              json.groundHeat = _this.programInfo.groundHeat;
+              json.airHeat = _this.programInfo.airHeat;
+              addLine.lineResult = json;
+              _this.data.lineList.push(addLine);
             }
             evt.connection.getOverlay("label-1").setLabel(from + to);
             setTimeout(function () {
@@ -604,12 +671,6 @@
           type: "warning",
           closeOnClickModal: false,
         }).then(() => {
-          // this.data.nodeList = this.data.nodeList.filter(function(node) {
-          // 	if (node.id === nodeId) {
-          // 		node.show = false
-          // 	}
-          // 	return true
-          // })
           this.data.nodeList.forEach((item, index) => {
             if (item.id === nodeId) {
               this.data.nodeList.splice(index, 1);
@@ -695,7 +756,7 @@
       fullScreenLoading() {
         const loading = this.$loading({
           lock: true,
-          text: 'Loading',
+          text: '计算中，请稍等....',
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.7)'
         });
@@ -762,6 +823,8 @@
         return true;
       },
       async lineCompute(line) {
+        console.log("lineCompute----------------")
+        console.log(line)
         if (!this.validateLine(line)) {
           return;
         }
@@ -786,18 +849,24 @@
         line.pipeG = pipeG;
         let startTime = new Date();
         let from_id = line.from;
+        let from_to = line.to;
         let nodes = this.data.nodeList;
-        let initT0 = line.initT0;
-        if(!initT0){
-          for (let n of nodes) {
-            if (from_id == n.id) {
-              if(n.Type !='1'){
-                this.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
-                return;
-              }
-              if (!n.temperature) {
-                this.$message.error("热源" + n.name + "T0温度不可知！");
-              }
+        let endNode = {};
+        for (let n of nodes) {
+          if(n.id == from_to){
+            endNode  = n;
+          }
+        }
+        for (let n of nodes) {
+          if (from_id == n.id) {
+            if(!n.pressure&&n.Type == '1'){
+              this.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
+              return;
+            }
+            if (!n.temperature&&n.Type == '1') {
+              this.$message.error("热源" + n.name + "T0温度不可知！");
+            }
+            if(n.Type == '1'){
               let tMap = {};
               let pMap = {};
               for(let i = 0;i<24;i++){
@@ -806,11 +875,15 @@
               }
               line.initT0 = tMap;
               line.initP0 = pMap;
-              break;
+            }else{
+              if(!line.initT0||!line.initP0){
+                this.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
+                return;
+              }
             }
+            break;
           }
         }
-
         this.programInfo.pipeLine = line;
         let loading = this.fullScreenLoading();
         let self = this;
@@ -822,28 +895,106 @@
           contentType: "application/json",
         }).then(resp => {
           console.log(resp);
-          self.templateWord.designer = self.programInfo.designer;
-          self.templateWord.checker = self.programInfo.checker;
-          self.templateWord.examiner = self.programInfo.examiner;
-          self.templateWord.approver = self.programInfo.approver;
-          self.templateWord.programName = self.programInfo.programName;
-          self.templateWord.custom = self.programInfo.custom;
-          self.templateWord.averDegree = self.programInfo.averDegree;
-          self.templateWord.averWind = self.programInfo.averWind;
-          self.templateWord.acuteValue = self.programInfo.acuteValue;
-          self.templateWord.rough = self.programInfo.rough;
-          self.templateWord.airDegree = self.programInfo.airDegree;
-          self.templateWord.groundDegree = self.programInfo.groundDegree;
-          self.templateWord.groundDeep = self.programInfo.groundDeep;
-          self.templateWord.groundHeat = self.programInfo.groundHeat;
-          self.templateWord.airHeat = self.programInfo.airHeat;
-          self.templateWord.originDegree = "20";
-          self.templateWord.originPress = "3";
-          let pipeParams = [];
           let pipe = {pipeNum:line.pipeName,pipeWidth:line.pipeWidth,pipeLength:line.pipeSize};
-          pipeParams.push(pipe);
-          self.templateWord.pipeParams = pipeParams;
+          line.lineResult.pipeParams = pipe;
+          let pr = {};
+          pr.pipeNum = line.pipeName;
+          let liulList = [];
+          let startPList = [];
+          let endPList = [];
+          let startTList = [];
+          let endTList = [];
+          let startWList = [];
+          let endWList = [];
 
+          let userW = [];
+          let userP = [];
+          let userT = [];
+          let userL = [];
+
+          let totalU = [];
+          let totalWater = 0;
+          let tMap = {};
+          let pMap = {};
+          for(let key in resp.result){
+            tMap[key+""] = resp.result[key].ts;
+            pMap[key+""] = resp.result[key].ps;
+            let _data = resp.result[key];
+            let ll = {wh:key,hour:line.pipeG[key]};
+            liulList.push(ll);
+            let sp = {wh1:key,sp:_data.startP};
+            startPList.push(sp);
+            let ep = {wh2:key,ep:_data.ps};
+            endPList.push(ep);
+            let st = {wh3:key,st:_data.startT};
+            startTList.push(st);
+            let et = {wh4:key,et:_data.ts};
+            endTList.push(et);
+            let sw = {wh5:key,sw:_data.startSpeed};
+            startWList.push(sw);
+            let ew = {wh6:key,ew:_data.speed};
+            endWList.push(ew);
+            let uw = {wh:key,hour:_data.speed};
+            userW.push(uw);
+
+            let up = {wh1:key,press:_data.ps};
+            userP.push(up);
+
+            let uT = {wh2:key,degree:_data.ts};
+            userT.push(uT);
+
+            let uL = {wh3:key,water:_data.disQ};
+            userL.push(uL);
+
+            let tL = {wh2:key,totalWater:_data.disQ};
+            totalU.push(tL);
+            totalWater +=_data.disQ;
+          }
+          for (let _link of this.data.lineList) {
+            if (_link.from == from_to) {
+              _link.initT0 = tMap;
+              _link.initP0 = pMap;
+              break;
+            }
+          }
+          console.log(liulList)
+          pr.LiuLiang = liulList;
+          pr.startYaLi = startPList;
+          pr.yaLi = endPList;
+          pr.startDegrees = startTList;
+          pr.degrees = endTList;
+          pr.startLiuSu = startWList;
+          pr.liuSu = endWList;
+          line.lineResult.pipeResults = pr;
+          if(endNode.Type =='3'){
+            let ur = {};
+            ur.userName = line.pipeName;
+            ur.LiuLiang = userW;
+            ur.YaLi = userP;
+            ur.wendu = userT;
+            ur.lengls = userL;
+            line.lineResult.userResults = ur;
+
+            let tl = {};
+            tl.userName = line.pipeName;
+            tl.cls =totalU;
+            line.lineResult.totalUser = tl;
+            line.lineResult.totalL = totalWater;
+          }
+          line.lineResult.totalL = line.lineResult.totalL>0?line.lineResult.totalL:0;
+          let material = {};
+          material.materialType = line.pipeOutside;
+          material.materialLen = line.pipeSize;
+          line.lineResult.pipeTotals = material;
+          let m_array = [];
+          for(let _d of line.pipeLineMaterials){
+            let dd = {};
+            dd.materialLoss = "未知";
+            dd.materialNum = "未知";
+            dd.material = _d.materialType;
+            m_array.push(dd);
+          }
+          line.lineResult.materials = m_array;
           console.log((startTime - new Date()) / 1000);
           loading.close();
         });
@@ -888,9 +1039,67 @@
         var uuid = s.join("");
         return uuid;
       },
-      saveData() {//保存
+
+      updateProgram(data){
+        let self = this;
+        let id = this.programInfo.id;
+        if(!id){
+          for(let key in data){
+            self.programInfo[key] = data[key];
+          }
+          self.projectDialog = false;
+          return;
+        }
+        let param = Object.assign({},data);
+        param.id = id;
+        self.$http({
+          url: "/pipe/program/updatePipeProgramInfor",
+          method: "post",
+          params: param,
+        }).then(resp => {
+          if (!resp.success) {
+            self.$message.error("修改项目失败！");
+          }else{
+            for(let key in data){
+              self.programInfo[key] = data[key];
+            }
+            self.$message.success('修改成功!');
+          }
+          self.projectDialog = false;
+        });
+      },
+      copyProgram(){
+        this.saveData("复制");
+      },
+      saveData(tip) {//保存
+        let self = this;
         console.log(this.data);
-        this.$message.success('保存成功!');
+        let param = Object.assign({},self.programInfo);
+        param.nodeInfo = this.data;
+        let user = JSON.parse(getToken());
+        param.createUser = user.id;
+        if(tip){
+          delete param.id;
+        }
+        self.$http({
+          url: "/pipe/program/addPipeProgram",
+          method: "post",
+          data: JSON.stringify(param),
+          dataType: 'json',
+          contentType: "application/json",
+        }).then(resp => {
+          if (!resp.success) {
+            self.$message.error("保存项目失败！");
+          }else{
+            self.isDraggable = true;
+            let msg = "保存成功";
+            if(tip){
+              msg = "复制成功";
+            }
+            this.$message.success(msg);
+          }
+          self.addDialog = false
+        });
       },
       editFlow() {
         // this.drawer = true
@@ -954,22 +1163,6 @@
           }
           self.addDialog = false
         });
-        // self.$http({
-        //   url: "/pipe/program/addPipeProgram",
-        //   method: "post",
-        //   params: data
-        // }).then(resp => {
-        //   if (!resp.success) {
-        //     self.$message.error("新建项目失败！");
-        //   }else{
-        //     let code = resp.result;
-        //     let tip = data.programName + " " +code;
-        //     self.$message.success("新建项目成功！");
-        //     self.name = '中国大唐电力股份有限公司 '+tip;
-        //     self.isDraggable = true
-        //   }
-        //   self.addDialog = false
-        // });
       },
       computer() {//物性速算
         this.computerDialog = true
@@ -993,10 +1186,22 @@
         this.$message.success('提交成功!');
       },
       showLog(data) {//用户输出结果弹框
-        this.logDialog = data
+        for (let _link of this.data.lineList) {
+          if (_link.to == data.id) {
+            this.$refs.userResult.init(_link);
+            break;
+          }
+        }
+        this.logDialog = true;
       },
       checkLog(data) {//查看输出结果弹框
-        this.checkDialog = data
+        for (let _link of this.data.lineList) {
+          if (_link.id == data.id) {
+            this.$refs.result.init(_link);
+            break;
+          }
+        }
+        this.checkDialog = true;
       },
       iterPipeG(id, array, nodeMap) {
         for (let _link of this.data.lineList) {
@@ -1020,9 +1225,16 @@
         this.iterPipeG(from_id, nodeArray, nodeMap);
         return nodeArray;
       },
+      editProgram(){
+        this.projectDialog = true;
+      },
       goPage(val) {
+        let _this = this;
         if (val == '项目信息') {
           this.projectDialog = true;
+          _this.$nextTick(function () {
+            _this.$refs.resultPro.initProData(_this.programInfo,!_this.programEdit);
+          });
           return;
         }
         this.navList[2].isShow = false;
@@ -1122,6 +1334,58 @@
       },
       handleGenerator() {
         let self = this;
+        if(this.data.lineList.length ==0){
+          this.$message.error("没有找到管道！");
+          return;
+        }
+        let firstResult = Object.assign({},this.data.lineList[0].lineResult);
+        let pipeParams = Object.assign({},firstResult.pipeParams);
+        firstResult.pipeParams = [];
+        firstResult.pipeParams.push(pipeParams);
+
+        let pipeResults = Object.assign({},firstResult.pipeResults);
+        firstResult.pipeResults = [];
+        firstResult.pipeResults.push(pipeResults);
+
+        let pipeTotals = Object.assign({},firstResult.pipeTotals);
+        firstResult.pipeTotals = [];
+        firstResult.pipeTotals.push(pipeTotals);
+
+        let totalUser = Object.assign({},firstResult.totalUser);
+        firstResult.totalUser = [];
+        firstResult.totalUser.push(totalUser);
+
+        let userResults = Object.assign({},firstResult.userResults);
+        firstResult.userResults = [];
+        firstResult.userResults.push(userResults);
+
+        if(firstResult.materials.length == 0){
+          this.$message.error("请先计算所有的管道！");
+          return;
+        }
+        let nodeList = this.data.nodeList;
+        for (let n of nodeList) {
+          if(n.Type =='1'){
+            firstResult.originDegree = n.temperature;
+            firstResult.originPress = n.pressure;
+            break;
+          }
+        }
+        for(let i = 1; i<this.data.lineList.length;i++){
+          let lineResult = this.data.lineList[i].lineResult;
+          if(!lineResult||lineResult.materials.length == 0){
+            this.$message.error("请先计算所有的管道！");
+            return;
+          }
+          firstResult.lineResult.totalL+=lineResult.totalL;
+          firstResult.lineResult.materials.push(...lineResult.materials);
+          firstResult.lineResult.pipeParams.push(lineResult.pipeParams);
+          firstResult.lineResult.pipeResults.push(lineResult.pipeResults);
+          firstResult.lineResult.pipeTotals.push(lineResult.pipeTotals);
+          firstResult.lineResult.totalUser.push(lineResult.totalUser);
+          firstResult.lineResult.userResults.push(lineResult.userResults);
+        }
+        console.log(firstResult);
         // 最外层的容器
         const treeContainnerElem = document.getElementById('flowParent');
         // 要导出div
@@ -1151,9 +1415,22 @@
           // 图片触发下载
           const img = canvas.toDataURL("image/jpeg").replace("data:image/jpeg;base64,", "");
           const finalImageSrc = "data:image/jpeg;base64," + img;
-          this.templateWord.imageUrl = finalImageSrc;
+          firstResult.imageUrl = finalImageSrc;
           self.$nextTick(() => {
-            self.$refs.downloadTemplate.submit();
+            self.$http({
+              url: "/pipe/file/exportExcelData",
+              method: "post",
+              data: JSON.stringify(firstResult),
+              dataType: 'json',
+              contentType: "application/json",
+            }).then(resp => {
+              if (resp.success) {
+                self.downPath = resp.result;
+                self.$nextTick(()=>{
+                  self.$refs.downloadFile.submit();
+                });
+              }
+            });
           })
           treeContainnerElem.removeChild(tempElem);
         })
