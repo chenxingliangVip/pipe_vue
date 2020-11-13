@@ -35,29 +35,41 @@
             </el-form-item>
           </div>
           <div class="list_nav">
+            <p>导热方程三次项系数</p>
+            <el-form-item class="formList" prop="threeNum">
+              <el-input clearable v-model="addForm.threeNum" placeholder=""></el-input>
+            </el-form-item>
+          </div>
+          <div class="list_nav">
             <p>衰减方程常数项系数</p>
             <el-form-item class="formList">
-              <el-input clearable v-model="addForm.constNumDesc" placeholder=""></el-input>
+              <el-input clearable v-model="addForm.constNumDesc" placeholder="" :disabled="!isReflect"></el-input>
             </el-form-item>
           </div>
           <div class="list_nav">
             <p>衰减方程一次项系数</p>
             <el-form-item class="formList">
-              <el-input clearable v-model="addForm.oneNumDesc" placeholder=""></el-input>
+              <el-input clearable v-model="addForm.oneNumDesc" placeholder="" :disabled="!isReflect"></el-input>
             </el-form-item>
           </div>
           <div class="list_nav">
             <p>衰减方程二次项系数</p>
             <el-form-item class="formList">
-              <el-input clearable v-model="addForm.twoNumDesc" placeholder=""></el-input>
+              <el-input clearable v-model="addForm.twoNumDesc" placeholder="" :disabled="!isReflect"></el-input>
+            </el-form-item>
+          </div>
+          <div class="list_nav">
+            <p>衰减方程三次项系数</p>
+            <el-form-item class="formList">
+              <el-input clearable v-model="addForm.threeNumDesc" placeholder="" :disabled="!isReflect"></el-input>
             </el-form-item>
           </div>
           <div class="list_nav">
             <p>反射</p>
             <el-form-item class="formList">
-              <el-select v-model="addForm.twoNumDesc" placeholder="">
-                <el-option value="是" label="是"></el-option>
-                <el-option value="否" label="否"></el-option>
+              <el-select v-model="addForm.reflect" placeholder="" @change="reflectChange">
+                <el-option value="1" label="是"></el-option>
+                <el-option value="2" label="否"></el-option>
               </el-select>
             </el-form-item>
           </div>
@@ -108,15 +120,19 @@
         tableHeader: [],
         editData: [],
         addDialog: false, //角色弹框
+        isReflect:true,
         addForm: {
           name: '',
           density: '',
           constNum: '',
           oneNum: '',
           twoNum: '',
+          threeNum: '',
           constNumDesc: '',
           oneNumDesc: '',
           twoNumDesc: '',
+          threeNumDesc: '',
+          reflect: '1',
         },
         rules: {
           name: [
@@ -134,6 +150,9 @@
           twoNum: [
             {required: true, validator: number, trigger: 'blur'},
           ],
+          threeNum: [
+            {required: true, validator: number, trigger: 'blur'},
+          ],
           constNumDesc: [
             {required: true, validator: number, trigger: 'blur'},
           ],
@@ -142,12 +161,22 @@
           ],
           twoNumDesc: [
             {validator: number, trigger: 'blur'},
+          ],
+          threeNumDesc: [
+            {validator: number, trigger: 'blur'},
           ]
         },
       }
     },
     methods: {
 
+      reflectChange(val){
+         if(val == '2'){
+           this.isReflect = false;
+         }else{
+           this.isReflect = true;
+         }
+      },
       getList() {
         let self = this;
         self.tableLoading = true;
@@ -168,9 +197,11 @@
               {"columnValue": "constNum", "columnName": "导热常数项系数", width: "180"},
               {"columnValue": "oneNum", "columnName": "导热方程一次项系数", width: "180"},
               {"columnValue": "twoNum", "columnName": "导热方程二次项系数", width: "180"},
+              {"columnValue": "threeNum", "columnName": "导热方程三次项系数", width: "180"},
               {"columnValue": "constNumDesc", "columnName": "衰减方程常数项系数", width: "180"},
               {"columnValue": "oneNumDesc", "columnName": "衰减方程常数项系数", width: "180"},
               {"columnValue": "twoNumDesc", "columnName": "衰减方程二次项系数", width: "180"},
+              {"columnValue": "threeNumDesc", "columnName": "衰减方程三次项系数", width: "180"},
             ]
           }
         });

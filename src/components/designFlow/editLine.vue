@@ -60,17 +60,17 @@
                 <th width="28%">是否反射层</th>
                 <th width="20%">厚度mm</th>
               </tr>
-              <tr v-for="(item , index) in line.pipeLineMaterials" :key="index">
+              <tr v-for="(item , index) in line.pipeLineMaterials"  :key="index">
                 <td width="12%">{{ index + 1 }}</td>
                 <td width="40%">
-                  <el-select v-model="item.materialType" placeholder="请选择材质">
-                    <el-option :value="item.name" :label="item.name" v-for="(item,index) in materials" :key="index"></el-option>
+                  <el-select v-model="item.materialType" placeholder="请选择材质" @change="materialChange(item)">
+                    <el-option :value="item.id" :label="item.name" v-for="(item,index) in filterMaterial(materials,item)"  :key="index"></el-option>
                   </el-select>
                 </td>
                 <td width="28%">
-                  <el-select v-model="item.reflect" placeholder="请选择是或否">
-                    <el-option value="是" label="是"></el-option>
-                    <el-option value="否" label="否"></el-option>
+                  <el-select v-model="item.reflect" placeholder="请选择是或否" @change="reflectChange(item)">
+                    <el-option value="1" label="是"></el-option>
+                    <el-option value="2" label="否"></el-option>
                   </el-select>
                 </td>
                 <td width="20%">
@@ -122,7 +122,21 @@
       this.getMaterials();
     },
     methods: {
-
+      filterMaterial(materials,item){
+        let reflect = item.reflect;
+        let array = materials.filter(m => m.reflect == reflect );
+        return array;
+      },
+      reflectChange(item){
+        item.materialType = "";
+      },
+      materialChange(item){
+        for(let m of this.materials){
+          if(item.materialType == m.id){
+            item.materialName = m.name;
+          }
+        }
+      },
       getMaterials() {
         let self = this;
         self.tableLoading = true;
@@ -151,7 +165,7 @@
         let level = this.line.degreeLevel;
         this.line.pipeLineMaterials = [];
         for(let i = 0;i<level;i++){
-          let item = {level:(i+1)+"",materialType:"",reflect:"",lineWidth:""};
+          let item = {level:(i+1)+"",materialType:"",reflect:"1",lineWidth:"",materialName:""};
           this.line.pipeLineMaterials.push(item);
         }
       },

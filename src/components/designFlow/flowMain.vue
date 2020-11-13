@@ -53,7 +53,7 @@
             <!--<img src="@/assets/img/open2.png">-->
             <!--<span>编辑</span>-->
             <!--</div>-->
-            <div class="nav-item"  @click="copyProgram"><!-- 可打开 -->
+            <div class="nav-item" v-show="isEdit"  @click="copyProgram"><!-- 可打开 -->
               <img src="@/assets/img/open.png">
                <span>复制</span>
             </div>
@@ -822,8 +822,7 @@
         }
         return true;
       },
-      async lineCompute(line) {
-        console.log("lineCompute----------------")
+      lineCompute(line) {
         console.log(line)
         if (!this.validateLine(line)) {
           return;
@@ -887,117 +886,121 @@
         this.programInfo.pipeLine = line;
         let loading = this.fullScreenLoading();
         let self = this;
-        self.$http({
-          url: "/pipe/program/queryComputeAir",
-          method: "post",
-          data: JSON.stringify(this.programInfo),
-          dataType: 'json',
-          contentType: "application/json",
-        }).then(resp => {
-          console.log(resp);
-          let pipe = {pipeNum:line.pipeName,pipeWidth:line.pipeWidth,pipeLength:line.pipeSize};
-          line.lineResult.pipeParams = pipe;
-          let pr = {};
-          pr.pipeNum = line.pipeName;
-          let liulList = [];
-          let startPList = [];
-          let endPList = [];
-          let startTList = [];
-          let endTList = [];
-          let startWList = [];
-          let endWList = [];
+        return new Promise((resolve, reject) => {
+          self.$http({
+            url: "/pipe/program/queryComputeAir",
+            method: "post",
+            data: JSON.stringify(this.programInfo),
+            dataType: 'json',
+            contentType: "application/json",
+          }).then(resp => {
+            console.log(resp);
+            let pipe = {pipeNum:line.pipeName,pipeWidth:line.pipeWidth,pipeLength:line.pipeSize};
+            line.lineResult.pipeParams = pipe;
+            let pr = {};
+            pr.pipeNum = line.pipeName;
+            let liulList = [];
+            let startPList = [];
+            let endPList = [];
+            let startTList = [];
+            let endTList = [];
+            let startWList = [];
+            let endWList = [];
 
-          let userW = [];
-          let userP = [];
-          let userT = [];
-          let userL = [];
+            let userW = [];
+            let userP = [];
+            let userT = [];
+            let userL = [];
 
-          let totalU = [];
-          let totalWater = 0;
-          let tMap = {};
-          let pMap = {};
-          for(let key in resp.result){
-            tMap[key+""] = resp.result[key].ts;
-            pMap[key+""] = resp.result[key].ps;
-            let _data = resp.result[key];
-            let ll = {wh:key,hour:line.pipeG[key]};
-            liulList.push(ll);
-            let sp = {wh1:key,sp:_data.startP};
-            startPList.push(sp);
-            let ep = {wh2:key,ep:_data.ps};
-            endPList.push(ep);
-            let st = {wh3:key,st:_data.startT};
-            startTList.push(st);
-            let et = {wh4:key,et:_data.ts};
-            endTList.push(et);
-            let sw = {wh5:key,sw:_data.startSpeed};
-            startWList.push(sw);
-            let ew = {wh6:key,ew:_data.speed};
-            endWList.push(ew);
-            let uw = {wh:key,hour:_data.speed};
-            userW.push(uw);
+            let totalU = [];
+            let totalWater = 0;
+            let tMap = {};
+            let pMap = {};
+            for(let key in resp.result){
+              tMap[key+""] = resp.result[key].ts;
+              pMap[key+""] = resp.result[key].ps;
+              let _data = resp.result[key];
+              let ll = {wh:key,hour:line.pipeG[key]};
+              liulList.push(ll);
+              let sp = {wh1:key,sp:_data.startP};
+              startPList.push(sp);
+              let ep = {wh2:key,ep:_data.ps};
+              endPList.push(ep);
+              let st = {wh3:key,st:_data.startT};
+              startTList.push(st);
+              let et = {wh4:key,et:_data.ts};
+              endTList.push(et);
+              let sw = {wh5:key,sw:_data.startSpeed};
+              startWList.push(sw);
+              let ew = {wh6:key,ew:_data.speed};
+              endWList.push(ew);
+              let uw = {wh:key,hour:_data.speed};
+              userW.push(uw);
 
-            let up = {wh1:key,press:_data.ps};
-            userP.push(up);
+              let up = {wh1:key,press:_data.ps};
+              userP.push(up);
 
-            let uT = {wh2:key,degree:_data.ts};
-            userT.push(uT);
+              let uT = {wh2:key,degree:_data.ts};
+              userT.push(uT);
 
-            let uL = {wh3:key,water:_data.disQ};
-            userL.push(uL);
+              let uL = {wh3:key,water:_data.disQ};
+              userL.push(uL);
 
-            let tL = {wh2:key,totalWater:_data.disQ};
-            totalU.push(tL);
-            totalWater +=_data.disQ;
-          }
-          for (let _link of this.data.lineList) {
-            if (_link.from == from_to) {
-              _link.initT0 = tMap;
-              _link.initP0 = pMap;
-              break;
+              let tL = {wh2:key,totalWater:_data.disQ};
+              totalU.push(tL);
+              totalWater +=_data.disQ;
             }
-          }
-          console.log(liulList)
-          pr.LiuLiang = liulList;
-          pr.startYaLi = startPList;
-          pr.yaLi = endPList;
-          pr.startDegrees = startTList;
-          pr.degrees = endTList;
-          pr.startLiuSu = startWList;
-          pr.liuSu = endWList;
-          line.lineResult.pipeResults = pr;
-          if(endNode.Type =='3'){
-            let ur = {};
-            ur.userName = line.pipeName;
-            ur.LiuLiang = userW;
-            ur.YaLi = userP;
-            ur.wendu = userT;
-            ur.lengls = userL;
-            line.lineResult.userResults = ur;
+            for (let _link of this.data.lineList) {
+              if (_link.from == from_to) {
+                _link.initT0 = tMap;
+                _link.initP0 = pMap;
+              }
+            }
+            console.log(liulList)
+            pr.LiuLiang = liulList;
+            pr.startYaLi = startPList;
+            pr.yaLi = endPList;
+            pr.startDegrees = startTList;
+            pr.degrees = endTList;
+            pr.startLiuSu = startWList;
+            pr.liuSu = endWList;
+            line.lineResult.pipeResults = pr;
+            if(endNode.Type =='3'){
+              let ur = {};
+              ur.userName = line.pipeName;
+              ur.LiuLiang = userW;
+              ur.YaLi = userP;
+              ur.wendu = userT;
+              ur.lengls = userL;
+              line.lineResult.userResults = ur;
 
-            let tl = {};
-            tl.userName = line.pipeName;
-            tl.cls =totalU;
-            line.lineResult.totalUser = tl;
-            line.lineResult.totalL = totalWater;
-          }
-          line.lineResult.totalL = line.lineResult.totalL>0?line.lineResult.totalL:0;
-          let material = {};
-          material.materialType = line.pipeOutside;
-          material.materialLen = line.pipeSize;
-          line.lineResult.pipeTotals = material;
-          let m_array = [];
-          for(let _d of line.pipeLineMaterials){
-            let dd = {};
-            dd.materialLoss = "未知";
-            dd.materialNum = "未知";
-            dd.material = _d.materialType;
-            m_array.push(dd);
-          }
-          line.lineResult.materials = m_array;
-          console.log((startTime - new Date()) / 1000);
-          loading.close();
-        });
+              let tl = {};
+              tl.userName = line.pipeName;
+              tl.cls =totalU;
+              line.lineResult.totalUser = tl;
+              line.lineResult.totalL = totalWater;
+            }
+            line.lineResult.totalL = line.lineResult.totalL>0?line.lineResult.totalL:0;
+            let material = {};
+            material.materialType = line.pipeOutside;
+            material.materialLen = line.pipeSize;
+            line.lineResult.pipeTotals = material;
+            let m_array = [];
+            for(let _d of line.pipeLineMaterials){
+              let dd = {};
+              dd.materialLoss = "无";
+              dd.materialNum = "无";
+              dd.material = _d.materialName;
+              m_array.push(dd);
+            }
+            line.lineResult.materials = m_array;
+            console.log((startTime - new Date()) / 1000);
+            loading.close();
+            resolve(resp);
+          }).catch((err) => {
+            reject(err)
+          });
+        })
       },
       drag(item) {
         this.currentItem = item;
@@ -1186,12 +1189,34 @@
         this.$message.success('提交成功!');
       },
       showLog(data) {//用户输出结果弹框
+        let wd = "";
+        let yl = "";
         for (let _link of this.data.lineList) {
           if (_link.to == data.id) {
             this.$refs.userResult.init(_link);
+            let pipeResults = _link.lineResult.pipeResults;
+            if (pipeResults) {
+              for (let i = 0; i < 24; i++) {
+                let data3 = pipeResults.yaLi[i].ep;
+                let data5 = pipeResults.degrees[i].et;
+                if(parseFloat(data.temperature) > parseFloat(data5)){
+                  wd = wd+(i+1)+"时,"
+                }
+                if(parseFloat(data.pressure) > parseFloat(data3)){
+                  yl = yl+(i+1)+"时,"
+                }
+              }
+            }
             break;
           }
         }
+        if(wd){
+          let msg = wd+"的温度小于预设的温度";
+          if(yl){
+            this.$message.warning(msg+"\n"+yl+"的压力小于预设的压力");
+          }
+        }
+
         this.logDialog = true;
       },
       checkLog(data) {//查看输出结果弹框
@@ -1228,7 +1253,7 @@
       editProgram(){
         this.projectDialog = true;
       },
-      goPage(val) {
+      async goPage(val) {
         let _this = this;
         if (val == '项目信息') {
           this.projectDialog = true;
@@ -1318,7 +1343,7 @@
           this.handleGenerator();
         }
       },
-      computeAnyLine(link, lineList) {
+      async  computeAnyLine(link, lineList) {
         let to = link.to;
         let compare = [];
         for (let l of lineList) {
@@ -1326,11 +1351,10 @@
             compare.push(l);
           }
         }
-        this.lineCompute(link).then(result => {
-          for (let c of compare) {
-            this.computeAnyLine(c, lineList);
-          }
-        });
+        let res = await this.lineCompute(link);
+        for (let c of compare) {
+          this.computeAnyLine(c, lineList);
+        }
       },
       handleGenerator() {
         let self = this;
@@ -1372,20 +1396,33 @@
           }
         }
         for(let i = 1; i<this.data.lineList.length;i++){
+          console.log("--------lineResult---------");
+          console.log(firstResult);
           let lineResult = this.data.lineList[i].lineResult;
           if(!lineResult||lineResult.materials.length == 0){
             this.$message.error("请先计算所有的管道！");
             return;
           }
-          firstResult.lineResult.totalL+=lineResult.totalL;
-          firstResult.lineResult.materials.push(...lineResult.materials);
-          firstResult.lineResult.pipeParams.push(lineResult.pipeParams);
-          firstResult.lineResult.pipeResults.push(lineResult.pipeResults);
-          firstResult.lineResult.pipeTotals.push(lineResult.pipeTotals);
-          firstResult.lineResult.totalUser.push(lineResult.totalUser);
-          firstResult.lineResult.userResults.push(lineResult.userResults);
+          firstResult.totalL+=lineResult.totalL;
+          firstResult.materials.push(...lineResult.materials);
+          firstResult.pipeParams.push(lineResult.pipeParams);
+          firstResult.pipeResults.push(lineResult.pipeResults);
+          firstResult.pipeTotals.push(lineResult.pipeTotals);
+          if(lineResult.totalUser.userName){
+            firstResult.totalUser.push(lineResult.totalUser);
+            firstResult.userResults.push(lineResult.userResults);
+          }
         }
-        console.log(firstResult);
+        for(let i = 0;i<firstResult.totalUser.length;i++){
+           if(!firstResult.totalUser[i].userName){
+             firstResult.totalUser.splice(i,1);
+           }
+        }
+        for(let i = 0;i<firstResult.userResults.length;i++){
+          if(!firstResult.userResults[i].userName){
+            firstResult.userResults.splice(i,1);
+          }
+        }
         // 最外层的容器
         const treeContainnerElem = document.getElementById('flowParent');
         // 要导出div
