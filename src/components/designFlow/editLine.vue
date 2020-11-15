@@ -151,7 +151,9 @@
       },
 
       init(item) {
+        console.log("---------line init----------");
         this.line = item;
+        console.log(this.line);
         if(!this.line.pipeLineMaterials||this.line.pipeLineMaterials.length == 0){
           this.$set(this.line,"pipeLineMaterials",[]);
           this.watchLevel();

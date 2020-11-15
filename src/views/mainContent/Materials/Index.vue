@@ -199,7 +199,7 @@
               {"columnValue": "twoNum", "columnName": "导热方程二次项系数", width: "180"},
               {"columnValue": "threeNum", "columnName": "导热方程三次项系数", width: "180"},
               {"columnValue": "constNumDesc", "columnName": "衰减方程常数项系数", width: "180"},
-              {"columnValue": "oneNumDesc", "columnName": "衰减方程常数项系数", width: "180"},
+              {"columnValue": "oneNumDesc", "columnName": "衰减方程一次项系数", width: "180"},
               {"columnValue": "twoNumDesc", "columnName": "衰减方程二次项系数", width: "180"},
               {"columnValue": "threeNumDesc", "columnName": "衰减方程三次项系数", width: "180"},
             ]

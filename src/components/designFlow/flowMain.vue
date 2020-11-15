@@ -164,7 +164,7 @@
         </template>
       </popout>
     </div>
-    <form action="/pipe/file/downloadFile" method="post"
+    <form action="/api/pipe/file/downloadFile" method="post"
           style="display: none;" ref="downloadFile">
       <input name="path" :value="downPath"/>
     </form>
@@ -423,6 +423,8 @@
               self.programInfo[key] = node_info[key];
             }
             self.data = JSON.parse(node_info.nodeInfo);
+            console.log("init------------------");
+            console.log(self.data);
             self.$nextTick(() => {
               self.init();
             });
@@ -785,7 +787,7 @@
           this.$message.error("管道" + name + "局部阻系数数据错误！");
           return false;
         }
-        if (!line.airOutside || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.airOutside))) {
+        if (line.psType =='2'&&(!line.airOutside || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.airOutside)))) {
           this.$message.error("管道" + name + "空气层外径数据错误！");
           return false;
         }
@@ -956,7 +958,6 @@
                 _link.initP0 = pMap;
               }
             }
-            console.log(liulList)
             pr.LiuLiang = liulList;
             pr.startYaLi = startPList;
             pr.yaLi = endPList;
@@ -996,6 +997,7 @@
             line.lineResult.materials = m_array;
             console.log((startTime - new Date()) / 1000);
             loading.close();
+            self.$message.success('计算成功!');
             resolve(resp);
           }).catch((err) => {
             reject(err)
