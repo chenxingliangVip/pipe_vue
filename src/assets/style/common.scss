@@ -188,6 +188,13 @@ li{
         color: #F56C6C;
     }
 }
+.sunhao table {
+    td .el-input__inner {
+        background-color: #eaeff7 !important; 
+        border-color: #eaeff7 !important; 
+        color: #333;
+    }
+}
 .table_ceng {
     td .el-input__inner {
         background-color: #eaeff7 !important; 
@@ -296,6 +303,12 @@ li{
         }
     }
 } 
+.pipes {
+    .el-form-item {
+        margin-bottom: 10px !important;
+        
+    }
+}
 .line_form {
     .el-form-item__label {
         padding: 0 !important;

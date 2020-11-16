@@ -1,7 +1,7 @@
 <template>
   <div class="line_form">
     <p class="type_title">管道参数设定</p>
-    <el-form :model="line" ref="dataForm" label-width="90px" class="flowEditForm margin13" size="mini">
+    <el-form :model="line" ref="dataForm" label-width="90px" class="flowEditForm margin13 pipes" size="mini">
       <el-row :gutter="10">
         <el-col :span="5">
           <el-form-item label="敷设方式：">
@@ -41,6 +41,9 @@
             <el-select v-model="line.degreeLevel" @change="watchLevel" placeholder="" style="width: calc(100% - 40px)">
               <el-option v-for="index of levels " :label="index" :value="index" :key="index" ></el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="换热系数：">
+            <el-input v-model="line.pipeName" style="width: calc(100% - 40px)" disabled></el-input>
           </el-form-item>
           <el-form-item label="管道名称：">
             <el-input v-model="line.pipeName" style="width: calc(100% - 40px)" disabled></el-input>

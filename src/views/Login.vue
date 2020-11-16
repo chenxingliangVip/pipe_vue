@@ -54,7 +54,7 @@
       handleLogin() {
         let self = this;
         let param = self.LoginForm;
-        let date = new Date("2020-11-09 00:00:00");
+        let date = new Date("2020-11-16 00:00:00");
         let now = new Date();
         if((now.getTime() - date.getTime())/(1000*60*60*24) >7){
           self.$message.error('已经过期，请联系睿孚科技!');

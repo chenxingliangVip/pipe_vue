@@ -73,6 +73,10 @@
               <img src="@/assets/img/computer.png">
               <span>物性速算</span>
             </div>
+            <div class="nav-item" @click="loss()">
+              <img src="@/assets/img/sunhao.png">
+              <span>材料损耗系数</span>
+            </div>
             <div class="clearBoth"></div>
           </div>
         </div>
@@ -113,6 +117,12 @@
     <div class="zll-dialog">
       <popout title="物性速算" :visible.sync="computerDialog" v-if="computerDialog" class="computer_dialog">
         <Computer ref="add" slot="content" :isEdit="isEdit" :editData="programInfo"></Computer>
+      </popout>
+    </div>
+    <!-- 材料损耗系数弹框 -->
+    <div class="zll-dialog">
+      <popout title="材料损耗系数" :visible.sync="lossDialog" v-if="lossDialog">
+        <Loss ref="add" slot="content"></Loss>
       </popout>
     </div>
     <!-- 参数 -->
@@ -179,6 +189,7 @@
   import editLine from "./editLine.vue";
   import Add from "@/views/DesignPage/add.vue";
   import Computer from "@/views/DesignPage/computer.vue";
+  import Loss from "@/views/DesignPage/loss.vue";
   import LoadSet from "@/views/DesignPage/loadSet.vue";
   import CheckResult from "@/views/DesignPage/CheckResult.vue";
   import LogResult from "@/views/DesignPage/LogResult.vue";
@@ -219,6 +230,7 @@
         loading: false,
         addDialog: false,//新建设计弹框
         computerDialog: false,//物性速算弹框
+        lossDialog: false,//材料损耗系数
         // isAdd: false,//是否新建设计
         // isDraggable: true,//
         drawer: false,//参数设定
@@ -393,6 +405,7 @@
       editLine,
       Add,
       Computer,
+      Loss,
       LoadSet,
       LogResult,
       ProjectInfo,
@@ -1171,6 +1184,9 @@
       },
       computer() {//物性速算
         this.computerDialog = true
+      },
+      loss() {//材料损耗系数
+        this.lossDialog = true
       },
       getLoad(data) { //24h负载设置弹框
         this.setDialog = true;
