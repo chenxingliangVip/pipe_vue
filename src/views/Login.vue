@@ -6,7 +6,7 @@
         <div class="imgurl">
           <img src="@/assets/img/title.png">
         </div>
-        <h2>全时段多用户蒸汽管网水力耦合计算系统</h2>
+        <h2>基于数字孪生的全时段<br>多用户蒸汽管网水力耦合设计管理平台</h2>
       </div>
       <div class="LoginBody Login_input">
         <el-form :model="LoginForm" ref="LoginForm" class="demo-ruleForm LoginForm">
@@ -22,7 +22,7 @@
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-checkbox class="remember" v-model="LoginForm.remember">记住用户</el-checkbox>
+            <el-checkbox class="remember" v-model="LoginForm.remember">记住用户名</el-checkbox>
           </el-form-item>
           <div class="Login-button" @click="LoginSubmit">登 录</div>
         </el-form>
@@ -138,6 +138,7 @@
         margin: 30px 0;
         font-weight: 400;
         text-align: center;
+        line-height: 40px;
       }
     }
 
@@ -145,7 +146,7 @@
       width: 450px;
       margin: 0 auto;
       background-color: rgb(0, 164, 222);
-      box-shadow: 0 0 20px #ffffff;
+      box-shadow: 0 0 20px #bcc552;
       padding: 20px 50px;
       border-radius: 10px;
       position: relative;
@@ -156,7 +157,7 @@
         width: 80%;
         text-align: center;
         padding: 10px 0px;
-        background-color: #ffffff;
+        background-color: #c6e0cd;
         margin: 0 auto;
         color: rgb(0, 164, 222);
         font-size: 14px;
