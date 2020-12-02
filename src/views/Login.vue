@@ -6,7 +6,7 @@
         <div class="imgurl">
           <img src="@/assets/img/title.png">
         </div>
-        <h2>全时段多用户蒸汽管网水力耦合计算系统</h2>
+        <h2>基于数值孪生的全时段多用户蒸汽管网水力耦合计算系统</h2>
       </div>
       <div class="LoginBody Login_input">
         <el-form :model="LoginForm" ref="LoginForm" class="demo-ruleForm LoginForm">
@@ -54,9 +54,9 @@
       handleLogin() {
         let self = this;
         let param = self.LoginForm;
-        let date = new Date("2020-11-16 00:00:00");
+        let date = new Date("2020-11-22 00:00:00");
         let now = new Date();
-        if((now.getTime() - date.getTime())/(1000*60*60*24) >7){
+        if((now.getTime() - date.getTime())/(1000*60*60*24) >30){
           self.$message.error('已经过期，请联系睿孚科技!');
           return;
         }

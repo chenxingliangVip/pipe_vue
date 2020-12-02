@@ -33,6 +33,7 @@
         this.table = [];
         let pipeResults = data.lineResult.pipeResults;
         if (pipeResults) {
+          let pipeG = data.pipeG;
           for (let i = 0; i < 24; i++) {
             let data1 = pipeResults.LiuLiang[i];
             let data2 = pipeResults.startYaLi[i];
@@ -40,7 +41,7 @@
             let data4 = pipeResults.startDegrees[i];
             let data5 = pipeResults.degrees[i];
             let data = {
-              data1:data1.wh,data1_value:data1.hour,
+              data1:data1.wh,data1_value:pipeG[i],
               data2:data2.wh1,data2_value:data2.sp,
               data3:data3.wh2,data3_value:data3.ep,
               data4:data4.wh3,data4_value:data4.st,

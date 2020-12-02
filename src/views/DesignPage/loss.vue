@@ -9,13 +9,13 @@
                 </tr>
                 <tr v-for="(item, index) in tableData" :key="index">
                     <td width="30%">
-                        {{ item.data1 }}
+                        {{ item.materialName }}
                     </td>
                     <td width="30%">
-                        {{ item.data2 }}
+                        {{ item.materialLen }}
                     </td>
                     <td width="40%">
-                        <el-input clearable v-model="item.data3" placeholder=""></el-input>
+                        <el-input clearable v-model="item.loss" placeholder=""></el-input>
                     </td>
                 </tr>
             </table>
@@ -27,15 +27,20 @@
 export default {
     data() {
         return {
-            tableData: [{
-                data1: '',
-                data2: '',
-                data3: '',
-            }]
+            tableData: []
         };
     },
-    methods: {},
-    mounted() {},
+    methods: {
+      init(val){
+        this.tableData = val;
+      },
+      getTable(){
+        return this.tableData;
+      }
+    },
+    mounted() {
+
+    },
 };
 </script>
 

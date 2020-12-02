@@ -43,7 +43,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="换热系数：">
-            <el-input v-model="line.pipeName" style="width: calc(100% - 40px)" disabled></el-input>
+            <el-input v-model="line.hotParam" style="width: calc(100% - 40px)"></el-input>
           </el-form-item>
           <el-form-item label="管道名称：">
             <el-input v-model="line.pipeName" style="width: calc(100% - 40px)" disabled></el-input>
@@ -113,6 +113,7 @@
           degreeNum:"",
           degreeLevel:"",
           pipeName: "",
+          hotParam: "",
           pipeLineMaterials:[],
         },
         levels:6,

@@ -53,9 +53,9 @@
             <!--<img src="@/assets/img/open2.png">-->
             <!--<span>编辑</span>-->
             <!--</div>-->
-            <div class="nav-item" v-show="isEdit"  @click="copyProgram"><!-- 可打开 -->
+            <div class="nav-item" v-show="isEdit" @click="copyProgram"><!-- 可打开 -->
               <img src="@/assets/img/open.png">
-               <span>复制</span>
+              <span>复制</span>
             </div>
             <div class="nav-item" v-show="isEdit" @click="saveData()"> <!-- 可保存 -->
               <img src="@/assets/img/save.png">
@@ -121,8 +121,8 @@
     </div>
     <!-- 材料损耗系数弹框 -->
     <div class="zll-dialog">
-      <popout title="材料损耗系数" :visible.sync="lossDialog" v-if="lossDialog">
-        <Loss ref="add" slot="content"></Loss>
+      <popout title="材料损耗系数" :visible.sync="lossDialog" v-show="lossDialog">
+        <Loss ref="lossMaterial" slot="content"></Loss>
       </popout>
     </div>
     <!-- 参数 -->
@@ -158,7 +158,7 @@
     <!-- 查看输出结果 -->
     <div class="zll-dialog">
       <popout title="查看输出结果" :visible.sync="checkDialog" v-show="checkDialog" class="resultDialog_dialog">
-        <CheckResult ref="result" slot="content" ></CheckResult>
+        <CheckResult ref="result" slot="content"></CheckResult>
         <template slot="bottom">
           <p class="zll-botton" @click="checkDialog = false">确 定</p>
         </template>
@@ -167,14 +167,14 @@
     <!-- 项目信息弹框 -->
     <div class="zll-dialog">
       <popout title="项目信息" :visible.sync="projectDialog" v-if="projectDialog" class="adddesign_dialog">
-        <Add ref="resultPro" slot="content" @updateForm="updateProgram" ></Add>
+        <Add ref="resultPro" slot="content" @updateForm="updateProgram"></Add>
         <template slot="bottom">
           <p class="zll-botton cancal" @click="projectDialog = false" v-show="programEdit">关 闭</p>
           <p class="zll-botton" @click="()=>{this.$refs.resultPro.setFormData('addForm','edit')}">修 改</p>
         </template>
       </popout>
     </div>
-    <form action="/api/pipe/file/downloadFile" method="post"
+    <form action="/pipe/file/downloadFile" method="post"
           style="display: none;" ref="downloadFile">
       <input name="path" :value="downPath"/>
     </form>
@@ -202,13 +202,13 @@
     name: "flowMain",
     data() {
       return {
-        downPath:"",
+        downPath: "",
         //图形是否编辑
         isEdit: false,
-        newBuild:true,
-        programEdit:false,
+        newBuild: true,
+        programEdit: false,
         programInfo: {
-          id:"",
+          id: "",
           custom: '',
           programName: '',
           acuteValue: '',
@@ -237,7 +237,7 @@
 
         loadSetData: {},
         setDialog: false,//24h负载设置弹框
-        lineResult:{},
+        lineResult: {},
 
         isShowEchart: false,//24h负载echart
         logDialog: false,//用户输出结果弹框
@@ -395,7 +395,8 @@
         timer: null, //定时器,判断单双击,
         currentConnect: "", //当前的连接线
         currentLine: "", //当前连接线数据
-        editType: "", //编辑的类型
+        editType: "", //编辑的类型,
+        computeCount:0,
       };
     },
     components: {
@@ -416,23 +417,23 @@
     mounted() {
       let self = this;
       this.jsPlumb = jsPlumb.getInstance();
-      let type  = this.$route.query.type;
-      let id  = this.$route.query.id;
-      if(type && id){
-        if(type =='all'){
+      let type = this.$route.query.type;
+      let id = this.$route.query.id;
+      if (type && id) {
+        if (type == 'all') {
           self.isEdit = true;
           self.programEdit = true;
-        }else{
+        } else {
           self.newBuild = false;
         }
         self.$http({
           url: "/pipe/program/queryPipeProgramNodeInfo",
           method: "post",
-          params:{value:id}
+          params: {value: id}
         }).then(resp => {
-          if (resp.success&&resp.result.length > 0) {
+          if (resp.success && resp.result.length > 0) {
             let node_info = resp.result[0];
-            for(let key in self.programInfo){
+            for (let key in self.programInfo) {
               self.programInfo[key] = node_info[key];
             }
             self.data = JSON.parse(node_info.nodeInfo);
@@ -445,12 +446,12 @@
             setTimeout(() => {
               self.loading = false
             }, 500)
-          }else{
+          } else {
             self.$message.error("获取管道信息失败！");
             return;
           }
         });
-      }else{
+      } else {
         self.programEdit = true;
         self.$nextTick(() => {
           self.init();
@@ -515,12 +516,13 @@
                 pipeWidth: "",
                 pipeSize: "",
                 pipeG: {},
-                lineResult:{},
+                lineResult: {},
                 localNum: "",
                 airOutside: "",
                 pressNum: "",
                 degreeNum: "",
                 degreeLevel: "",
+                hotParam: "",
                 pipeName: from + to,
               };
               let json = {};
@@ -800,7 +802,7 @@
           this.$message.error("管道" + name + "局部阻系数数据错误！");
           return false;
         }
-        if (line.psType =='2'&&(!line.airOutside || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.airOutside)))) {
+        if (line.psType == '2' && (!line.airOutside || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(line.airOutside)))) {
           this.$message.error("管道" + name + "空气层外径数据错误！");
           return false;
         }
@@ -837,6 +839,12 @@
         }
         return true;
       },
+
+      computeOneLine(line){
+        this.computeCount = 1;
+        this.lineCompute(line);
+      },
+
       lineCompute(line) {
         console.log(line)
         if (!this.validateLine(line)) {
@@ -867,30 +875,30 @@
         let nodes = this.data.nodeList;
         let endNode = {};
         for (let n of nodes) {
-          if(n.id == from_to){
-            endNode  = n;
+          if (n.id == from_to) {
+            endNode = n;
           }
         }
         for (let n of nodes) {
           if (from_id == n.id) {
-            if(!n.pressure&&n.Type == '1'){
+            if (!n.pressure && n.Type == '1') {
               this.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
               return;
             }
-            if (!n.temperature&&n.Type == '1') {
+            if (!n.temperature && n.Type == '1') {
               this.$message.error("热源" + n.name + "T0温度不可知！");
             }
-            if(n.Type == '1'){
+            if (n.Type == '1') {
               let tMap = {};
               let pMap = {};
-              for(let i = 0;i<24;i++){
-                tMap[i+""] = n.temperature;
-                pMap[i+""] = n.pressure;
+              for (let i = 0; i < 24; i++) {
+                tMap[i + ""] = n.temperature;
+                pMap[i + ""] = n.pressure;
               }
               line.initT0 = tMap;
               line.initP0 = pMap;
-            }else{
-              if(!line.initT0||!line.initP0){
+            } else {
+              if (!line.initT0 || !line.initP0) {
                 this.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
                 return;
               }
@@ -910,7 +918,8 @@
             contentType: "application/json",
           }).then(resp => {
             console.log(resp);
-            let pipe = {pipeNum:line.pipeName,pipeWidth:line.pipeWidth,pipeLength:line.pipeSize};
+            this.computeCount = this.computeCount -1;
+            let pipe = {pipeNum: line.pipeName, pipeWidth: line.pipeWidth, pipeLength: line.pipeSize};
             line.lineResult.pipeParams = pipe;
             let pr = {};
             pr.pipeNum = line.pipeName;
@@ -931,39 +940,39 @@
             let totalWater = 0;
             let tMap = {};
             let pMap = {};
-            for(let key in resp.result){
-              tMap[key+""] = resp.result[key].ts;
-              pMap[key+""] = resp.result[key].ps;
+            for (let key in resp.result) {
+              tMap[key + ""] = resp.result[key].ts;
+              pMap[key + ""] = resp.result[key].ps;
               let _data = resp.result[key];
-              let ll = {wh:key,hour:line.pipeG[key]};
+              let ll = {wh: key, hour: _data.disQ};
               liulList.push(ll);
-              let sp = {wh1:key,sp:_data.startP};
+              let sp = {wh1: key, sp: _data.startP};
               startPList.push(sp);
-              let ep = {wh2:key,ep:_data.ps};
+              let ep = {wh2: key, ep: _data.ps};
               endPList.push(ep);
-              let st = {wh3:key,st:_data.startT};
+              let st = {wh3: key, st: _data.startT};
               startTList.push(st);
-              let et = {wh4:key,et:_data.ts};
+              let et = {wh4: key, et: _data.ts};
               endTList.push(et);
-              let sw = {wh5:key,sw:_data.startSpeed};
+              let sw = {wh5: key, sw: _data.startSpeed};
               startWList.push(sw);
-              let ew = {wh6:key,ew:_data.speed};
+              let ew = {wh6: key, ew: _data.speed};
               endWList.push(ew);
-              let uw = {wh:key,hour:_data.speed};
+              let uw = {wh: key, hour: _data.realPipeG};
               userW.push(uw);
 
-              let up = {wh1:key,press:_data.ps};
+              let up = {wh1: key, press: _data.ps};
               userP.push(up);
 
-              let uT = {wh2:key,degree:_data.ts};
+              let uT = {wh2: key, degree: _data.ts};
               userT.push(uT);
 
-              let uL = {wh3:key,water:_data.disQ};
+              let uL = {wh3: key, water: _data.disQ};
               userL.push(uL);
 
-              let tL = {wh2:key,totalWater:_data.disQ};
+              let tL = {wh2: key, totalWater: _data.disQ};
               totalU.push(tL);
-              totalWater +=_data.disQ;
+              totalWater += _data.disQ;
             }
             for (let _link of this.data.lineList) {
               if (_link.from == from_to) {
@@ -979,9 +988,9 @@
             pr.startLiuSu = startWList;
             pr.liuSu = endWList;
             line.lineResult.pipeResults = pr;
-            if(endNode.Type =='3'){
+            if (endNode.Type == '3') {
               let ur = {};
-              ur.userName = line.pipeName;
+              ur.userName = endNode.name;
               ur.LiuLiang = userW;
               ur.YaLi = userP;
               ur.wendu = userT;
@@ -989,27 +998,29 @@
               line.lineResult.userResults = ur;
 
               let tl = {};
-              tl.userName = line.pipeName;
-              tl.cls =totalU;
+              tl.userName = endNode.name;
+              tl.cls = totalU;
               line.lineResult.totalUser = tl;
               line.lineResult.totalL = totalWater;
             }
-            line.lineResult.totalL = line.lineResult.totalL>0?line.lineResult.totalL:0;
+            line.lineResult.totalL = line.lineResult.totalL > 0 ? line.lineResult.totalL : 0;
             let material = {};
             material.materialType = line.pipeOutside;
             material.materialLen = line.pipeSize;
             line.lineResult.pipeTotals = material;
-            let m_array = [];
-            for(let _d of line.pipeLineMaterials){
-              let dd = {};
-              dd.materialLoss = "无";
-              dd.materialNum = "无";
-              dd.material = _d.materialName;
-              m_array.push(dd);
-            }
-            line.lineResult.materials = m_array;
+            // let m_array = [];
+            // for (let _d of line.pipeLineMaterials) {
+            //   let dd = {};
+            //   dd.materialLoss = "无";
+            //   dd.materialNum = "无";
+            //   dd.material = _d.materialName;
+            //   m_array.push(dd);
+            // }
+            // line.lineResult.materials = m_array;
             console.log((startTime - new Date()) / 1000);
-            loading.close();
+            if(this.computeCount <= 0){
+              loading.close();
+            }
             self.$message.success('计算成功!');
             resolve(resp);
           }).catch((err) => {
@@ -1058,17 +1069,17 @@
         return uuid;
       },
 
-      updateProgram(data){
+      updateProgram(data) {
         let self = this;
         let id = this.programInfo.id;
-        if(!id){
-          for(let key in data){
+        if (!id) {
+          for (let key in data) {
             self.programInfo[key] = data[key];
           }
           self.projectDialog = false;
           return;
         }
-        let param = Object.assign({},data);
+        let param = Object.assign({}, data);
         param.id = id;
         self.$http({
           url: "/pipe/program/updatePipeProgramInfor",
@@ -1077,8 +1088,8 @@
         }).then(resp => {
           if (!resp.success) {
             self.$message.error("修改项目失败！");
-          }else{
-            for(let key in data){
+          } else {
+            for (let key in data) {
               self.programInfo[key] = data[key];
             }
             self.$message.success('修改成功!');
@@ -1086,17 +1097,17 @@
           self.projectDialog = false;
         });
       },
-      copyProgram(){
+      copyProgram() {
         this.saveData("复制");
       },
       saveData(tip) {//保存
         let self = this;
         console.log(this.data);
-        let param = Object.assign({},self.programInfo);
+        let param = Object.assign({}, self.programInfo);
         param.nodeInfo = this.data;
         let user = JSON.parse(getToken());
         param.createUser = user.id;
-        if(tip){
+        if (tip) {
           delete param.id;
         }
         self.$http({
@@ -1108,10 +1119,10 @@
         }).then(resp => {
           if (!resp.success) {
             self.$message.error("保存项目失败！");
-          }else{
+          } else {
             self.isDraggable = true;
             let msg = "保存成功";
-            if(tip){
+            if (tip) {
               msg = "复制成功";
             }
             this.$message.success(msg);
@@ -1186,8 +1197,46 @@
         this.computerDialog = true
       },
       loss() {//材料损耗系数
+        if (!this.isEdit) {
+          this.$message.warning('请新建项目!');
+          return;
+        }
+        let lossTable = this.getLossData();
         this.lossDialog = true
+        this.$refs.lossMaterial.init(lossTable);
       },
+
+      getLossData(){
+        let existLoss = this.$refs.lossMaterial.getTable();
+        let existMap = {};
+        for(let loss of existLoss){
+          let materialName = loss.materialName;
+          existMap[materialName] = loss.loss;
+        }
+        let lossTable = [];
+        let lossMap = {};
+        for (let _line of this.data.lineList) {
+          let pipeSize = _line.pipeSize;
+          let pipeLineMaterials = _line.pipeLineMaterials;
+          for (let m of pipeLineMaterials) {
+            if (m.materialName) {
+              let loss = existMap[m.materialName]||"0.0";
+              let val = lossMap[m.materialName];
+              if (val && (_line.pipeName !=val.pipeName)) {
+                val.materialLen = (parseFloat(val.materialLen) + parseFloat(pipeSize)) + "";
+              } else {
+                lossMap[m.materialName] = {pipeName:_line.pipeName,materialName: m.materialName, materialLen: pipeSize, loss: loss};
+              }
+            }
+          }
+        }
+        for (let key in lossMap) {
+          let obj = lossMap[key];
+          lossTable.push(obj);
+        }
+        return lossTable;
+      },
+
       getLoad(data) { //24h负载设置弹框
         this.setDialog = true;
         this.loadSetData = Object.assign({}, data);
@@ -1217,21 +1266,21 @@
               for (let i = 0; i < 24; i++) {
                 let data3 = pipeResults.yaLi[i].ep;
                 let data5 = pipeResults.degrees[i].et;
-                if(parseFloat(data.temperature) > parseFloat(data5)){
-                  wd = wd+(i+1)+"时,"
+                if (parseFloat(data.temperature) > parseFloat(data5)) {
+                  wd = wd + (i + 1) + "时,"
                 }
-                if(parseFloat(data.pressure) > parseFloat(data3)){
-                  yl = yl+(i+1)+"时,"
+                if (parseFloat(data.pressure) > parseFloat(data3)) {
+                  yl = yl + (i + 1) + "时,"
                 }
               }
             }
             break;
           }
         }
-        if(wd){
-          let msg = wd+"的温度小于预设的温度";
-          if(yl){
-            this.$message.warning(msg+"\n"+yl+"的压力小于预设的压力");
+        if (wd) {
+          let msg = wd + "的温度小于预设的温度";
+          if (yl) {
+            this.$message.warning(msg + "\n" + yl + "的压力小于预设的压力");
           }
         }
 
@@ -1259,16 +1308,19 @@
         }
       },
       getPipeG(line) {
-        let from_id = line.from;
+        let from_id = line.to;
         let nodeMap = {};
         let nodeArray = [];
         for (let n of this.data.nodeList) {
           nodeMap[n.id] = n;
+          if(from_id == n.id && n.Type =='3'){
+            nodeArray.push(n);
+          }
         }
         this.iterPipeG(from_id, nodeArray, nodeMap);
         return nodeArray;
       },
-      editProgram(){
+      editProgram() {
         this.projectDialog = true;
       },
       async goPage(val) {
@@ -1276,7 +1328,7 @@
         if (val == '项目信息') {
           this.projectDialog = true;
           _this.$nextTick(function () {
-            _this.$refs.resultPro.initProData(_this.programInfo,!_this.programEdit);
+            _this.$refs.resultPro.initProData(_this.programInfo, !_this.programEdit);
           });
           return;
         }
@@ -1307,8 +1359,8 @@
           for (let n of nodeList) {
             let name = n.name;
             if (n.Type == '1' || n.Type == '3') {
-              let temperature = n.temperature;
-              let pressure = n.pressure;
+              let temperature = n.temperature.trim();
+              let pressure = n.pressure.trim();
               if (!temperature || (!(/^[+-]?(0|([1-9]\d*))(\.\d+)?$/).test(temperature))) {
                 this.$message.error("节点" + name + "温度数据错误！");
                 return;
@@ -1345,6 +1397,7 @@
           this.navList[2].isShow = true;
         }
         if (val == '管网计算' && this.navList[2].isShow == true) {
+          this.computeCount = lineList.length;
           let firstLines = [];
           for (let n of firstNodes) {
             for (let _lk of lineList) {
@@ -1361,7 +1414,7 @@
           this.handleGenerator();
         }
       },
-      async  computeAnyLine(link, lineList) {
+      async computeAnyLine(link, lineList) {
         let to = link.to;
         let compare = [];
         for (let l of lineList) {
@@ -1376,71 +1429,77 @@
       },
       handleGenerator() {
         let self = this;
-        if(this.data.lineList.length ==0){
+        if (this.data.lineList.length == 0) {
           this.$message.error("没有找到管道！");
           return;
         }
-        let firstResult = Object.assign({},this.data.lineList[0].lineResult);
-        let pipeParams = Object.assign({},firstResult.pipeParams);
+        let firstResult = Object.assign({}, this.data.lineList[0].lineResult);
+        let pipeParams = Object.assign({}, firstResult.pipeParams);
         firstResult.pipeParams = [];
         firstResult.pipeParams.push(pipeParams);
 
-        let pipeResults = Object.assign({},firstResult.pipeResults);
+        let pipeResults = Object.assign({}, firstResult.pipeResults);
         firstResult.pipeResults = [];
         firstResult.pipeResults.push(pipeResults);
 
-        let pipeTotals = Object.assign({},firstResult.pipeTotals);
+        let pipeTotals = Object.assign({}, firstResult.pipeTotals);
         firstResult.pipeTotals = [];
         firstResult.pipeTotals.push(pipeTotals);
 
-        let totalUser = Object.assign({},firstResult.totalUser);
+        let totalUser = Object.assign({}, firstResult.totalUser);
         firstResult.totalUser = [];
         firstResult.totalUser.push(totalUser);
 
-        let userResults = Object.assign({},firstResult.userResults);
+        let userResults = Object.assign({}, firstResult.userResults);
         firstResult.userResults = [];
         firstResult.userResults.push(userResults);
 
-        if(firstResult.materials.length == 0){
-          this.$message.error("请先计算所有的管道！");
-          return;
-        }
+        // if (firstResult.materials.length == 0) {
+        //   this.$message.error("请先计算所有的管道！");
+        //   return;
+        // }
         let nodeList = this.data.nodeList;
         for (let n of nodeList) {
-          if(n.Type =='1'){
+          if (n.Type == '1') {
             firstResult.originDegree = n.temperature;
             firstResult.originPress = n.pressure;
             break;
           }
         }
-        for(let i = 1; i<this.data.lineList.length;i++){
+        for (let i = 1; i < this.data.lineList.length; i++) {
           console.log("--------lineResult---------");
           console.log(firstResult);
           let lineResult = this.data.lineList[i].lineResult;
-          if(!lineResult||lineResult.materials.length == 0){
+          if (!lineResult) {
             this.$message.error("请先计算所有的管道！");
             return;
           }
-          firstResult.totalL+=lineResult.totalL;
-          firstResult.materials.push(...lineResult.materials);
+          firstResult.totalL += lineResult.totalL;
+          // firstResult.materials.push(...lineResult.materials);
           firstResult.pipeParams.push(lineResult.pipeParams);
           firstResult.pipeResults.push(lineResult.pipeResults);
           firstResult.pipeTotals.push(lineResult.pipeTotals);
-          if(lineResult.totalUser.userName){
+          if (lineResult.totalUser.userName) {
             firstResult.totalUser.push(lineResult.totalUser);
             firstResult.userResults.push(lineResult.userResults);
           }
         }
-        for(let i = 0;i<firstResult.totalUser.length;i++){
-           if(!firstResult.totalUser[i].userName){
-             firstResult.totalUser.splice(i,1);
-           }
-        }
-        for(let i = 0;i<firstResult.userResults.length;i++){
-          if(!firstResult.userResults[i].userName){
-            firstResult.userResults.splice(i,1);
+        for (let i = 0; i < firstResult.totalUser.length; i++) {
+          if (!firstResult.totalUser[i].userName) {
+            firstResult.totalUser.splice(i, 1);
           }
         }
+        for (let i = 0; i < firstResult.userResults.length; i++) {
+          if (!firstResult.userResults[i].userName) {
+            firstResult.userResults.splice(i, 1);
+          }
+        }
+
+        console.log("--------lineResult--second---------");
+        let lossTable = this.getLossData();
+        firstResult.materials = [];
+        firstResult.materials.push(...lossTable);
+        console.log(firstResult);
         // 最外层的容器
         const treeContainnerElem = document.getElementById('flowParent');
         // 要导出div
@@ -1481,7 +1540,7 @@
             }).then(resp => {
               if (resp.success) {
                 self.downPath = resp.result;
-                self.$nextTick(()=>{
+                self.$nextTick(() => {
                   self.$refs.downloadFile.submit();
                 });
               }
