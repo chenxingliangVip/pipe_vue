@@ -10,8 +10,9 @@
           <div>{{item.name}}</div>
         </div>
         <div class="menu-item" @click="isConnect=true" :class="{'isDraggable': !isEdit}">
-          <i class="el-icon-bottom-right"></i>
-          <div>连线</div>
+          <img class="imgsrc" src="@/assets/img/guandao.png" v-show="isEdit">
+          <img class="imgsrc" src="@/assets/img/guandao2.png" v-show="!isEdit">
+          <div>管道</div>
         </div>
         <div class="menu-item" @click="isConnect=false" :class="{'isDraggable': !isEdit}">
           <i class="el-icon-rank"></i>

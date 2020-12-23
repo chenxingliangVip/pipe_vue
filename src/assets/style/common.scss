@@ -36,6 +36,7 @@ li{
     .el-menu {
         background: none;
         border: none;
+        position: unset !important;
     }
     .el-menu--collapse {//缩小时候
         .el-submenu__title span,.el-submenu__title i:last-of-type{
@@ -62,7 +63,7 @@ li{
         &:hover {
             opacity: 1;
             transition: all .3s;
-            background: #297e8d;
+            background: rgba(19, 151, 222, 0.5);
         }
     }
     .el-menu-item-group {
@@ -73,7 +74,7 @@ li{
             &:hover {
                 opacity: 1;
                 transition: all .3s;
-                background: #297e8d;
+                background: rgba(19, 151, 222, 0.5);
             }
         }
     }
@@ -89,7 +90,7 @@ li{
             color: #fff
         }
         &:hover {
-            background: #297e8d;
+            background: rgba(19, 151, 222, 0.5);
             opacity: 1;
             transition: all .3s;
         }
@@ -102,17 +103,17 @@ li{
         }
     }
     .el-menu-item.is-active {
-        color: #fff;
-        background: #1374c0;
+        color: #1397de;
+        background: #fff;
         opacity: 1;
         i {
-            filter: drop-shadow(#00C 0px 0);
-          }
+            color: #1397de;
+        }
     }
     .color1.el-menu {
         .el-menu-item.is-active {
-            color: #fff;
-            background: rgba(19, 151, 222, 0.5);
+            color: #1397de;
+            background: #fff;
         }
     }
     .color2.el-menu {
@@ -148,17 +149,6 @@ li{
 }
 .el-menu-item-group__title {
     padding: 0 !important;
-}
-.Menu-item .el-menu-item {
-    font-size: 14px;
-    &:hover {
-        background: #1e6d9b;
-        color: #fff !important;
-    }
-    &.is-active {
-        color: #fff !important;
-        background: #1e6d9b;
-    }
 }
 .el-menu-item, .el-submenu__title {
     height: 45px;
@@ -244,8 +234,6 @@ li{
 }
 //分页样式
 .zll-pagination {
-    border: 1px solid #EBEEF5;
-    border-top: 0px;
     padding: 5px;
     .el-pagination {
         font-weight: 400;
@@ -537,4 +525,72 @@ li{
 }
 .jtk-overlay.csslabel {
     background: #ffffff;
+}.tree {
+    .el-tree-node__content {
+        height: 45px;
+    }
+}
+.mytree /deep/ {
+    border-left: 1px solid #bebfbe;
+    padding-top: 40px;
+    .el-tree-node__expand-icon{
+        font-size: 16px;
+    }
+    .el-tree > .el-tree-node:after {
+        border-top: none;
+    }
+    .el-tree-node {
+        position: relative;
+        padding-left: 16px;
+    }
+    //节点有间隙，隐藏掉展开按钮就好了,如果觉得空隙没事可以删掉
+    .el-tree-node__expand-icon.is-leaf {
+        display: none;
+    }
+    .el-tree-node__children {
+        padding-left: 16px;
+    }
+    .el-tree-node :last-child:before {
+        height: 38px;
+    }
+    .el-tree > .el-tree-node:before {
+        content: '●';
+        color: #bebfbe;
+        left: -4px;
+        top: 15px;
+        border-left: none;
+    }
+    .el-tree > .el-tree-node:after {
+        border-top: 1px solid #bebfbe;
+    }
+    .el-tree-node:before {
+        content: '';
+        left: 0px;
+        padding-bottom: 10px;
+        position: absolute;
+        right: auto;
+        border-width: 1px;
+    }
+    .el-tree-node:after {
+        content: '';
+        left: 0px;
+        color: #bebfbe;
+        position: absolute;
+        right: auto;
+        border-width: 1px;
+    }
+    .el-tree-node:before {
+        border-left: 1px solid #bebfbe;
+        bottom: 0px;
+        height: 100%;
+        top: -26px;
+        width: 1px;
+    }
+    .el-tree-node:after {
+        border-top: 1px solid #bebfbe;
+        height: 10px;
+        line-height: 1px;
+        top: 22px;
+        width: 24px;
+    }
 }

@@ -52,6 +52,6 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
   setTimeout(() => {
     // const browserHeaderTitle = store.getters.browserHeaderTitle
-    setTitle("全时段多用户蒸汽管网水力耦合计算系统")
+    setTitle("ReLica")
   }, 0)
 })

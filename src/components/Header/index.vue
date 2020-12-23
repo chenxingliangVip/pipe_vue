@@ -4,11 +4,15 @@
     <div class="Title_header"
          :style="{backgroundColor:$store.state.colorData.top.topBgColor,color:$store.state.colorData.top.topFontColor}">
       <img class="Roms" src="@/assets/img/logo_icon.png"/>
-      <span class="splite">|</span> 全时段多用户蒸汽管网水力耦合计算系统
+      <span class="splite">|</span> 全时段多用户蒸汽管网水力热力耦合计算系统
     </div>
     <!-- 右侧按钮 -->
     <div class="header_user"
          :style="{backgroundColor:$store.state.colorData.top.topBgColor,color:$store.state.colorData.top.topFontColor}">
+    
+        <div class="time">
+        {{nowDate}} {{nowTime}}
+        </div>
       <!-- <div class="headalist"  @click="showTheme = true">
           <span class="changeColor" title="切换主题"><i class="el-icon-s-promotion"></i></span>
       </div> -->
@@ -71,13 +75,27 @@
     components: {colorPopout, password},
     data() {
       return {
-        menuList: [{name: '用户管理', routeName: 'User'}],
+        menuList: [{name: '信息公告', routeName: 'FirstPage'}],
         showTheme: false, //主题弹框显示
         resetDialog: false,
         userInfo: '',
+        nowTime: new Date(),
+        nowDate: new Date(),
       }
     },
     methods: {
+      getdateFormat() {
+        //显示时间
+        var _this = this;
+        let yy = String(new Date().getFullYear());
+        let mm = new Date().getMonth() + 1;
+        let dd = String(new Date().getDate() < 10 ? "0" + new Date().getDate() : new Date().getDate());
+        let hou = String(new Date().getHours() < 10 ? "0" + new Date().getHours() : new Date().getHours());
+        let min = String(new Date().getMinutes() < 10 ? "0" + new Date().getMinutes() : new Date().getMinutes());
+        let sec = String(new Date().getSeconds() < 10 ? "0" + new Date().getSeconds() : new Date().getSeconds());
+        _this.nowTime = hou + ":" + min + ":" + sec;
+        _this.nowDate = yy + "-" + mm + "-" + dd;
+      },
       setLeftMenuMin() {//设置切换左侧菜单最小化
         this.$store.commit('SET_leftMenuMin', !this.$store.state.leftMenuMin);
       },
@@ -112,12 +130,12 @@
         this.menuList.splice(index, 1);
       },
       closeAll() {//关闭全部标签
-        this.menuList = [{name: '用户管理', routeName: 'User'}]
-        this.goPage('User');
+        this.menuList = [{name: '信息公告', routeName: 'FirstPage'}]
+        this.goPage('FirstPage');
       },
       closeNow() { //关闭当前标签
         for (let i = 0; i < this.menuList.length; i++) {
-          if (this.$route.name != "User") {
+          if (this.$route.name != "FirstPage") {
             if (this.menuList[i].routeName == this.$route.name) {
               this.menuList.splice(i, 1);
               this.goPage(this.menuList[i - 1].routeName);
@@ -127,11 +145,11 @@
       },
       closeOthers() {//关闭其他标签
         for (let i = 0; i < this.menuList.length; i++) {
-          if (this.$route.name != "User") {
+          if (this.$route.name != "FirstPage") {
             if (this.menuList[i].routeName == this.$route.name) {
               this.menuList = [
                 {
-                  name: '用户管理', routeName: 'User'
+                  name: '信息公告', routeName: 'FirstPage'
                 }, {
                   name: this.$route.meta.title, routeName: this.$route.name
                 }
@@ -169,6 +187,10 @@
     mounted() {
       let user = JSON.parse(getToken());
       this.userInfo = user.userName;
+      this.getdateFormat(); //时间
+      setInterval(() => {
+        this.getdateFormat();
+      }, 1000);
     }
   }
 </script>

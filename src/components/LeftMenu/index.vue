@@ -1,9 +1,5 @@
 <template>
   <div class="leftMenu" :class="$store.state.leftMenuMin && 'min'">
-    <div class="time" :style="{color:$store.state.colorData.top.topFontColor}"
-         v-show="!$store.state.leftMenuMin && 'min'">
-      {{nowDate}} {{nowTime}}
-    </div>
     <div class="zll-Menu">
       <el-menu :class="$store.state.colorData.index"
                :collapse="$store.state.leftMenuMin"
@@ -14,6 +10,7 @@
         <MenuList :menuData="LeftMenuData"></MenuList>
       </el-menu>
     </div>
+    <p class="tab">© 2019 睿孚 RELICA</p>
   </div>
 </template>
 
@@ -66,29 +63,12 @@
         activeNum: "1",
         menuIndexs: menuIndexData,
         isCollapse: false, //菜单折叠
-        nowTime: new Date(),
-        nowDate: new Date(),
       };
     },
     methods: {
-      getdateFormat() {
-        //显示时间
-        var _this = this;
-        let yy = String(new Date().getFullYear());
-        let mm = new Date().getMonth() + 1;
-        let dd = String(new Date().getDate() < 10 ? "0" + new Date().getDate() : new Date().getDate());
-        let hou = String(new Date().getHours() < 10 ? "0" + new Date().getHours() : new Date().getHours());
-        let min = String(new Date().getMinutes() < 10 ? "0" + new Date().getMinutes() : new Date().getMinutes());
-        let sec = String(new Date().getSeconds() < 10 ? "0" + new Date().getSeconds() : new Date().getSeconds());
-        _this.nowTime = hou + ":" + min + ":" + sec;
-        _this.nowDate = yy + "-" + mm + "-" + dd;
-      },
     },
     mounted() {
-      this.getdateFormat(); //时间
-      setInterval(() => {
-        this.getdateFormat();
-      }, 1000);
+      
     }
   };
 </script>

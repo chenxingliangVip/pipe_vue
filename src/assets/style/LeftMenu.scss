@@ -22,6 +22,7 @@
     }
     .zll-Menu {
         margin-bottom: 20px;
+        padding-top: 45px;
     }
     .zll-meun-nav {
         background: #188b9c;
@@ -32,5 +33,12 @@
         width: 170px;
         text-align: center;
         opacity: .7;
+    }
+    .tab {
+        text-align: center;
+        opacity: .7;
+        position: fixed;
+        bottom: 10px;
+        width: 170px;
     }
 }
