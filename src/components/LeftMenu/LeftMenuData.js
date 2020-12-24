@@ -36,7 +36,7 @@ export default [
     }, {
         title: '物性计算',
         meta: { type: 4 },
-        icon: 'el-icon-edit-outline'
+        icon: 'el-icon-odometer'
     }, {
         name: 'Materials',//路由name
         path: 'Materials',//路由name

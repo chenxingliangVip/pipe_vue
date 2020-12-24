@@ -1,10 +1,26 @@
 <template>
   <div class="User">
+    <h1 class="header_h1">用户管理</h1>
     <!-- 头部搜索 -->
     <div class="Search_Top_Input">
-      <div class="addNew">
-        <span @click="addUser()"><i class="el-icon-circle-plus-outline"></i> 新建用户</span>
-      </div>
+        <div class="search_list" style="width: calc(100% - 100px) !important">
+            <div class="input_flex">
+                <el-input clearable v-model="searchInput1" placeholder="用户名"></el-input>
+            </div>
+            <div class="input_flex">
+                <el-input clearable v-model="searchInput2" placeholder="姓名"></el-input>
+            </div>
+            <div class="input_flex">
+                <el-input clearable v-model="searchInput3" placeholder="职务"></el-input>
+            </div>
+            <div class="input_flex search">
+                <span class="zll-search">搜索</span>
+                <span class="zll-search-reset">重置</span>
+            </div>
+        </div>
+        <div class="addNew" style="width: 100px">
+            <span @click="addUser()"><i class="el-icon-circle-plus-outline"></i> 新建用户</span>
+        </div>
     </div>
     <!-- table -->
     <sys-table
@@ -44,6 +60,9 @@
         tableHeader: [],
         addDialog: false, //用户弹框
         editData: [],
+        searchInput1: '',
+        searchInput2: '',
+        searchInput3: '',
       }
     },
     methods: {

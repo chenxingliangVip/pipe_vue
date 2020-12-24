@@ -1,11 +1,30 @@
 <template>
     <div class="Power">
+        <h1 class="header_h1">权限角色</h1>
         <!-- 头部搜索 -->
         <div class="Search_Top_Input">
-			<div class="addNew">
+            <div class="search_list" style="width: calc(100% - 100px) !important">
+                <div class="input_flex">
+                    <el-input clearable v-model="searchInput1" placeholder="部门"></el-input>
+                </div>
+                <div class="input_flex">
+                    <el-input clearable v-model="searchInput2" placeholder="角色"></el-input>
+                </div>
+                <div class="input_flex">
+                    <el-select clearable v-model="searchInput3" placeholder="状态">
+                        <el-option label="正常" value="正常"></el-option>
+                        <el-option label="停用" value="停用"></el-option>
+                    </el-select>
+                </div>
+                <div class="input_flex search">
+                    <span class="zll-search">搜索</span>
+                    <span class="zll-search-reset">重置</span>
+                </div>
+            </div>
+            <div class="addNew" style="width: 100px">
                 <span @click="addPower()"><i class="el-icon-circle-plus-outline"></i> 新建角色</span>
-			</div>
-		</div>
+            </div>
+        </div>
         <!-- table -->
         <sys-table  
             :isMultipleSelection="false" 
@@ -76,12 +95,6 @@
                 this.addDialog = true
                 this.type = "编辑"
             },
-            searchReset() { //重置搜索
-                this.searchInput1 = "";
-                this.searchInput2 = "";
-                this.searchInput3 = "";
-                this.getTableList();
-            },
         },
         mounted(){
             this.getTableList();//显示table
@@ -94,32 +107,4 @@
 
 <style lang="scss" scoped>
 @import "@/assets/style/SearchTop.scss";
-.Power{
-    h1 {
-        text-align: center;
-        color: #34bfc6;
-        font-size: 20px;
-        font-weight: normal;
-        position: relative;
-        width: 100px;
-        margin: 0 auto;
-        padding-bottom: 10px;
-        .line1 {
-            width: 30px;
-            height: 1px;
-            position: absolute;
-            left: -40px;
-            top: 14px;
-            background:  #34bfc6;
-        }
-        .line2 {
-            width: 30px;
-            height: 1px;
-            position: absolute;
-            right: -40px;
-            top: 14px;
-            background:  #34bfc6;
-        }
-    }
-}
 </style>

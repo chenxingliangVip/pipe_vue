@@ -1,5 +1,6 @@
 <template>
     <div class="Organization">
+        <h1 class="header_h1">部门管理</h1>
         <div class="Top_Input">
 			<div class="addNew">
                 <span @click="addOrganization()"><i class="el-icon-circle-plus-outline"></i> 新建部门</span>

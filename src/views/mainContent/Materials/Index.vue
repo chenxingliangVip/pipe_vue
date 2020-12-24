@@ -1,7 +1,8 @@
 <template>
   <div class="Materials">
+    <h1 class="header_h1">材料管理</h1>
     <!-- 头部搜索 -->
-    <div class="Search_Top_Input addMaterials">
+    <!-- <div class="Search_Top_Input addMaterials">
       <el-form :model="addForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
         <div class="addList">
           <div class="list_nav">
@@ -81,6 +82,20 @@
           </el-form-item>
         </div>
       </el-form>
+    </div> -->
+    <div class="Search_Top_Input">
+        <div class="search_list" style="width: calc(100% - 100px) !important">
+            <div class="input_flex">
+                <el-input clearable v-model="searchInput1" placeholder="材料名称"></el-input>
+            </div>
+            <div class="input_flex search">
+                <span class="zll-search">搜索</span>
+                <span class="zll-search-reset">重置</span>
+            </div>
+        </div>
+        <div class="addNew" style="width: 100px">
+            <span @click="addPower()"><i class="el-icon-circle-plus-outline"></i> 新建材料</span>
+        </div>
     </div>
     <!-- table -->
     <sys-table
@@ -98,7 +113,7 @@
 
     <!-- 材料弹框 -->
     <div class="zll-dialog">
-      <popout title="编辑材料" :visible.sync="addDialog" v-if="addDialog" class="package_dialog">
+      <popout :title="type + '材料'" :visible.sync="addDialog" v-if="addDialog" class="package_dialog">
         <Add ref="add" slot="content" :editData="editData" @addForm="getFormData"></Add>
         <template slot="bottom">
           <p class="zll-botton" @click="()=>{this.$refs.add.setFormData('addForm')}">提 交</p>
@@ -115,6 +130,8 @@
   export default {
     data() {
       return {
+        type: '',
+        searchInput1: '',
         tableLoading: true, //table刷新
         tableData: [],
         tableHeader: [],
@@ -233,21 +250,27 @@
 
       },
 
-      addPower(formName) {
-        let self = this;
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            self.editMaterial(self.addForm);
-          } else {
-            return false
-          }
-        })
+    //   addPower(formName) {
+    //     let self = this;
+    //     this.$refs[formName].validate((valid) => {
+    //       if (valid) {
+    //         self.editMaterial(self.addForm);
+    //       } else {
+    //         return false
+    //       }
+    //     })
+    //   },
+      addPower() {
+        this.type = '新建'
+        this.addDialog = true;
+        this.editData = {};
       },
       getFormData(data) {
         this.addDialog = false;
         this.editMaterial(data,'edit');
       },
       edit(val) { //管理
+        this.type = '编辑'
         this.addDialog = true
         this.editData = val;
       },

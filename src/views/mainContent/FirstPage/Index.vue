@@ -1,5 +1,6 @@
 <template>
     <div class="FirstPage">
+        <h1>信息公告</h1>
         <div class="message">
             <div class="listNav" v-for="(item,index) in list" :key="index" :class="{ 'isread': !item.isread }" @click="goDetail">
                 <el-row class="item">
@@ -59,6 +60,16 @@ export default {
 <style scoped lang="scss">
     .FirstPage {
         margin: 0 50px;
+        h1 {
+            text-align: center;
+            color: #1397de;
+            font-size: 20px;
+            font-weight: normal;
+            position: relative;
+            width: 100px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+        }
         .message {
             padding: 20px 30px;    
             box-shadow: 0 0 10px #ccc;

@@ -1,5 +1,23 @@
 <template>
   <div class="User">
+    <h1 class="header_h1">我的项目</h1>
+    <div class="Search_Top_Input">
+        <div class="search_list" style="width: calc(100%) !important">
+            <div class="input_flex">
+                <el-input clearable v-model="searchInput1" placeholder="项目号"></el-input>
+            </div>
+            <div class="input_flex">
+                <el-input clearable v-model="searchInput2" placeholder="项目名称"></el-input>
+            </div>
+            <div class="input_flex">
+                <el-input clearable v-model="searchInput3" placeholder="设计人"></el-input>
+            </div>
+            <div class="input_flex search">
+                <span class="zll-search">搜索</span>
+                <span class="zll-search-reset" @click="searchReset()">重置</span>
+            </div>
+        </div>
+    </div>
     <!-- table -->
     <sys-table
       :isMultipleSelection="false"
@@ -35,6 +53,9 @@
         tableData: [],
         tableHeader: [],
         addDialog: false, //弹框
+        searchInput1: '',
+        searchInput2: '',
+        searchInput3: '',
       }
     },
     methods: {
@@ -83,6 +104,12 @@
       getFormData(data) {
         this.addDialog = false
       },
+      searchReset() {
+          this.searchInput1 ==''
+          this.searchInput2 ==''
+          this.searchInput3 ==''
+          this.getList()
+      }
     },
     mounted() {
       this.getList();//显示table

@@ -27,7 +27,7 @@ const urlWhiteList = {
 // request拦截器
 service.interceptors.request.use(config => {
 
-  // config.url = 'api' + config.url;
+  config.url = 'api' + config.url;
   return config
 }, error => {
   if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {

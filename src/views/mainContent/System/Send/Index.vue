@@ -1,15 +1,12 @@
 <template>
     <div class="SystemLog">
+        <h1 class="header_h1">信息发布</h1>
         <div class="Search_Top_Input">
-            <div class="input_flex"></div>
-            <div class="addNew">
-                <span class="delete" @click="batchCancal">
-                    <i class="el-icon-delete"></i> 批量删除
-                </span>
-                <span @click="addDialog = true">
-                    <i class="el-icon-circle-plus-outline"></i> 消息发布
-                </span>
-            </div>
+            <div class="search_list" style="width: calc(100% -200px) !important"></div>
+			<div class="addNew" style="width: 200px !important">
+                <span class="delete" @click="batchCancal"><i class="el-icon-circle-plus-outline"></i> 批量删除</span>
+                <span @click="addUser()"><i class="el-icon-delete"></i> 消息发布</span>
+			</div>
         </div>
         <!-- table -->
         <sys-table
@@ -100,32 +97,4 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/assets/style/SearchTop.scss";
-.SystemLog {
-    h1 {
-        text-align: center;
-        color: #34bfc6;
-        font-size: 20px;
-        font-weight: normal;
-        position: relative;
-        width: 200px;
-        margin: 0 auto;
-        padding-bottom: 10px;
-        .line1 {
-            width: 30px;
-            height: 1px;
-            position: absolute;
-            left: -40px;
-            top: 14px;
-            background:  #34bfc6;
-        }
-        .line2 {
-            width: 30px;
-            height: 1px;
-            position: absolute;
-            right: -40px;
-            top: 14px;
-            background:  #34bfc6;
-        }
-    }
-}
 </style>

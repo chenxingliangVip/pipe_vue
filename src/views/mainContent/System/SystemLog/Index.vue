@@ -1,5 +1,21 @@
 <template>
     <div class="SystemLog">
+        <h1 class="header_h1">系统日志</h1>
+        <!-- 头部搜索 -->
+        <div class="Search_Top_Input">
+            <div class="search_list" style="width: calc(100%) !important">
+                <div class="input_flex">
+                    <el-input clearable v-model="searchInput1" placeholder="用户名"></el-input>
+                </div>
+                <div class="input_flex">
+                    <el-date-picker v-model="searchInput2" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
+                </div>
+                <div class="input_flex search">
+                    <span class="zll-search">搜索</span>
+                    <span class="zll-search-reset" @click="searchReset()">重置</span>
+                </div>
+            </div>
+		</div>
         <!-- table -->
         <sys-table  
             :isMultipleSelection="false" 
@@ -58,32 +74,4 @@
 
 <style lang="scss" scoped>
 @import "@/assets/style/SearchTop.scss";
-.SystemLog{
-    h1 {
-        text-align: center;
-        color: #34bfc6;
-        font-size: 20px;
-        font-weight: normal;
-        position: relative;
-        width: 100px;
-        margin: 0 auto;
-        padding-bottom: 10px;
-        .line1 {
-            width: 30px;
-            height: 1px;
-            position: absolute;
-            left: -40px;
-            top: 14px;
-            background:  #34bfc6;
-        }
-        .line2 {
-            width: 30px;
-            height: 1px;
-            position: absolute;
-            right: -40px;
-            top: 14px;
-            background:  #34bfc6;
-        }
-    }
-}
 </style>
