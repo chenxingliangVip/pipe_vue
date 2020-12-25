@@ -493,7 +493,7 @@
         /* event.wheelDelta 获取滚轮滚动值并将滚动值叠加给缩放比zoom wheelDelta统一为±120，其中正数表示为向上滚动，负数表示向下滚动 */
         zoom += event.wheelDelta / 12;
         /* 最小范围 和 最大范围 的图片缩放尺度 */
-        if (zoom >= 80 && zoom < 500) {
+        if (zoom >= 10 && zoom < 500) {
             this.$refs.flowContent.style.zoom = zoom + "%";
         }
         return false;
@@ -1614,7 +1614,7 @@
         overflow: hidden;
     }
   #flowContent {
-    width: 100%;
+    width: 200%;
     height: 100%;
     position: relative;
   }

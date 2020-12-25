@@ -22,6 +22,11 @@
                         style="width: calc(100% - 100px)"></el-input>
               <span class="danwei"> Mpa（绝压）</span>
             </el-form-item>
+            <el-form-item class="formList" prop="addformdata4" label="输出小时：">
+              <el-input clearable class="input_right" placeholder="请输入输出小时" v-model="setForm.pressure" disabled
+                        style="width: calc(100% - 100px)"></el-input>
+              <span class="danwei"> 时</span>
+            </el-form-item>
           </el-col>
         </el-row>
         <div class="tableList">
