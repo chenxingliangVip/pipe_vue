@@ -4,6 +4,12 @@
     <el-form :model="line" ref="dataForm" label-width="90px" class="flowEditForm margin13 pipes" size="mini">
       <el-row :gutter="10">
         <el-col :span="5">
+          <el-form-item label="复制管道：">
+            <el-select v-model="line.psType" placeholder="" style="width: calc(100% - 40px)">
+              <el-option label="1" value="1"></el-option>
+              <el-option label="2" value="2"></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="敷设方式：">
             <el-select v-model="line.psType" placeholder="" style="width: calc(100% - 40px)">
               <el-option label="架空" value="1"></el-option>
