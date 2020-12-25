@@ -121,8 +121,8 @@ export default {
     line-height: 15px;
 }
 .node-con .imgsrc {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
 }
 .node-del {
     position: absolute;

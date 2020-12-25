@@ -81,8 +81,8 @@
             <div class="clearBoth"></div>
           </div>
         </div>
-        <div class="flow-detail" @click="togglePanel" id="flowParent">
-          <div
+        <div class="flow-detail drag_main" @click="togglePanel" id="flowParent"  @mousewheel.prevent="rollImg">
+          <div @mousedown="dragMove"
             id="flowContent"
             ref="flowContent"
             @drop="drop($event)"
@@ -464,6 +464,40 @@
       }
     },
     methods: {
+      dragMove(e) {
+        let odiv = e.target;    //获取目标元素
+        //算出鼠标相对元素的位置
+        let disX = e.clientX - odiv.offsetLeft;
+        let disY = e.clientY - odiv.offsetTop;
+        document.onmousemove = (e)=>{    //鼠标按下并移动的事件
+            //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+            let left = e.clientX - disX;  
+            let top = e.clientY - disY;
+            
+            //绑定元素位置到positionX和positionY上面
+            // this.positionX = top;
+            // this.positionY = left;
+            
+            //移动当前元素
+            odiv.style.left = left + 'px';
+            odiv.style.top = top + 'px';
+        };
+        document.onmouseup = (e) => {
+            document.onmousemove = null;
+            document.onmouseup = null;
+        };
+      }, 
+      rollImg() {
+        /* 获取当前页面的缩放比 若未设置zoom缩放比，则为默认100%，即1，原图大小 */
+        var zoom = parseInt(this.$refs.flowContent.style.zoom) || 100;
+        /* event.wheelDelta 获取滚轮滚动值并将滚动值叠加给缩放比zoom wheelDelta统一为±120，其中正数表示为向上滚动，负数表示向下滚动 */
+        zoom += event.wheelDelta / 12;
+        /* 最小范围 和 最大范围 的图片缩放尺度 */
+        if (zoom >= 80 && zoom < 500) {
+            this.$refs.flowContent.style.zoom = zoom + "%";
+        }
+        return false;
+     },
       init() {
         document.oncontextmenu = function () {
           return false;
@@ -1575,7 +1609,10 @@
     // background: -webkit-linear-gradient(top,transparent 39px,#dedede 40px),-webkit-linear-gradient(left,transparent 39px,#dedede 40px);
     // background-size: 40px 40px;
   }
-
+    .drag_main {
+        position: relative;
+        overflow: hidden;
+    }
   #flowContent {
     width: 100%;
     height: 100%;
