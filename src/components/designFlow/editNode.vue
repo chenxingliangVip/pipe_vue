@@ -7,7 +7,7 @@
           <el-input v-model="node.id" disabled></el-input>
         </el-form-item>
         <el-form-item label="名称：" class="floatForm">
-          <el-input v-model="node.name" disabled></el-input>
+          <el-input v-model="node.name"></el-input>
         </el-form-item>
         <el-form-item label="温度：" class="floatForm">
           <el-input v-model="node.temperature"  style="width: calc(100% - 40px)"></el-input>
@@ -27,7 +27,7 @@
           <el-input v-model="node.id" disabled></el-input>
         </el-form-item>
         <el-form-item label="名称：" class="floatForm">
-          <el-input v-model="node.name" disabled></el-input>
+          <el-input v-model="node.name"></el-input>
         </el-form-item>
         <!--<el-form-item class="floatForm">-->
         <!--<el-button round class="button_list sure" @click="Submit('dataForm', node.Type)">修 改</el-button>-->
@@ -41,7 +41,7 @@
               <el-input v-model="node.id" disabled></el-input>
             </el-form-item>
             <el-form-item label="名称：">
-              <el-input v-model="node.name" disabled></el-input>
+              <el-input v-model="node.name"></el-input>
             </el-form-item>
             <el-form-item label="温度：" >
               <el-input v-model="node.temperature" style="width: calc(100% - 40px)"></el-input>
