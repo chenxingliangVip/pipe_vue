@@ -14,7 +14,7 @@
             </div>
         </div> -->
         <div class="node-con">
-            <img class="imgsrc type-icon" :src="iconClass">
+            <img class="imgsrc type-icon" :src="iconClass" :class="node.Type == 1 ? '' : 'img_min'">
             <p>{{ node.label }}</p>
         </div>
         <div class="node-del" v-show="mouseEnter" @click.stop="deleteNode">
@@ -123,6 +123,10 @@ export default {
 .node-con .imgsrc {
     width: 40px;
     height: 40px;
+}
+.node-con .img_min {
+    width: 30px;
+    height: 30px;
 }
 .node-del {
     position: absolute;
