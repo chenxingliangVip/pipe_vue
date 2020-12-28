@@ -2,7 +2,7 @@
   <div class="Materials">
     <h1 class="header_h1">材料管理</h1>
     <!-- 头部搜索 -->
-    <!-- <div class="Search_Top_Input addMaterials">
+    <div class="Search_Top_Input addMaterials">
       <el-form :model="addForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
         <div class="addList">
           <div class="list_nav">
@@ -82,20 +82,6 @@
           </el-form-item>
         </div>
       </el-form>
-    </div> -->
-    <div class="Search_Top_Input">
-        <div class="search_list" style="width: calc(100% - 100px) !important">
-            <div class="input_flex">
-                <el-input clearable v-model="searchInput1" placeholder="材料名称"></el-input>
-            </div>
-            <div class="input_flex search">
-                <span class="zll-search">搜索</span>
-                <span class="zll-search-reset">重置</span>
-            </div>
-        </div>
-        <div class="addNew" style="width: 100px">
-            <span @click="addPower()"><i class="el-icon-circle-plus-outline"></i> 新建材料</span>
-        </div>
     </div>
     <!-- table -->
     <sys-table
@@ -250,20 +236,15 @@
 
       },
 
-    //   addPower(formName) {
-    //     let self = this;
-    //     this.$refs[formName].validate((valid) => {
-    //       if (valid) {
-    //         self.editMaterial(self.addForm);
-    //       } else {
-    //         return false
-    //       }
-    //     })
-    //   },
-      addPower() {
-        this.type = '新建'
-        this.addDialog = true;
-        this.editData = {};
+      addPower(formName) {
+        let self = this;
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            self.editMaterial(self.addForm);
+          } else {
+            return false
+          }
+        })
       },
       getFormData(data) {
         this.addDialog = false;

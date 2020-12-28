@@ -1,14 +1,12 @@
 <template>
   <div class="Login">
     <div class="bg"></div>
-    <div style=" height: 60%;">
+    <div style=" height: 60%;min-height: 480px;">
       <div class="header">
         <div class="imgurl">
           <img src="@/assets/img/title.png">
         </div>
-        <h2>
-          <img src="@/assets/img/title_txt.png">
-        </h2>
+        <h2>基于数字孪生的全时段<br>多用户蒸汽管网水力耦合设计管理平台</h2>
       </div>
       <div class="LoginBody Login_input">
         <el-form :model="LoginForm" ref="LoginForm" class="demo-ruleForm LoginForm">
@@ -70,7 +68,7 @@
           if (resp.success) {
             self.$store.dispatch('setLoginUserDetail', resp.result).then(res => {
               setToken(resp.result);
-              self.$router.push({path: "/FirstPage"});
+              self.$router.push({path: "/User"});
             });
             return
           }
@@ -148,7 +146,7 @@
       width: 450px;
       margin: 0 auto;
       background-color: rgb(0, 164, 222);
-      box-shadow: 0 0 20px #d8715e;
+      box-shadow: 0 0 20px #bcc552;
       padding: 20px 50px;
       border-radius: 10px;
       position: relative;

@@ -75,7 +75,7 @@
     components: {colorPopout, password},
     data() {
       return {
-        menuList: [{name: '信息公告', routeName: 'FirstPage'}],
+        menuList: [{name: '用户管理', routeName: 'User'}],
         showTheme: false, //主题弹框显示
         resetDialog: false,
         userInfo: '',
@@ -130,12 +130,12 @@
         this.menuList.splice(index, 1);
       },
       closeAll() {//关闭全部标签
-        this.menuList = [{name: '信息公告', routeName: 'FirstPage'}]
-        this.goPage('FirstPage');
+        this.menuList = [{name: '用户管理', routeName: 'User'}]
+        this.goPage('User');
       },
       closeNow() { //关闭当前标签
         for (let i = 0; i < this.menuList.length; i++) {
-          if (this.$route.name != "FirstPage") {
+          if (this.$route.name != "User") {
             if (this.menuList[i].routeName == this.$route.name) {
               this.menuList.splice(i, 1);
               this.goPage(this.menuList[i - 1].routeName);
@@ -145,11 +145,11 @@
       },
       closeOthers() {//关闭其他标签
         for (let i = 0; i < this.menuList.length; i++) {
-          if (this.$route.name != "FirstPage") {
+          if (this.$route.name != "User") {
             if (this.menuList[i].routeName == this.$route.name) {
               this.menuList = [
                 {
-                  name: '信息公告', routeName: 'FirstPage'
+                  name: '用户管理', routeName: 'User'
                 }, {
                   name: this.$route.meta.title, routeName: this.$route.name
                 }
