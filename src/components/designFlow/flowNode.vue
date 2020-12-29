@@ -14,7 +14,7 @@
             </div>
         </div> -->
         <div class="node-con">
-            <img class="imgsrc type-icon" :src="iconClass">
+            <img class="imgsrc type-icon" :src="iconClass" :class="node.Type == 3 ? 'img_min' : ''">
             <p>{{ node.label }}</p>
         </div>
         <div class="node-del" v-show="mouseEnter" @click.stop="deleteNode">
@@ -72,7 +72,7 @@ export default {
             this.$emit("edit-node", this.node.id);
         },
         // 鼠标进入
-        showDelete() {
+        showDelete(e) {
             this.mouseEnter = true;
         },
         // 鼠标离开
@@ -80,8 +80,8 @@ export default {
             this.mouseEnter = false;
         },
         // 鼠标移动后抬起
-        changeNodeSite() {
-            this.$emit("changeNodeSite", {
+        changeNodeSite(e) {
+            this.$emit("change-node-site", {
                 nodeId: this.node.id,
                 left: this.$refs.node.style.left,
                 top: this.$refs.node.style.top,
@@ -123,6 +123,10 @@ export default {
 .node-con .imgsrc {
     width: 40px;
     height: 40px;
+}
+.node-con .img_min {
+    width: 30px;
+    height: 30px;
 }
 .node-del {
     position: absolute;
