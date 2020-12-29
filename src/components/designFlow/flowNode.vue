@@ -21,6 +21,11 @@
             <i class="el-icon-circle-close"></i>
         </div>
 
+        <div class="guide-leftTop" v-show="mouseEnter && node.Type !== 1"></div>
+        <div class="guide-rightTop" :class="node.Type == 2 ? 'jiedian' : ''" v-show="mouseEnter && node.Type !== 1"></div>
+        <div class="guide-leftBottom" v-show="mouseEnter && node.Type !== 1"></div>
+        <div class="guide-rightBottom" v-show="mouseEnter && node.Type !== 1"></div>
+
         <!--连线用--//触发连线的区域-->
         <div class="flow-node-drag" v-show="isconnect"></div>
     </div>
@@ -73,6 +78,9 @@ export default {
         },
         // 鼠标进入
         showDelete(e) {
+            // console.log(e)
+            this.orgX= e.pageX;
+            this.orgY= e.pageY
             this.mouseEnter = true;
         },
         // 鼠标离开
@@ -81,11 +89,88 @@ export default {
         },
         // 鼠标移动后抬起
         changeNodeSite(e) {
-            this.$emit("change-node-site", {
+            // this.$emit("change-node-site", {
+            //     nodeId: this.node.id,
+            //     left: this.$refs.node.style.left,
+            //     top: this.$refs.node.style.top,
+            // });
+            let position = this.calcPosstion();
+            this.$refs.node.style.left = position.left;
+            this.$refs.node.style.top = position.top;
+
+            this.$emit("changeNodeSite", {
                 nodeId: this.node.id,
-                left: this.$refs.node.style.left,
-                top: this.$refs.node.style.top,
+                left: position.left,
+                top: position.top,
             });
+        },
+        
+        // 计算元素位置
+        calcPosstion(){
+            /**
+             * 相近元素自动对齐(相差50px自动对齐)
+             * 对齐原则为:当左右同时出现满足对齐条件时候，优先选择左侧元素
+             *             当上下同时出现满足对齐条件时候，优先选择上侧元素
+             *
+             */
+            const offsetNum = 50;//偏移量
+            // 当前元素位置
+            let nodeX = this.$refs.node.style.left.replace('px','')*1,
+                nodeY = this.$refs.node.style.top.replace('px','')*1;
+            let newX = nodeX,newY = nodeY;//计算后的位置
+            //所有元素位置
+            let posstionArr = this.$parent.data.nodeList.map(item => {
+                if(item.id == this.node.id) return null;
+                let newItem = {
+                    x:document.getElementById(item.id).style.left.replace('px','')*1,
+                    y:document.getElementById(item.id).style.top.replace('px','')*1,
+                }
+                return {
+                    ...newItem,
+                    offsetX:nodeX - newItem.x,
+                    offsetY:nodeY - newItem.y,
+                };
+            }) || [];
+            // let addX = 0,addY = 0;//距离当前元素的位置
+            posstionArr.map(item => {
+                if(!item) return false;
+                if(Math.abs(item.offsetX) < offsetNum ){
+                    // addY = this.getLeftVal(addY,item.offsetY);
+                    // if(addY == item.offsetY){
+                    newX = item.x;
+                    // }
+                }
+                if(Math.abs(item.offsetY) < offsetNum ){
+                    // addX = this.getLeftVal(addX,item.offsetX);
+                    // if(addX == item.offsetX){
+                    newY = item.y;
+                    // }
+                }
+                return false;
+            })
+            return {
+                left:newX + 'px',
+                top:newY + 'px',
+            }
+        },
+        //优先获取正数，然后取最小正数
+        getLeftVal(theVal,newVal){
+            if(theVal == 0){
+                return newVal;
+            }
+            if(theVal < 0 ){
+                if(newVal > 0){
+                    return newVal;
+                }else{
+                    return theVal > newVal ? theVal : newVal;
+                }
+            }else{
+                if(newVal > 0){
+                    return theVal > newVal ? newVal : theVal;
+                }else{
+                    return theVal;
+                }
+            }
         },
     },
 };
@@ -98,6 +183,49 @@ export default {
     overflow: initial;
     /* background: #fbf4dc; */
     padding: 5px 0;
+}
+.guide-leftTop {
+    height: 1px;
+    width: 580px;
+    border: 1px dashed #2ab1e8;
+    position: absolute;
+    top: -0px;
+    left: -250px;
+    border-top: none;
+    border-left: none;
+}
+.guide-rightTop {
+    height: 1px;
+    width: 580px;
+    border: 1px dashed #2ab1e8;
+    position: absolute;
+    top: 60px;
+    left: -250px;
+    border-bottom: none;
+    border-right: none;
+}
+.guide-rightTop.jiedian {
+    top: 69px;
+}
+.guide-leftBottom {
+    height: 300px;
+    width: 1px;
+    border: 1px dashed #2ab1e8;
+    position: absolute;
+    top: -120px;
+    left: 80px;
+    border-top: none;
+    border-right: none;
+}
+.guide-rightBottom {
+    height: 300px;
+    width: 1px;
+    border: 1px dashed #2ab1e8;
+    position: absolute;
+    top: -120px;
+    left: 0px;
+    border-bottom: none;
+    border-left: none;
 }
 
 .node-titel {
