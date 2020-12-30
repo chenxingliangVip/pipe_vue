@@ -14,7 +14,7 @@
             </div>
         </div> -->
         <div class="node-con">
-            <img class="imgsrc type-icon" :src="iconClass" :class="node.Type == 3 ? 'img_min' : ''">
+            <img class="imgsrc type-icon" :src="iconClass" :class="node.Type == 2 ? 'img_min' : ''">
             <p>{{ node.label }}</p>
         </div>
         <div class="node-del" v-show="mouseEnter" @click.stop="deleteNode">
