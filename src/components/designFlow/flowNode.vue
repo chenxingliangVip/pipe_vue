@@ -22,7 +22,7 @@
         </div>
 
         <div class="guide-leftTop" v-show="mouseEnter && node.Type !== 1"></div>
-        <div class="guide-rightTop" :class="node.Type == 2 ? 'jiedian' : ''" v-show="mouseEnter && node.Type !== 1"></div>
+        <div class="guide-rightTop" :class="node.Type == 3 ? 'jiedian' : ''" v-show="mouseEnter && node.Type !== 1"></div>
         <div class="guide-leftBottom" v-show="mouseEnter && node.Type !== 1"></div>
         <div class="guide-rightBottom" v-show="mouseEnter && node.Type !== 1"></div>
 
