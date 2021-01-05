@@ -146,7 +146,7 @@
       width: 450px;
       margin: 0 auto;
       background-color: rgb(0, 164, 222);
-      box-shadow: 0 0 20px #bcc552;
+    //   box-shadow: 0 0 20px #bcc552;
       padding: 20px 50px;
       border-radius: 10px;
       position: relative;

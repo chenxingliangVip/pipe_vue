@@ -3,10 +3,11 @@
     <h1 class="header_h1">用户管理</h1>
     <!-- 头部搜索 -->
     <div class="Search_Top_Input">
-      <div class="search_list" style="width: calc(100% - 100px) !important"></div>
-      <div class="addNew" style="width: 100px">
-        <span @click="addUser()"><i class="el-icon-circle-plus-outline"></i> 新建用户</span>
-      </div>
+        <div class="search_list" style="width: calc(100% - 200px) !important"></div>
+        <div class="addNew" style="width: 200px">
+            <span @click="progress()">进度</span>
+            <span @click="addUser()"><i class="el-icon-circle-plus-outline"></i> 新建用户</span>
+        </div>
     </div>
     <!-- table -->
     <sys-table
@@ -31,6 +32,19 @@
         </template>
       </popout>
     </div>
+
+    <div v-show="isProgress" class="zl-progress">
+        <div class="zl_steps">
+            <el-steps :active="1">
+                <el-step title="步骤 1" description="这是一段很长很长很长的描述性文字"></el-step>
+                <el-step title="步骤 2" description="这是一段很长很长很长的描述性文字"></el-step>
+                <el-step title="步骤 3" description="这段就没那么长了"></el-step>
+            </el-steps>
+        </div>
+        <div class="close">
+            <p class="zll-botton step" @click="closeStep">关 闭</p>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -40,6 +54,7 @@
   export default {
     data() {
       return {
+        isProgress: false,
         title: '',
         tableLoading: true, //table刷新
         tableData: [],
@@ -52,6 +67,12 @@
       }
     },
     methods: {
+        progress() {
+            this.isProgress = true
+        },
+        closeStep() {
+            this.isProgress = false
+        },
       getList() {
         let self = this;
         self.tableLoading = true;

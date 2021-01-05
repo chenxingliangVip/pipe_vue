@@ -594,3 +594,28 @@ li{
         width: 24px;
     }
 }
+.zl-progress {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 11111;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    .zl_steps {
+        width: 1200px;
+        .el-step__title.is-process {
+            color: #fff;
+        }
+        .el-step__description.is-process {
+            color: #fff;
+        }
+    }
+    .close {
+        position: absolute;
+        bottom: 100px;
+    }
+}
