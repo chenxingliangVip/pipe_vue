@@ -16,6 +16,15 @@
         <div class="node-con">
             <img class="imgsrc type-icon" :src="iconClass">
             <p>{{ node.name }}</p>
+            <div class="node_txt" v-if="node.Type == 1">
+                <p>压力：1.589Mpa</p>
+                <p>温度：268.45℃</p>
+            </div>
+            <div class="node_txt" v-if="node.Type == 3">
+                <p>流量：</p>
+                <p>压力：1.589Mpa</p>
+                <p>温度：268.45℃</p>
+            </div>
         </div>
         <div class="node-del" v-show="mouseEnter" @click.stop="deleteNode">
             <i class="el-icon-circle-close"></i>
@@ -140,5 +149,9 @@ export default {
     height: 100%;
     opacity: 0;
     cursor: crosshair;
+}
+.node_txt p {
+    text-align: left;
+    padding-left: 10px;
 }
 </style>
