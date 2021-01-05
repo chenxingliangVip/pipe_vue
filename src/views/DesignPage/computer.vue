@@ -270,6 +270,7 @@
         }).then(resp => {
           if (resp.success) {
             self.formData3.water = resp.result;
+            self.$eventBus.$emit("getHotValue",self.formData3.water);
           }
         });
       },

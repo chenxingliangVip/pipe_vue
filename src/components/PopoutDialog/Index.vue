@@ -278,6 +278,8 @@ export default {
     .popout-main {
         top: calc(50% - 250px);
         max-height: 710px;
+        width: 70%;
+        left: calc(15%);
     }
 }
 </style>

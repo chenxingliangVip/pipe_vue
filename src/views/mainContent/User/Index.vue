@@ -3,10 +3,10 @@
     <h1 class="header_h1">用户管理</h1>
     <!-- 头部搜索 -->
     <div class="Search_Top_Input">
-        <div class="search_list" style="width: calc(100% - 100px) !important"></div>
-        <div class="addNew" style="width: 100px">
-            <span @click="addUser()"><i class="el-icon-circle-plus-outline"></i> 新建用户</span>
-        </div>
+      <div class="search_list" style="width: calc(100% - 100px) !important"></div>
+      <div class="addNew" style="width: 100px">
+        <span @click="addUser()"><i class="el-icon-circle-plus-outline"></i> 新建用户</span>
+      </div>
     </div>
     <!-- table -->
     <sys-table

@@ -1,5 +1,5 @@
 <template>
-  <div class="appcontainer" v-loading="loading">
+  <div class="appcontainer" v-loading="loading" >
     <div class="flow-menu">
       <div>
         <div class="menu-item" v-for="(item, index) in menueList" :key="index" :class="{'isDraggable': !isEdit}"
@@ -81,7 +81,7 @@
             <div class="clearBoth"></div>
           </div>
         </div>
-        <div class="flow-detail drag_main" @click="togglePanel" id="flowParent"  @mousewheel.prevent="rollImg">
+        <div  class="flow-detail drag_main" @click="togglePanel" id="flowParent"  @mousewheel.prevent="rollImg">
           <div @mousedown="dragMove"
             id="flowContent"
             ref="flowContent"
@@ -134,7 +134,7 @@
           <edit-node ref="nodeForm" v-show="editType=='node'" :isShowEchart="isShowEchart" @LoadSet="getLoad"
                      @showLog="showLog"></edit-node>
           <edit-line ref="lineForm" v-show="editType=='line'" @line-save="lineLabelSave"
-                     @lineCompute="lineCompute" @checkResult="checkLog"></edit-line>
+                     @lineCompute="lineCompute" @checkResult="checkLog" @updateLine="updateLine"></edit-line>
         </div>
       </div>
     </div>
@@ -226,6 +226,7 @@
           groundHeat: '',
           airHeat: '',
         },
+        hotValue:0.0,
         name: '',
         type: '',
         loading: false,
@@ -443,6 +444,7 @@
             self.$nextTick(() => {
               self.init();
             });
+            self.name = "中圣集团 "+node_info.programName+" "+node_info.id;
             self.editFlow();
             setTimeout(() => {
               self.loading = false
@@ -462,6 +464,10 @@
           self.loading = false
         }, 500)
       }
+
+      self.$eventBus.$on("getHotValue",function (data) {
+          self.hotValue = data;
+      })
     },
     methods: {
       dragMove(e) {
@@ -488,15 +494,15 @@
         };
       },
       rollImg() {
-        /* 获取当前页面的缩放比 若未设置zoom缩放比，则为默认100%，即1，原图大小 */
-        var zoom = parseInt(this.$refs.flowContent.style.zoom) || 100;
-        /* event.wheelDelta 获取滚轮滚动值并将滚动值叠加给缩放比zoom wheelDelta统一为±120，其中正数表示为向上滚动，负数表示向下滚动 */
-        zoom += event.wheelDelta / 12;
-        /* 最小范围 和 最大范围 的图片缩放尺度 */
-        if (zoom >= 20 && zoom < 200) {
-            this.$refs.flowContent.style.zoom = zoom + "%";
-        }
-        return false;
+        // /* 获取当前页面的缩放比 若未设置zoom缩放比，则为默认100%，即1，原图大小 */
+        // var zoom = parseInt(this.$refs.flowContent.style.zoom) || 100;
+        // /* event.wheelDelta 获取滚轮滚动值并将滚动值叠加给缩放比zoom wheelDelta统一为±120，其中正数表示为向上滚动，负数表示向下滚动 */
+        // zoom += event.wheelDelta / 12;
+        // /* 最小范围 和 最大范围 的图片缩放尺度 */
+        // if (zoom >= 20 && zoom < 500) {
+        //     this.$refs.flowContent.style.zoom = zoom + "%";
+        // }
+        // return false;
      },
       init() {
         document.oncontextmenu = function () {
@@ -748,15 +754,24 @@
           this.$refs.nodeForm.init(this.data, nodeId);
         });
       },
+      updateLine(upLine){
+        let _this = this;
+        for(let i = 0;i<_this.data.lineList.length;i++){
+          if (_this.data.lineList[i].id == upLine.id) {
+            _this.data.lineList[i] = Object.assign({},JSON.parse(JSON.stringify(upLine)));
+            return;
+          }
+        }
+      },
       editLine(conn) {
-        var _this = this;
+        let _this = this;
         _this.currentConnect = conn;
         _this.data.lineList.forEach(function (item, index) {
           if (item.from == conn.sourceId && item.to == conn.targetId) {
             _this.currentLine = item;
             _this.editType = "line";
             _this.$nextTick(function () {
-              _this.$refs.lineForm.init(item);
+              _this.$refs.lineForm.init(item,_this.data.lineList);
             });
             return;
           }
@@ -1222,7 +1237,7 @@
             let code = resp.result;
             let tip = data.programName + " " + code;
             self.$message.success("新建项目成功！");
-            self.name = '中国大唐电力股份有限公司 ' + tip;
+            self.name = '中圣集团 ' + tip;
             self.isEdit = true;
           }
           self.addDialog = false
@@ -1295,29 +1310,29 @@
         let yl = "";
         for (let _link of this.data.lineList) {
           if (_link.to == data.id) {
-            this.$refs.userResult.init(_link);
-            let pipeResults = _link.lineResult.pipeResults;
-            if (pipeResults) {
-              for (let i = 0; i < 24; i++) {
-                let data3 = pipeResults.yaLi[i].ep;
-                let data5 = pipeResults.degrees[i].et;
-                if (parseFloat(data.temperature) > parseFloat(data5)) {
-                  wd = wd + (i + 1) + "时,"
-                }
-                if (parseFloat(data.pressure) > parseFloat(data3)) {
-                  yl = yl + (i + 1) + "时,"
-                }
-              }
-            }
+            this.$refs.userResult.init(_link,data);
+            // let pipeResults = _link.lineResult.pipeResults;
+            // if (pipeResults) {
+            //   for (let i = 0; i < 24; i++) {
+            //     let data3 = pipeResults.yaLi[i].ep;
+            //     let data5 = pipeResults.degrees[i].et;
+            //     if (parseFloat(data.temperature) > parseFloat(data5)) {
+            //       wd = wd + (i + 1) + "时,"
+            //     }
+            //     if (parseFloat(data.pressure) > parseFloat(data3)) {
+            //       yl = yl + (i + 1) + "时,"
+            //     }
+            //   }
+            // }
             break;
           }
         }
-        if (wd) {
-          let msg = wd + "的温度小于预设的温度";
-          if (yl) {
-            this.$message.warning(msg + "\n" + yl + "的压力小于预设的压力");
-          }
-        }
+        // if (wd) {
+        //   let msg = wd + "的温度小于预设的温度";
+        //   if (yl) {
+        //     this.$message.warning(msg + "\n" + yl + "的压力小于预设的压力");
+        //   }
+        // }
 
         this.logDialog = true;
       },
@@ -1462,13 +1477,53 @@
           this.computeAnyLine(c, lineList);
         }
       },
+
+      getNewArray(indexs,array){
+         let new_Array = [];
+         for(let index of indexs){
+           new_Array.push(array[index]);
+         }
+         return new_Array;
+      },
+      getEffectArray(line){
+         let pipeG = line.pipeG;
+         let pipeResults = line.lineResult.pipeResults;
+         let totalUser = line.lineResult.totalUser;
+         let userResults = line.lineResult.userResults;
+         let i = 0;
+         let zeros = [];
+         for(let key in pipeG){
+            let v = pipeG[key];
+            if(v != 0){
+              zeros.push(i);
+            }
+            i++;
+         }
+         console.log(zeros);
+        pipeResults.LiuLiang = this.getNewArray(zeros,pipeResults.LiuLiang);
+        pipeResults.degrees= this.getNewArray(zeros,pipeResults.degrees);
+        pipeResults.liuSu= this.getNewArray(zeros,pipeResults.liuSu);
+        pipeResults.startDegrees= this.getNewArray(zeros,pipeResults.startDegrees);
+        pipeResults.startLiuSu= this.getNewArray(zeros,pipeResults.startLiuSu);
+        pipeResults.startYaLi= this.getNewArray(zeros,pipeResults.startYaLi);
+        pipeResults.yaLi= this.getNewArray(zeros,pipeResults.yaLi);
+        totalUser.cls= this.getNewArray(zeros,totalUser.cls);
+        userResults.LiuLiang= this.getNewArray(zeros,userResults.LiuLiang);
+        userResults.YaLi= this.getNewArray(zeros,userResults.YaLi);
+        userResults.lengls= this.getNewArray(zeros,userResults.lengls);
+        userResults.wendu= this.getNewArray(zeros,userResults.wendu);
+      },
       handleGenerator() {
         let self = this;
         if (this.data.lineList.length == 0) {
           this.$message.error("没有找到管道！");
           return;
         }
-        let firstResult = Object.assign({}, this.data.lineList[0].lineResult);
+        let data = Object.assign({},JSON.parse(JSON.stringify(this.data)));
+        for(let line of data.lineList){
+          this.getEffectArray(line);
+        }
+        let firstResult = Object.assign({}, data.lineList[0].lineResult);
         let pipeParams = Object.assign({}, firstResult.pipeParams);
         firstResult.pipeParams = [];
         firstResult.pipeParams.push(pipeParams);
@@ -1493,7 +1548,7 @@
         //   this.$message.error("请先计算所有的管道！");
         //   return;
         // }
-        let nodeList = this.data.nodeList;
+        let nodeList = data.nodeList;
         for (let n of nodeList) {
           if (n.Type == '1') {
             firstResult.originDegree = n.temperature;
@@ -1501,10 +1556,10 @@
             break;
           }
         }
-        for (let i = 1; i < this.data.lineList.length; i++) {
+        for (let i = 1; i < data.lineList.length; i++) {
           console.log("--------lineResult---------");
           console.log(firstResult);
-          let lineResult = this.data.lineList[i].lineResult;
+          let lineResult = data.lineList[i].lineResult;
           if (!lineResult) {
             this.$message.error("请先计算所有的管道！");
             return;
@@ -1565,6 +1620,7 @@
           const img = canvas.toDataURL("image/jpeg").replace("data:image/jpeg;base64,", "");
           const finalImageSrc = "data:image/jpeg;base64," + img;
           firstResult.imageUrl = finalImageSrc;
+          firstResult.hotValue = self.hotValue+"";
           self.$nextTick(() => {
             self.$http({
               url: "/pipe/file/exportExcelData",
@@ -1615,7 +1671,7 @@
     }
   #flowContent {
     width: 200%;
-    height: 100%;
+    height: 200%;
     position: relative;
   }
 

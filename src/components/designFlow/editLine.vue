@@ -5,9 +5,8 @@
       <el-row :gutter="10">
         <el-col :span="5">
           <el-form-item label="复制管道：">
-            <el-select v-model="line.psType" placeholder="" style="width: calc(100% - 40px)">
-              <el-option label="1" value="1"></el-option>
-              <el-option label="2" value="2"></el-option>
+            <el-select v-model="lineName" placeholder="" style="width: calc(100% - 40px)" @change="copyLine">
+              <el-option v-for="(item,index) in lines" :key="index" :label="item.label" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="敷设方式：">
@@ -108,6 +107,8 @@
       return {
         isShow: false,
         materials:[],
+        lineName:"",
+        lines:[],
         line: {
           psType:"",
           pipeOutside:"",
@@ -122,6 +123,7 @@
           hotParam: "",
           pipeLineMaterials:[],
         },
+        attr:["psType","pipeOutside","pipeWidth","pipeSize","localNum","airOutside","pressNum","degreeNum","degreeLevel","hotParam","pipeLineMaterials"],
         levels:6,
       }
     },
@@ -132,6 +134,18 @@
       this.getMaterials();
     },
     methods: {
+      copyLine(value){
+        let _this = this;
+        _this.lines.forEach(function (item, index) {
+          if (item.id == value) {
+            for(let key of _this.attr){
+              _this.line[key] = item[key];
+            }
+            _this.$emit("updateLine",item);
+            return;
+          }
+        });
+      },
       filterMaterial(materials,item){
         let reflect = item.reflect;
         let array = materials.filter(m => m.reflect == reflect );
@@ -160,10 +174,14 @@
         });
       },
 
-      init(item) {
+      init(item,lineList) {
         console.log("---------line init----------");
         this.line = item;
+        this.lineName = "";
         console.log(this.line);
+        if(lineList){
+          this.lines = lineList;
+        }
         if(!this.line.pipeLineMaterials||this.line.pipeLineMaterials.length == 0){
           this.$set(this.line,"pipeLineMaterials",[]);
           this.watchLevel();

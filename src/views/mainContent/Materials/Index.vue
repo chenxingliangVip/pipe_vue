@@ -174,11 +174,11 @@
     methods: {
 
       reflectChange(val){
-         if(val == '2'){
-           this.isReflect = false;
-         }else{
-           this.isReflect = true;
-         }
+        if(val == '2'){
+          this.isReflect = false;
+        }else{
+          this.isReflect = true;
+        }
       },
       getList() {
         let self = this;

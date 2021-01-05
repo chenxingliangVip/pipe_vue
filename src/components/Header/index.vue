@@ -9,10 +9,10 @@
     <!-- 右侧按钮 -->
     <div class="header_user"
          :style="{backgroundColor:$store.state.colorData.top.topBgColor,color:$store.state.colorData.top.topFontColor}">
-    
-        <div class="time">
+
+      <div class="time">
         {{nowDate}} {{nowTime}}
-        </div>
+      </div>
       <!-- <div class="headalist"  @click="showTheme = true">
           <span class="changeColor" title="切换主题"><i class="el-icon-s-promotion"></i></span>
       </div> -->
