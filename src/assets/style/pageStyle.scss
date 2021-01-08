@@ -154,12 +154,12 @@
         .pack_list {
             border: 1px solid #848484;
             padding-right: 10px;
-            height: 225px;
-            margin-bottom: 20px;
+            height: 250px;
+            margin-bottom: 30px;
             .logo {
                 width: 26px;
                 background: #848484;
-                height: 223px;
+                height: 248px;
                 line-height: 28px;
                 color: #ffffff;
                 font-size: 14px;
@@ -170,15 +170,30 @@
                 text-align: center;
             }
             .formList {
-                margin-top: 10px !important;
+                margin-top: 13px !important;
             }
             &.pack_list1 {
-                height: 100px !important;
+                height: 120px !important;
                 border: 1px solid #1397de;
                 margin-top: 13px;
                 .logo  {
-                    height: 98px !important;
+                    height: 118px !important;
                     background: #1397de;
+                }
+            }
+        }
+        &.is {
+            .pack_list {
+                height: 225px;
+                margin-bottom: 20px;
+                .logo {
+                    height: 223px;
+                }
+                &.pack_list1 {
+                    height: 100px !important;
+                    .logo  {
+                        height: 98px !important;
+                    }
                 }
             }
         }

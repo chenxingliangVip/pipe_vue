@@ -246,7 +246,7 @@ export default {
 .adddesign_dialog {
     .popout-main {
         width: 50%;
-        height: 500px;
+        height: 565px;
         left: 25%;
     }
 }

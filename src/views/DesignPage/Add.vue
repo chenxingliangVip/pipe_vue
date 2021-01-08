@@ -4,6 +4,9 @@
       <el-form :model="addForm" :rules="rules" ref="addForm" class="demo-ruleForm">
         <el-row :gutter="20">
           <el-col :span="11">
+            <el-form-item class="formList" prop="custom" label="项目号：">
+              <el-input clearable class="input_right" placeholder="请输入项目号" v-model="addForm.custom" :disabled="noEdit"></el-input>
+            </el-form-item>
             <el-form-item class="formList" prop="custom" label="客户名称：">
               <el-input clearable class="input_right" placeholder="请输入客户名称" v-model="addForm.custom" :disabled="noEdit"></el-input>
             </el-form-item>
@@ -21,6 +24,9 @@
               <span class="danwei">mm</span>
             </el-form-item>
             <el-form-item class="formList" style="height: 15px"></el-form-item>
+            <el-form-item class="formList" prop="designer" label="设计号：">
+              <el-input clearable class="input_right" placeholder="请输入设计号" v-model="addForm.designer" :disabled="noEdit"></el-input>
+            </el-form-item>
             <el-form-item class="formList" prop="designer" label="设计：">
               <el-input clearable class="input_right" placeholder="请输入设计" v-model="addForm.designer" :disabled="noEdit"></el-input>
             </el-form-item>
