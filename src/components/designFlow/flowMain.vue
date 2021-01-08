@@ -589,9 +589,9 @@
             let labelNew = from + to
               + '<div class="label_txt">'
               + '<p>流量： 11</p>'
-              + '<p>期末端压力：</p>'
-              + '<p>期末端温度：</p>'
-              + '<p>期末端流速：</p>'
+              + '<p>起末端压力：</p>'
+              + '<p>起末端温度：</p>'
+              + '<p>起末端流速：</p>'
               + '</div>'
             evt.connection.getOverlay("label-1").setLabel(labelNew);
             // evt.connection.getOverlay("label-1").setLabel(from + to);
@@ -695,9 +695,9 @@
           let labelNew = line.label
               + '<div class="label_txt">'
               + '<p>流量： 11</p>'
-              + '<p>期末端压力：</p>'
-              + '<p>期末端温度：</p>'
-              + '<p>期末端流速：</p>'
+              + '<p>起末端压力：</p>'
+              + '<p>起末端温度：</p>'
+              + '<p>起末端流速：</p>'
               + '</div>'
         //   connection.getOverlay("label-1").setLabel(line.label); //初始化label
             connection.getOverlay("label-1").setLabel(labelNew); //初始化label
