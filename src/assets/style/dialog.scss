@@ -21,8 +21,8 @@ $baseColor: #1397de;
             float: left;
             width: calc(100% - 20px)
         }
-        .el-select {
-            width: calc(100% - 20px)
+        .el-select, .el-input {
+            width: calc(100% - 20px) !important
         }
     }
     .NOnum {

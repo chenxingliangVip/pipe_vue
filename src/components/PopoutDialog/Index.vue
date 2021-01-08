@@ -231,6 +231,15 @@ export default {
         top: calc(50% - 250px);
     }
 }
+.minSize_copy {
+    .popout-main {
+        font-size: 12px;
+        width: 50%;
+        height: 450px;
+        left: 25%;
+        top: calc(50% - 250px);
+    }
+}
 .changePassword {
     .movePopout .popout-bg {
         position: fixed;
