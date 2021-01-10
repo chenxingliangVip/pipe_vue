@@ -28,13 +28,6 @@ export default [
         ]
     },
     {
-        name: 'Project',//路由name
-        path: 'Project',//路由name
-        title: '项目借用授权',
-        meta: { type: 1 },
-        icon: 'el-icon-folder-checked'
-    },
-    {
         name: 'Materials',//路由name
         path: 'Materials',//路由name
         title: '材料管理',

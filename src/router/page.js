@@ -12,11 +12,6 @@ export default [{
     meta: { title: '用户管理' },
     component: User
 }, {
-    path: 'Project',
-    name: 'Project',
-    meta: { title: '项目借用授权' },
-    component: Project
-}, {
     path: 'Materials',
     name: 'Materials',
     meta: { title: '材料管理' },

@@ -4,19 +4,19 @@
     <div class="Search_Top_Input">
       <div class="search_list" style="width: calc(100% - 100px) !important">
         <div class="input_flex">
-          <el-input clearable v-model="searchInput1" placeholder="客户名称"></el-input>
+          <el-input clearable v-model="searchForm.custom" placeholder="客户名称"></el-input>
         </div>
         <div class="input_flex">
-          <el-input clearable v-model="searchInput2" placeholder="项目名称"></el-input>
+          <el-input clearable v-model="searchForm.programName" placeholder="项目名称"></el-input>
         </div>
         <div class="input_flex">
-          <el-input clearable v-model="searchInput3" placeholder="项目号"></el-input>
+          <el-input clearable v-model="searchForm.programId" placeholder="项目号"></el-input>
         </div>
         <div class="input_flex">
-          <el-input clearable v-model="searchInput4" placeholder="设计号"></el-input>
+          <el-input clearable v-model="searchForm.programCode" placeholder="设计号"></el-input>
         </div>
         <div class="input_flex search">
-          <span class="zll-search">搜索</span>
+          <span class="zll-search" @click="getList()">搜索</span>
           <span class="zll-search-reset" @click="searchReset()">重置</span>
         </div>
       </div>
@@ -36,11 +36,9 @@
         <el-button @click="goDetail(scope.row)" type="text" size="small">查看</el-button>
         <el-button @click="copyPro(scope.row)" type="text" size="small" >复制
         </el-button>
-        <el-button @click="deleteRow(scope.index, tableData)" type="text" size="small"
-                   v-if="scope.row.tableNum6 == '无'">删除
+        <el-button @click="deleteRow(scope.row)" type="text" size="small">删除
         </el-button>
         <el-button @click="Impower(scope.row)" type="text" size="small" >授权</el-button>
-        <el-button type="text" size="small" >转换</el-button>
       </template>
     </sys-table>
 
@@ -55,19 +53,19 @@
     </div>
     <!-- 复制弹框 -->
     <div class="zll-dialog">
-      <popout title="项目复制" :visible.sync="copyDialog" v-if="copyDialog" class="minSize_copy">
-        <copy ref="copy" slot="content"></copy>
+      <popout title="项目复制" :visible.sync="copyDialog" v-show="copyDialog" class="minSize_copy">
+        <copy ref="copy" slot="content" :copyData="copyData"></copy>
         <template slot="bottom">
-          <p class="zll-botton" @click="copyDialog = false"> 复 制 </p>
+          <p class="zll-botton" @click="copyProgram"> 复 制 </p>
         </template>
       </popout>
     </div>
     <!-- 授权弹框 -->
     <div class="zll-dialog">
-      <popout title="项目授权" :visible.sync="impowerDialog" v-if="impowerDialog">
-        <Impower ref="Impower" slot="content"></Impower>
+      <popout title="项目授权" :visible.sync="impowerDialog" v-show="impowerDialog">
+        <Impower ref="Impower" :authData="authData" slot="content"></Impower>
         <template slot="bottom">
-          <p class="zll-botton" @click="impowerDialog = false"> 确定 </p>
+          <p class="zll-botton" @click="saveImpower"> 确定 </p>
         </template>
       </popout>
     </div>
@@ -82,36 +80,52 @@
   export default {
     data() {
       return {
+        copyData:{},
+        authData:{},
         tableLoading: true, //table刷新
-        tableData: [
-          {
-            tableNum1: "",
-            tableNum2: "",
-            tableNum3: "",
-            tableNum4: "",
-            tableNum5: "",
-            tableNum6: "授权中",
-          }, {
-            tableNum1: "",
-            tableNum2: "",
-            tableNum3: "",
-            tableNum4: "",
-            tableNum5: "",
-            tableNum6: "无",
-          },
-        ],
+        tableData: [],
         tableHeader: [],
         addDialog: false, //弹框
         copyDialog: false, //复制弹框
         impowerDialog: false, //授权弹框
-        searchInput1: "",
-        searchInput2: "",
-        searchInput3: "",
-        searchInput4: "",
+        searchForm:{custom:"",programId:"",programCode:"",programName:""},
         selectList: [],
       };
     },
     methods: {
+      authProgram(data){
+        let self = this;
+        self.$http({
+          url: "/pipe/program/updatePipeProgram",
+          method: "post",
+          data: JSON.stringify(data),
+          dataType: 'json',
+          contentType: "application/json",
+        }).then(resp => {
+          if (resp.success) {
+            self.$message.success("授权成功！");
+            self.getList()
+            self.impowerDialog = false;
+          }else{
+            self.$message.success("授权失败，请刷新页面授权！")
+          }
+        });
+      },
+      deleteProgram(row){
+        let self = this;
+        self.$http({
+          url: "/pipe/program/deletePipeProgram",
+          method: "post",
+          params: {id: row.id}
+        }).then(resp => {
+          if (resp.success) {
+            self.$message.success("已删除");
+            self.getList()
+          }else{
+            self.$message.success("删除失败，请刷新页面删除！")
+          }
+        });
+      },
       getList() {
         let self = this;
         let user = JSON.parse(getToken());
@@ -120,20 +134,24 @@
         self.$http({
           url: "/pipe/program/queryPipeProgramList",
           method: "post",
-          params: {id: id}
+          params: self.searchForm
         }).then(resp => {
           if (resp.success) {
             self.tableLoading = false;
             self.tableData = resp.result;
             for (let data of self.tableData) {
-              data.author = data.programAuth.userName || "";
-              data.authEndTime = data.programAuth.programTime || "";
+              if(data.programAuths.length > 0){
+                data.author = "已授权";
+              }else{
+                data.author = "未授权";
+              }
             }
             this.tableHeader = [
-              {"columnValue": "id", "columnName": "项目号", width: 150},
+              {"columnValue": "programId", "columnName": "项目号", width: 150},
               {"columnValue": "programName", "columnName": "项目名称",},
-              {"columnValue": "designer", "columnName": "设计号", width: 150},
+              {"columnValue": "programCode", "columnName": "设计号", width: 150},
               {"columnValue": "designer", "columnName": "设计人", width: 150},
+              {"columnValue": "custom", "columnName": "客户名称", width: 150},
               {"columnValue": "author", "columnName": "授权状态", width: 150}]
           }
         });
@@ -147,22 +165,80 @@
         }
       },
       copyPro(val) {//复制
+        this.copyData = Object.assign({},val);
         this.copyDialog = true
       },
+      copyProgram(){
+        let self = this;
+        let copy  =self.$refs.copy.getCopyData();
+        console.log(copy);
+        let updateData = [];
+        for(let _d of copy){
+          if(_d.custom.trim()&&_d.programName&&_d.programCode.trim()){
+            updateData.push(_d);
+          }
+        }
+        if(updateData.length == 0){
+          this.$message.warning("请补充信息！");
+          return;
+        }
+        self.$http({
+          url: "/pipe/program/updateCopyPipeProgram",
+          method: "post",
+          data: JSON.stringify(updateData),
+          dataType: 'json',
+          contentType: "application/json",
+        }).then(resp => {
+          if (resp.success) {
+            self.$message.success("复制成功！");
+            self.copyDialog = false;
+          }else{
+            self.$message.success("复制失败，请刷新页面复制！")
+          }
+        });
+      },
       Impower(val) {//授权
+        this.authData = Object.assign({},val);
         this.impowerDialog = true
+      },
+      saveImpower(){
+        let self = this;
+        let improveData =self.$refs.Impower.getTableData();
+        let tableData = improveData.tableData;
+        let saveData = {id:"",programAuths:[]};
+        saveData.id = improveData.programId;
+        let userIds = [];
+        for(let data of tableData){
+          let _d = {userId:"",programDay:""};
+          if(!data.userId){
+            this.$message.error("请选择授权用户！");
+            return;
+          }
+          if(!data.programDay){
+            this.$message.error("请选择授权天数！");
+            return;
+          }
+          if(userIds.indexOf(data.userId) > -1){
+            this.$message.error("授权用户重复！");
+            return;
+          }
+          _d.userId = data.userId;
+          _d.programDay = data.programDay;
+          saveData.programAuths.push(_d);
+          userIds.push(data.userId);
+        }
+        self.authProgram(saveData);
       },
       goDetail(val) { //查看
         let type = "see";
         let createUser = val.createUser;
-        let userId = val.programAuth.userId;
         let user = JSON.parse(getToken());
         if(user.id == createUser){
           type = "all";
         }
-        if(user.id == userId){
-          type = "save";
-        }
+        // if(user.id == userId){
+        //   type = "save";
+        // }
         let name = "DesignPage";
         this.$router.push({ name ,query: {type: type,id:val.id }});
       },
@@ -172,24 +248,25 @@
       getSelection(val) {
         this.selectList = val;
       },
-      deleteRow(index, rows) {//删除
+      deleteRow(row) {//删除
+        let self = this;
+        let programAuths = row.programAuths;
+        if(programAuths && programAuths.length > 0){
+          this.$message.error("项目授权中，无法删除");
+          return;
+        }
         this.$confirm('确定删除？', '提示', {
           distinguishCancelAndClose: true,
           cancelButtonText: '取消',
           confirmButtonText: '确定',
         }).then(() => {
-          rows.splice(index, 1);
-          this.$message.success("已删除")
-          this.getList()
+          self.deleteProgram(row);
         }).catch(() => {
-          this.$message.info("已取消")
+          self.$message.info("已取消")
         });
       },
       searchReset() {
-        this.searchInput1 == "";
-        this.searchInput2 == "";
-        this.searchInput3 == "";
-        this.searchInput4 == "";
+        this.searchForm = {custom:"",programId:"",programCode:"",programName:""};
         this.getList();
       },
     },
