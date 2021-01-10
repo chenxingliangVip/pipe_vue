@@ -179,6 +179,13 @@
           style="display: none;" ref="downloadFile">
       <input name="path" :value="downPath"/>
     </form>
+    <div v-show="isProgress" class="zl-progress">
+      <div class="zl_steps">
+        <el-steps :active="actives">
+          <el-step v-for="(item,index) in steps"  :title="item.name" :key="index" :description="item.descr"></el-step>
+        </el-steps>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -203,6 +210,10 @@
     name: "flowMain",
     data() {
       return {
+        connectionMap:{},
+        isProgress: false,
+        steps:[],
+        actives:1,
         downPath: "",
         //图形是否编辑
         isEdit: false,
@@ -210,8 +221,10 @@
         programEdit: false,
         programInfo: {
           id: "",
+          programId: "",
           custom: '',
           programName: '',
+          programCode: '',
           acuteValue: '',
           rough: '',
           designer: '',
@@ -444,7 +457,7 @@
             self.$nextTick(() => {
               self.init();
             });
-            self.name = "中圣集团 "+node_info.programName+" "+node_info.id;
+            self.name = "中圣集团 "+node_info.programName+" "+node_info.programId;
             self.editFlow();
             setTimeout(() => {
               self.loading = false
@@ -470,6 +483,7 @@
       })
     },
     methods: {
+
       dragMove(e) {
         let odiv = e.target;    //获取目标元素
         //算出鼠标相对元素的位置
@@ -542,15 +556,17 @@
           });
           // 连线
           _this.jsPlumb.bind("connection", function (evt) {
-            console.log("connection", evt);
+            console.log("connection", _this.jsPlumb);
+            console.log("jump", evt);
             let from = evt.source.id;
             let to = evt.target.id;
+            let line_id = _this.getUUID();
             if (_this.loadEasyFlowFinish) {
               let addLine = {
                 from: from,
                 to: to,
                 label: from + to,
-                id: _this.getUUID(),
+                id: line_id,
                 Remark: "",
                 psType: "",
                 pipeOutside: "",
@@ -566,12 +582,14 @@
                 hotParam: "",
                 pipeName: from + to,
               };
+              this.connectionMap[line_id] = evt.connection;
               let json = {};
               json.designer = _this.programInfo.designer;
               json.checker = _this.programInfo.checker;
               json.examiner = _this.programInfo.examiner;
               json.approver = _this.programInfo.approver;
               json.programName = _this.programInfo.programName;
+              json.programName = _this.programInfo.programCode;
               json.custom = _this.programInfo.custom;
               json.averDegree = _this.programInfo.averDegree;
               json.averWind = _this.programInfo.averWind;
@@ -585,14 +603,14 @@
               addLine.lineResult = json;
               _this.data.lineList.push(addLine);
             }
-            
-            let labelNew = from + to
-              + '<div class="label_txt">'
-              + '<p>流量： 11</p>'
-              + '<p>起末端压力：</p>'
-              + '<p>起末端温度：</p>'
-              + '<p>起末端流速：</p>'
-              + '</div>'
+
+            let labelNew = from + to;
+              // + '<div class="label_txt">'
+              // + '<p>流量：</p>'
+              // + '<p>末端压力：</p>'
+              // + '<p>末端温度：</p>'
+              // + '<p>末端流速：</p>'
+              // + '</div>'
             evt.connection.getOverlay("label-1").setLabel(labelNew);
             // evt.connection.getOverlay("label-1").setLabel(from + to);
             setTimeout(function () {
@@ -692,13 +710,14 @@
             },
             this.jsplumbConnectOptions
           );
-          let labelNew = line.label
-              + '<div class="label_txt">'
-              + '<p>流量： 11</p>'
-              + '<p>起末端压力：</p>'
-              + '<p>起末端温度：</p>'
-              + '<p>起末端流速：</p>'
-              + '</div>'
+          this.connectionMap[line.id] = connection;
+          let labelNew = line.label;
+              // + '<div class="label_txt">'
+              // + '<p>流量</p>'
+              // + '<p>末端压力</p>'
+              // + '<p>末端温度：</p>'
+              // + '<p>末端流速：</p>'
+              // + '</div>'
         //   connection.getOverlay("label-1").setLabel(line.label); //初始化label
             connection.getOverlay("label-1").setLabel(labelNew); //初始化label
         }
@@ -909,6 +928,7 @@
 
       computeOneLine(line){
         this.computeCount = 1;
+        this.steps = [{name:line.pipeName,descr:"正在计算中..."},{name:"结束",descr:""}];
         this.lineCompute(line);
       },
 
@@ -923,6 +943,7 @@
           return;
         }
         let pipeG = {};
+        let index = 0;
         for (let _u of nodeArray) {
           let table = _u.table;
           if (!table) {
@@ -933,6 +954,12 @@
             pipeG[key] = pipeG[key] ? pipeG[key] : 0;
             let v = parseFloat(table[key] ? table[key] : 0);
             pipeG[key] = pipeG[key] + v;
+          }
+        }
+        for(let k in pipeG){
+          if(pipeG[k] > 0){
+            index = k;
+            break;
           }
         }
         line.pipeG = pipeG;
@@ -974,7 +1001,8 @@
           }
         }
         this.programInfo.pipeLine = line;
-        let loading = this.fullScreenLoading();
+        // let loading = this.fullScreenLoading();
+        this.isProgress = true;
         let self = this;
         return new Promise((resolve, reject) => {
           self.$http({
@@ -1075,6 +1103,10 @@
             material.materialType = line.pipeOutside;
             material.materialLen = line.pipeSize;
             line.lineResult.pipeTotals = material;
+            let liusdu = this.getFloat(line.lineResult.pipeResults.liuSu[index].ew,1);
+            endNode.liuL = pipeG[index];
+            endNode.finalPressure = this.getFloat(line.lineResult.pipeResults.yaLi[index].ep,3);
+            endNode.finalT = this.getFloat(line.lineResult.pipeResults.degrees[index].et,1);
             // let m_array = [];
             // for (let _d of line.pipeLineMaterials) {
             //   let dd = {};
@@ -1085,8 +1117,15 @@
             // }
             // line.lineResult.materials = m_array;
             console.log((startTime - new Date()) / 1000);
-            if(this.computeCount <= 0){
-              loading.close();
+            self.steps[self.actives-1].descr = "计算完成";
+            self.steps[self.actives].descr = "计算中....";
+            self.actives++;
+            let connection = self.connectionMap[line.id];
+
+            let labelNew = line.label + '<div class="label_txt">' + '<p>流量:'+endNode.liuL+'</p>' + '<p>末端压力:'+endNode.finalPressure+'</p>' + '<p>末端温度:'+endNode.finalT+'</p>' + '<p>末端流速:'+liusdu+'</p>' + '</div>';
+            connection.getOverlay("label-1").setLabel(labelNew); //初始化label
+            if(self.computeCount <= 0){
+              self.isProgress = false;
             }
             self.$message.success('计算成功!');
             resolve(resp);
@@ -1094,6 +1133,15 @@
             reject(err)
           });
         })
+      },
+      getFloat(num, n){
+        n = n ? parseInt(n) : 0;
+        if(n <= 0) {
+          return Math.round(num);
+        }
+        num = Math.round(num * Math.pow(10, n)) / Math.pow(10, n); //四舍五入
+        num = Number(num).toFixed(n); //补足位数
+        return num;
       },
       drag(item) {
         this.currentItem = item;
@@ -1176,6 +1224,7 @@
         param.createUser = user.id;
         if (tip) {
           delete param.id;
+          delete param.programId;
         }
         self.$http({
           url: "/pipe/program/addPipeProgram",
@@ -1192,7 +1241,8 @@
             if (tip) {
               msg = "复制成功";
             }
-            this.$message.success(msg);
+            self.programInfo.id = resp.result;
+            self.$message.success(msg);
           }
           self.addDialog = false
         });
@@ -1231,7 +1281,7 @@
           cancelButtonText: "取消",
           type: "warning",
         }).then(() => {
-          self.$router.push({path: "/ProjectList"});
+          self.$router.push({path: "/MyProjectList"});
         }).catch(() => {
         });
       },
@@ -1252,7 +1302,7 @@
             self.$message.error("查询建项目失败！");
           } else {
             let code = resp.result;
-            let tip = data.programName + " " + code;
+            let tip = data.programName + " " + data.programId;
             self.$message.success("新建项目成功！");
             self.name = '中圣集团 ' + tip;
             self.isEdit = true;
@@ -1441,10 +1491,12 @@
               firstNodes.push(n.id);
             }
           }
+          this.steps = [];
           for (let line of lineList) {
             if (!this.validateLine(line)) {
               return;
             }
+            this.steps.push({name:line.pipeName,descr:""});
             let nodeArray = this.getPipeG(line);
             if (nodeArray.length == 0) {
               this.$message.error("管道" + line.pipeName + "没有用户！");
@@ -1458,6 +1510,8 @@
               }
             }
           }
+          this.steps.push({name:"结束",descr:""});
+          this.steps[0].descr = "计算中...";
           if (val == '设计检查') {
             this.$message.success("检查通过！");
           }
@@ -1473,6 +1527,7 @@
               }
             }
           }
+
           for (let link of firstLines) {
             this.computeAnyLine(link, lineList);
           }

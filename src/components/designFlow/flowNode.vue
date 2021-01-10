@@ -17,13 +17,13 @@
             <img class="imgsrc type-icon" :src="iconClass">
             <p>{{ node.name }}</p>
             <div class="node_txt" v-if="node.Type == 1">
-                <p>压力：1.589Mpa</p>
-                <p>温度：268.45℃</p>
+                <p v-show="node.pressure">压力：{{node.pressure}}Mpa</p>
+                <p v-show="node.temperature">温度：{{node.temperature}}℃</p>
             </div>
             <div class="node_txt" v-if="node.Type == 3">
-                <p>流量：</p>
-                <p>压力：1.589Mpa</p>
-                <p>温度：268.45℃</p>
+                <p v-show="node.liuL">流量：{{node.liuL}}</p>
+                <p v-show="node.finalPressure">压力：{{node.finalPressure}}Mpa</p>
+                <p v-show="node.finalT">温度：{{node.finalT}}℃</p>
             </div>
         </div>
         <div class="node-del" v-show="mouseEnter" @click.stop="deleteNode">

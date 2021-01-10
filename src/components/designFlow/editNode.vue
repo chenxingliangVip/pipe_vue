@@ -124,6 +124,15 @@
           if(!self.node.temperature){
             self.$set(this.node, "temperature", "");
           }
+          if(!self.node.finalT){
+            self.$set(this.node, "finalT", "");
+          }
+          if(!self.node.finalPressure){
+            self.$set(this.node, "finalPressure", "");
+          }
+          if(!self.node.liuL){
+            self.$set(this.node, "liuL", "");
+          }
           if(!self.node.pressure){
             self.$set(this.node, "pressure", "");
           }

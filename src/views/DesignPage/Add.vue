@@ -4,8 +4,8 @@
       <el-form :model="addForm" :rules="rules" ref="addForm" class="demo-ruleForm">
         <el-row :gutter="20">
           <el-col :span="11">
-            <el-form-item class="formList" prop="custom" label="项目号：">
-              <el-input clearable class="input_right" placeholder="请输入项目号" v-model="addForm.custom" :disabled="noEdit"></el-input>
+            <el-form-item class="formList"  label="项目号：">
+              <el-input clearable class="input_right" placeholder="后端生成" v-model="addForm.programId"  disabled></el-input>
             </el-form-item>
             <el-form-item class="formList" prop="custom" label="客户名称：">
               <el-input clearable class="input_right" placeholder="请输入客户名称" v-model="addForm.custom" :disabled="noEdit"></el-input>
@@ -24,8 +24,8 @@
               <span class="danwei">mm</span>
             </el-form-item>
             <el-form-item class="formList" style="height: 15px"></el-form-item>
-            <el-form-item class="formList" prop="designer" label="设计号：">
-              <el-input clearable class="input_right" placeholder="请输入设计号" v-model="addForm.designer" :disabled="noEdit"></el-input>
+            <el-form-item class="formList" prop="programCode" label="设计号：">
+              <el-input clearable class="input_right" placeholder="请输入设计号" v-model="addForm.programCode" :disabled="noEdit"></el-input>
             </el-form-item>
             <el-form-item class="formList" prop="designer" label="设计：">
               <el-input clearable class="input_right" placeholder="请输入设计" v-model="addForm.designer" :disabled="noEdit"></el-input>
@@ -108,6 +108,8 @@
     data() {
       return {
         addForm: {
+          programCode:"",
+          programId:"",
           custom: '',
           programName: '',
           acuteValue: '',
@@ -128,6 +130,9 @@
         rules: {
           custom:[
               { required: true, message: '请输入客户名称', trigger: 'blur' },
+          ],
+          programCode:[
+              { required: true, message: '请输入设计号', trigger: 'blur' },
           ],
           programName:[
               { required: true, message: '请输入项目名称', trigger: 'blur' },

@@ -75,6 +75,11 @@
             }
           }
         }
+        // if(this.table.length >0){
+        //   initData.finalT = this.table[0].data1_value;
+        //   initData.finalPressure = this.table[0].data5_value;
+        //   initData.liuL = this.table[0].data3_value;
+        // }
         console.log(data);
       }
     },
