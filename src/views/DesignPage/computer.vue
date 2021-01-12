@@ -11,12 +11,12 @@
               </p>
               <el-form-item class="formList" label="温度：">
                 <el-input clearable class="input_right" placeholder="请输入温度" v-model="formData1.degree"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">℃</span>
               </el-form-item>
               <el-form-item class="formList" label="压力：">
                 <el-input clearable class="input_right" placeholder="请输入压力" v-model="formData1.press"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">Mpa(绝压)</span>
               </el-form-item>
               <div class="botton">
@@ -24,41 +24,41 @@
               </div>
               <el-form-item class="formList" label="比容：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData1.br"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">m³/kg</span>
               </el-form-item>
               <el-form-item class="formList" label="比焓：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData1.bh"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">kJ/kg</span>
               </el-form-item>
               <el-form-item class="formList" label="定压比热容：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData1.dyrr"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">kJ/(kg·K)</span>
               </el-form-item>
               <el-form-item class="formList" label="动力粘度：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData1.nd"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">Pa·s</span>
               </el-form-item>
               <el-form-item class="formList" label="饱和压力：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData1.ps"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">Mpa(绝压)</span>
               </el-form-item>
               <el-form-item class="formList" label="饱和温度：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData1.ts"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei"> ℃</span>
               </el-form-item>
               <el-form-item class="formList" label="热力状态：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData1.status"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
               </el-form-item>
               <el-form-item class="formList" label="饱和水焓：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData1.hs"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -70,12 +70,12 @@
               </p>
               <el-form-item class="formList" label="压力：">
                 <el-input clearable class="input_right" placeholder="请输入压力" v-model="formData2.press"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">Mpa(绝压)</span>
               </el-form-item>
               <el-form-item class="formList" label="比焓：">
                 <el-input clearable class="input_right" placeholder="请输入比焓" v-model="formData2.H"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">kJ/kg</span>
               </el-form-item>
               <div class="botton">
@@ -83,17 +83,17 @@
               </div>
               <el-form-item class="formList" label="温度：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData2.t"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">℃</span>
               </el-form-item>
               <el-form-item class="formList" label="饱和温度：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData2.ts"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">℃</span>
               </el-form-item>
               <el-form-item class="formList" label="区域：">
                 <el-input clearable class="input_right red" placeholder="" v-model="formData2.status"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -105,22 +105,22 @@
               </p>
               <el-form-item class="formList" label="疏水器：">
                 <el-input clearable class="input_right" placeholder="请输入疏水器" v-model="formData3.rootNum"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">个</span>
               </el-form-item>
               <el-form-item class="formList" label="操作压力：">
                 <el-input clearable class="input_right" placeholder="请输入操作压力" v-model="formData3.press"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">Mpa</span>
               </el-form-item>
               <el-form-item class="formList" label="水管管径：">
                 <el-input clearable class="input_right" placeholder="请输入水管管径" v-model="formData3.width"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">mm</span>
               </el-form-item>
               <el-form-item class="formList" label="水管长度：">
                 <el-input clearable class="input_right" placeholder="请输入水管长度" v-model="formData3.len"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">m</span>
               </el-form-item>
               <div class="botton">
@@ -128,7 +128,7 @@
               </div>
               <el-form-item class="formList" label="冷凝水量：">
                 <el-input clearable class="input_right blue" placeholder="" v-model="formData3.water"
-                          style="width: calc(100% - 59px)"></el-input>
+                          style="width: calc(100% - 59px) !important"></el-input>
                 <span class="danwei">Kg/h</span>
               </el-form-item>
             </div>
