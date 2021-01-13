@@ -42,27 +42,29 @@
       getList() {
         let self = this;
         let user = JSON.parse(getToken());
-        let id = user.roleType == 1?"":user.id;
         self.tableLoading = true;
         self.$http({
           url: "/pipe/program/queryPipeProgramList",
           method: "post",
-          params:{id:id}
+          params: self.searchForm
         }).then(resp => {
           if (resp.success) {
             self.tableLoading = false;
             self.tableData = resp.result;
             for (let data of self.tableData) {
-              data.author = data.programAuth.userName || "";
-              data.authEndTime = data.programAuth.programTime || "";
+              if(data.programAuths.length > 0){
+                data.author = "已授权";
+              }else{
+                data.author = "未授权";
+              }
             }
             this.tableHeader = [
-              {"columnValue": "id", "columnName": "项目号", width: 150},
+              {"columnValue": "programId", "columnName": "项目号", width: 150},
               {"columnValue": "programName", "columnName": "项目名称",},
+              {"columnValue": "programCode", "columnName": "设计号", width: 150},
               {"columnValue": "designer", "columnName": "设计人", width: 150},
-              {"columnValue": "author", "columnName": "授权访问", width: 150},
-              {"columnValue": "authEndTime", "columnName": "截止日期", width: 200},
-            ]
+              {"columnValue": "custom", "columnName": "客户名称", width: 150},
+              {"columnValue": "author", "columnName": "授权状态", width: 150}]
           }
         });
 

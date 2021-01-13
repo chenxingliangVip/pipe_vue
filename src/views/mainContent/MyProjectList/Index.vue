@@ -44,10 +44,10 @@
 
     <!-- 赋项目号弹框 -->
     <div class="zll-dialog">
-      <popout title="赋项目号" :visible.sync="addDialog" v-if="addDialog" class="minSize">
-        <Add ref="add" slot="content" @addForm="getFormData"></Add>
+      <popout title="赋项目号" :visible.sync="addDialog" v-show="addDialog" class="minSize">
+        <Add ref="addPid" slot="content" :authProgramData="authProgramData"></Add>
         <template slot="bottom">
-          <p class="zll-botton" @click="()=>{this.$refs.add.setFormData('addForm')}"> 确 定 </p>
+          <p class="zll-botton" @click="authProgramId"> 确 定 </p>
         </template>
       </popout>
     </div>
@@ -88,8 +88,9 @@
         addDialog: false, //弹框
         copyDialog: false, //复制弹框
         impowerDialog: false, //授权弹框
-        searchForm:{custom:"",programId:"",programCode:"",programName:""},
+        searchForm:{custom:"",programId:"",programCode:"",programName:"",userId:""},
         selectList: [],
+        authProgramData:{}
       };
     },
     methods: {
@@ -130,6 +131,7 @@
         let self = this;
         let user = JSON.parse(getToken());
         let id = user.id;
+        self.searchForm.userId = id;
         self.tableLoading = true;
         self.$http({
           url: "/pipe/program/queryPipeProgramList",
@@ -159,10 +161,34 @@
       },
       addProject() {
         if (this.selectList.length == 1) {
+          let data = this.selectList[0];
+          if(data.programId){
+            this.$message.warning("项目号已存在！");
+            return;
+          }
+          this.authProgramData = Object.assign({},data);
           this.addDialog = true
         } else {
           this.$message.warning("请选择一列数据！");
         }
+      },
+      authProgramId(){
+        let self = this;
+        let auth = this.$refs.addPid.getPIds();
+        let param= {id:auth.id,programId:auth.programId};
+        self.$http({
+          url: "/pipe/program/updatePipeProgramId",
+          method: "post",
+          params: param,
+        }).then(resp => {
+          if (!resp.success) {
+            self.$message.error("赋予项目号失败！请检查项目号是否已经存在");
+          } else {
+            self.$message.success('赋予项目号成功!');
+            self.getList();
+            self.addDialog = false;
+          }
+        });
       },
       copyPro(val) {//复制
         this.copyData = Object.assign({},val);

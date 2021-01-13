@@ -9,7 +9,6 @@ export default [
     }, {
         name: 'Project',//路由name
         title: '项目管理',
-        meta: { type: 1 },
         icon: 'el-icon-notebook-2',
         children: [
             {
@@ -20,10 +19,12 @@ export default [
                 name: 'ImpowerRecord',//路由name
                 path: 'ImpowerRecord',//路由name
                 title: '授权记录',
-            }, {
+            },
+          {
                 name: 'ProjectList',//路由name
                 path: 'ProjectList',//路由name
                 title: '部门项目',
+                meta: { auth: [1,3] },
             },
         ]
     },

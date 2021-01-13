@@ -55,26 +55,22 @@
       getList() {
         let self = this;
         let user = JSON.parse(getToken());
-        let id = user.roleType == 1?"":user.id;
+        let id = user.id;
         self.tableLoading = true;
         self.$http({
-          url: "/pipe/program/queryPipeProgramList",
+          url: "/pipe/program/queryAuthPipeProgramList",
           method: "post",
           params:{id:id}
         }).then(resp => {
           if (resp.success) {
             self.tableLoading = false;
             self.tableData = resp.result;
-            for (let data of self.tableData) {
-              data.author = data.programAuth.userName || "";
-              data.authEndTime = data.programAuth.programTime || "";
-            }
             this.tableHeader = [
-              {"columnValue": "id", "columnName": "项目号", width: 150},
+              {"columnValue": "programId", "columnName": "项目号", width: 150},
               {"columnValue": "programName", "columnName": "项目名称",},
-              {"columnValue": "designer", "columnName": "设计人", width: 150},
-              {"columnValue": "author", "columnName": "授权访问", width: 150},
-              {"columnValue": "authEndTime", "columnName": "截止日期", width: 200},
+              {"columnValue": "userId", "columnName": "被授权人", width: 150},
+              {"columnValue": "programDay", "columnName": "授权天数", width: 150},
+              {"columnValue": "programTime", "columnName": "截止日期", width: 200},
             ]
           }
         });

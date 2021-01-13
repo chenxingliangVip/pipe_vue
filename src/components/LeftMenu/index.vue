@@ -44,6 +44,13 @@
         }
         for (let m of LeftMenuData) {
           let meta = m.meta;
+          if(meta && meta.auth &&meta.auth.length > 0){
+            if (meta.auth.indexOf(roleType) > -1) {
+              newMenu.push(m);
+            }else{
+              continue;
+            }
+          }
           if (meta && meta.type) {
             if (roleType != 1) {
               if (roleType == meta.type) {
@@ -68,7 +75,7 @@
     methods: {
     },
     mounted() {
-      
+
     }
   };
 </script>

@@ -457,7 +457,7 @@
             self.$nextTick(() => {
               self.init();
             });
-            self.name = "中圣集团 "+node_info.programName+" "+node_info.programId;
+            self.name = "中圣集团 "+node_info.programName+" ";
             self.editFlow();
             setTimeout(() => {
               self.loading = false
@@ -1302,7 +1302,7 @@
             self.$message.error("查询建项目失败！");
           } else {
             let code = resp.result;
-            let tip = data.programName + " " + data.programId;
+            let tip = data.programName + " ";
             self.$message.success("新建项目成功！");
             self.name = '中圣集团 ' + tip;
             self.isEdit = true;
