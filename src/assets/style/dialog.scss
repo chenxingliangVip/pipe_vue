@@ -21,7 +21,10 @@ $baseColor: #1397de;
             float: left;
             width: calc(100% - 20px)
         }
-        .el-select, .el-input {
+        .el-select {
+            width: calc(100% - 20px)
+        }
+        .el-date-editor {
             width: calc(100% - 20px) !important
         }
     }
