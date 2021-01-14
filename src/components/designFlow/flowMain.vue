@@ -1276,12 +1276,17 @@
       },
       closeProject() {//关闭项目
         let self = this;
+        let user = JSON.parse(getToken());
         this.$confirm("确定关闭项目吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         }).then(() => {
-          self.$router.push({path: "/MyProjectList"});
+          if(user.roleType == 1){
+            self.$router.push({path: "/User"});
+          }else {
+            self.$router.push({path: "/MyProjectList"});
+          }
         }).catch(() => {
         });
       },

@@ -19,12 +19,10 @@ export default [
                 name: 'ImpowerRecord',//路由name
                 path: 'ImpowerRecord',//路由name
                 title: '授权记录',
-            },
-          {
+            }, {
                 name: 'ProjectList',//路由name
                 path: 'ProjectList',//路由name
                 title: '部门项目',
-                meta: { auth: [1,3] },
             },
         ]
     },
@@ -32,7 +30,7 @@ export default [
         name: 'Materials',//路由name
         path: 'Materials',//路由name
         title: '材料管理',
-        meta: { type: 3 },
+        meta: { type: 2 },
         icon: 'el-icon-document-copy'
     }, {
         name: 'DesignPage',//路由name

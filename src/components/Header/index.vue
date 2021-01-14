@@ -112,16 +112,16 @@
       goPage(name) {//页面跳转
         if (this.$route.name != name) this.$router.push({name});
 
-        this.$nextTick(() => {//head nav已更新 计算滚动位置
-          let mainViewNavParent = this.$refs.mainViewNavParent;//滚动标签
-          let activeLi = mainViewNavParent.getElementsByClassName('active')[0],//选中的标签
-            scrollRight = mainViewNavParent.scrollWidth - mainViewNavParent.offsetWidth;//滚动条的距离(最大滚动距离)
+        // this.$nextTick(() => {//head nav已更新 计算滚动位置
+        //   let mainViewNavParent = this.$refs.mainViewNavParent;//滚动标签
+        //   let activeLi = mainViewNavParent.getElementsByClassName('active')[0],//选中的标签
+        //     scrollRight = mainViewNavParent.scrollWidth - mainViewNavParent.offsetWidth;//滚动条的距离(最大滚动距离)
 
-          //距离父标签得距离(应该滚动的距离)
-          let distance = activeLi.offsetLeft;
-          //应该滚动的距离小于最大滚动距离时候 滚动为应该滚动 否则为最大滚动距离
-          this.$refs.mainViewNavParent.scrollLeft = distance < scrollRight ? distance : scrollRight;
-        })
+        //   //距离父标签得距离(应该滚动的距离)
+        //   let distance = activeLi.offsetLeft;
+        //   //应该滚动的距离小于最大滚动距离时候 滚动为应该滚动 否则为最大滚动距离
+        //   this.$refs.mainViewNavParent.scrollLeft = distance < scrollRight ? distance : scrollRight;
+        // })
       },
       closePage(index, name) {//关闭页面
         if (this.$route.name == name) {//关闭了当前
@@ -130,12 +130,25 @@
         this.menuList.splice(index, 1);
       },
       closeAll() {//关闭全部标签
-        this.menuList = [{name: '用户管理', routeName: 'User'}]
-        this.goPage('User');
+        let user = JSON.parse(getToken());
+        if(user.roleType == 1) {//管理员
+          this.menuList = [{name: '用户管理', routeName: 'User'}]
+          this.goPage('User');
+        }else {
+          this.menuList = [{name: '我的项目', routeName: 'MyProjectList'}]
+          this.goPage('MyProjectList');
+        }
       },
       closeNow() { //关闭当前标签
         for (let i = 0; i < this.menuList.length; i++) {
-          if (this.$route.name != "User") {
+          let user = JSON.parse(getToken());
+          let routeNameNow = "User"
+          if(user.roleType == 1) {//管理员
+            routeNameNow = "User"
+          }else {
+            routeNameNow = "MyProjectList" 
+          }
+          if (this.$route.name != routeNameNow) {
             if (this.menuList[i].routeName == this.$route.name) {
               this.menuList.splice(i, 1);
               this.goPage(this.menuList[i - 1].routeName);
@@ -145,14 +158,21 @@
       },
       closeOthers() {//关闭其他标签
         for (let i = 0; i < this.menuList.length; i++) {
-          if (this.$route.name != "User") {
+          let user = JSON.parse(getToken());
+          let routeNameNow = "User"
+          let nameNow = "用户管理"
+          if(user.roleType == 1) {//管理员
+            routeNameNow = "User"
+            nameNow = "用户管理"
+          }else {
+            routeNameNow = "MyProjectList" 
+            nameNow = "我的项目"
+          }
+          if (this.$route.name != routeNameNow) {
             if (this.menuList[i].routeName == this.$route.name) {
               this.menuList = [
-                {
-                  name: '用户管理', routeName: 'User'
-                }, {
-                  name: this.$route.meta.title, routeName: this.$route.name
-                }
+                { name: nameNow, routeName: routeNameNow }, 
+                { name: this.$route.meta.title, routeName: this.$route.name }
               ]
             }
           }
@@ -186,6 +206,11 @@
     },
     mounted() {
       let user = JSON.parse(getToken());
+      if(user.roleType == 1) {//管理员
+        this.menuList = [{name: '用户管理', routeName: 'User'}]
+      }else {
+        this.menuList = [{name: '我的项目', routeName: 'MyProjectList'}]
+      }
       this.userInfo = user.userName;
       this.getdateFormat(); //时间
       setInterval(() => {

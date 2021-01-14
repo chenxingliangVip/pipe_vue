@@ -68,7 +68,13 @@
           if (resp.success) {
             self.$store.dispatch('setLoginUserDetail', resp.result).then(res => {
               setToken(resp.result);
-              self.$router.push({path: "/User"});
+              if(resp.result.roleType == 1) {//管理员
+                self.$router.push({path: "/User"});
+              }else if(resp.result.roleType == 2) {//经理
+                self.$router.push({path: "/MyProjectList"});
+              }else if(resp.result.roleType == 3) {//设计员
+                self.$router.push({path: "/MyProjectList"});
+              }
             });
             return
           }

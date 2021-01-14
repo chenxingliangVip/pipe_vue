@@ -52,7 +52,7 @@
             }
           }
           if (meta && meta.type) {
-            if (roleType != 1) {
+            if (roleType !== 1) {
               if (roleType == meta.type) {
                 newMenu.push(m);
               }
