@@ -15,6 +15,7 @@
           <el-select clearable v-model="addForm.programId" placeholder="请输入项目号">
             <el-option :label="item" :value="item" v-for="(item,index) in programIds" :key="index"></el-option>
           </el-select>
+          <p class="zll-botton float_add"> 获取 </p>
         </el-form-item>
       </el-form>
     </div>
@@ -67,4 +68,12 @@
 </script>
 <style lang="scss" scoped>
   @import "@/assets/style/dialog.scss";
+  .float_add {
+    position: absolute;
+    right: -22px;
+    padding: 0px 8px;
+    font-size: 12px;
+    line-height: 24px;
+    top: 4px;
+  }
 </style>
