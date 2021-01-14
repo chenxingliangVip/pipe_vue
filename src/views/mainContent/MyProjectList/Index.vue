@@ -44,7 +44,7 @@
 
     <!-- 赋项目号弹框 -->
     <div class="zll-dialog">
-      <popout title="赋项目号" :visible.sync="addDialog" v-show="addDialog" class="minSize">
+      <popout title="赋项目号" :visible.sync="addDialog" v-show="addDialog" class="fu_project">
         <Add ref="addPid" slot="content" :authProgramData="authProgramData"></Add>
         <template slot="bottom">
           <p class="zll-botton" @click="authProgramId"> 确 定 </p>

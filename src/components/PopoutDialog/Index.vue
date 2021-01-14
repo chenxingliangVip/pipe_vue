@@ -291,4 +291,13 @@ export default {
         left: calc(15%);
     }
 }
+.fu_project {
+    .popout-main {
+        font-size: 12px;
+        width: 40%;
+        height: 520px;
+        left: 30%;
+        top: calc(50% - 250px);
+    }
+}
 </style>
