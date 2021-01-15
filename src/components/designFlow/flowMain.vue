@@ -38,6 +38,10 @@
         <div class="add_design">
           <div class="nav-item title_name">{{ name }}</div>
           <div class="middle">
+            <div class="nav-item" @click="warnAlert()">
+              <img src="@/assets/img/warning.png">
+              <span></span>
+            </div>
             <div class="nav-item" @click="addDesign()" v-show="!isEdit&&newBuild"><!-- 可新建设计 -->
               <img src="@/assets/img/add.png">
               <span>新建设计</span>
@@ -120,6 +124,12 @@
         <Computer ref="add" slot="content" :isEdit="isEdit" :editData="programInfo"></Computer>
       </popout>
     </div>
+    <!-- 警告弹框 -->
+    <div class="zll-dialog">
+      <popout title="警告" :visible.sync="warnDialog" v-show="warnDialog">
+        <WarnAlert ref="warn" slot="content"></WarnAlert>
+      </popout>
+    </div>
     <!-- 材料损耗系数弹框 -->
     <div class="zll-dialog">
       <popout title="材料损耗系数" :visible.sync="lossDialog" v-show="lossDialog">
@@ -195,6 +205,7 @@
   import editFlow from "./editFlow.vue";
   import editNode from "./editNode.vue";
   import editLine from "./editLine.vue";
+  import WarnAlert from "@/views/DesignPage/warning.vue";
   import Add from "@/views/DesignPage/add.vue";
   import Computer from "@/views/DesignPage/computer.vue";
   import Loss from "@/views/DesignPage/loss.vue";
@@ -243,6 +254,7 @@
         name: '',
         type: '',
         loading: false,
+        warnDialog: false,
         addDialog: false,//新建设计弹框
         computerDialog: false,//物性速算弹框
         lossDialog: false,//材料损耗系数
@@ -425,7 +437,8 @@
       LoadSet,
       LogResult,
       ProjectInfo,
-      CheckResult
+      CheckResult,
+      WarnAlert,
     },
     created() {
     },
@@ -1293,6 +1306,9 @@
 
       addDesign() { //新建设计弹框
         this.addDialog = true;
+      },
+      warnAlert() {
+        this.warnDialog = true;
       },
       getFormData(data) {//获取设计数据
         let self = this;
