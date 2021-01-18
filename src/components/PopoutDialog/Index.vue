@@ -295,9 +295,9 @@ export default {
     .popout-main {
         font-size: 12px;
         width: 40%;
-        height: 520px;
+        height: 550px;
         left: 30%;
-        top: calc(50% - 250px);
+        top: calc(50% - 300px);
     }
 }
 </style>

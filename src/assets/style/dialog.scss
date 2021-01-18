@@ -227,4 +227,83 @@ $baseColor: #1397de;
         padding-left: 2px;
         font-size: 12px;
     }
+    .Search_Top_Input {    
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        // float: left;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        .el-range-editor.el-input__inner {
+            // width: 65%;
+            width: 100%;
+        }
+        ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+            font-size: 12px;
+        }
+        .search_list {
+            width: calc(100% - 200px);
+            .input_flex {
+                margin-bottom: 10px;
+                margin-right: 10px;
+                width: 200px;
+                float: left;
+                &.search {
+                    width: 120px !important;
+                }
+            }
+            .search_left {
+                float: left;
+                width: 72px;
+                height: 26px;
+                line-height: 26px;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .el-input,.el-select,.el-cascader {
+                // width: calc(100% - 72px);
+                width: 100%;
+                float: right;
+            }
+            .el-button.is-circle {
+                padding: 10px;
+            }
+        }
+        .zll-search {
+            background: $baseColor;
+            border: 1px solid $baseColor;
+            color: #ffffff;
+            border-radius: 5px;
+            text-align: center;
+            display: inline-block;
+            height: 26px;
+            line-height: 26px;
+            padding: 0 10px;
+            cursor: pointer;
+            &:hover {
+                transition: all .3s;
+                opacity: .8;
+            }
+            margin-left: 20px;
+        }
+        .zll-search-reset {
+            border: 1px solid #ccc;
+            color: #aaaaaa;
+            border-radius: 5px;
+            text-align: center;
+            display: inline-block;
+            height: 26px;
+            line-height: 26px;
+            padding: 0 10px;
+            cursor: pointer;
+            &:hover {
+                transition: all .3s;
+                opacity: .8;
+            }
+        }
+    }
 }

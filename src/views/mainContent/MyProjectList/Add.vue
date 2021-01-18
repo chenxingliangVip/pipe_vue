@@ -9,43 +9,31 @@
           <el-input clearable class="input_right" placeholder="请输入项目名称" v-model="addForm.programName" disabled></el-input>
         </el-form-item>
         <el-form-item class="formList" prop="programId" label="项目号：">
-          <el-select clearable v-model="addForm.programId" placeholder="请选择项目号">
+          <el-input clearable class="input_right" placeholder="请输入项目号" v-model="addForm.programId"></el-input>
+          <!-- <el-select clearable v-model="addForm.programId" placeholder="请选择项目号">
             <el-option :label="item" :value="item" v-for="(item,index) in programIds" :key="index"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class="formList"></el-form-item>
-        <el-form-item class="formList" label="客户名称：">
-          <el-input clearable class="input_right" placeholder="请输入客户名称" v-model="addForm.custom" disabled></el-input>
-        </el-form-item>
-        <el-form-item class="formList" label="业务员：">
-          <el-select clearable v-model="addForm.designer" placeholder="请选择业务员">
-            <el-option label="1" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item class="formList" label="日期：">
-          <el-date-picker clearable class="input_right" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" v-model="addForm.createTime"></el-date-picker>
-          <p class="zll-botton float_add"> 获取 </p>
+          </el-select> -->
         </el-form-item>
       </el-form>
     </div>
-    <div class="tableList sunhao">
-        <table border="1">
-        <tr class="add_Table" v-for="(item, index) in tableData" :key="index">
-            <td width="50">
-            <span class="checkStyle" @click="checkList(index)">
-                <i class="el-icon-check" v-show="item.checked"></i>
-                <i class="no-check" v-show="!item.checked"></i>
-            </span>
-            </td>
-            <td width="200">
-            <el-date-picker clearable type="date" placeholder=""  v-model="item.table1"></el-date-picker>
-            </td>
-            <td>
-            <el-input clearable placeholder="" v-model="item.table2"></el-input>
-            </td>
-        </tr>
-        </table>
+    <div class="Search_Top_Input">
+      <div class="search_list" style="width: 100% !important">
+        <div class="input_flex">
+          <el-input clearable v-model="searchdata" placeholder="客户名称"></el-input>
+        </div>
+        <div class="input_flex search">
+          <span class="zll-search">搜索</span>
+        </div>
+      </div>
     </div>
+    <!-- table -->
+    <sys-table :isMultipleSelection="false"
+               :tableData="tableData"
+               :tableLoading="tableLoading"
+               :tableHeader="tableHeader"
+               :isOperate="false"
+    >
+    </sys-table>
   </div>
 </template>
 <script>
@@ -53,6 +41,7 @@
     props: ['authProgramData'],
     data() {
       return {
+        searchdata: '',
         addForm: {
           programId: '',
           custom: '',
@@ -65,16 +54,12 @@
             {required: true, message: '请输入项目号', trigger: 'blur'},
           ],
         },
-        tableData: [
-          {checked: false, table1: '', table2: ''},
-          {checked: false, table1: '', table2: ''}
-        ]
+        tableLoading: true, //table刷新
+        tableData: [],
+        tableHeader: [],
       }
     },
     methods: {
-      checkList(index) {
-        this.tableData[index].checked = !this.tableData[index].checked;
-      },
       getPIds(){
          return this.addForm
       },
@@ -88,10 +73,23 @@
              self.programIds = resp.result;
           }
         });
-      }
+      },
+      getList() {
+        let self = this;
+        self.tableLoading = true;
+        setTimeout(() => {
+            self.tableLoading = false;
+            this.tableHeader = [
+              {"columnValue": "programId", "columnName": "项目号"},
+              {"columnValue": "programName", "columnName": "项目名称",},
+              {"columnValue": "programCode", "columnName": "设计号"}
+            ]
+        }, 500)
+      },
     },
     mounted() {
         this.getProgramId();
+        this.getList()
     },
     watch:{
       authProgramData(val){
