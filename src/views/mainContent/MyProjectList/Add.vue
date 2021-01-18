@@ -31,8 +31,11 @@
                :tableData="tableData"
                :tableLoading="tableLoading"
                :tableHeader="tableHeader"
-               :isOperate="false"
+               :scopeWidth="100"
     >
+      <template slot-scope="scope" slot="operate">
+        <el-button @click="copyPro(scope.row)" type="text" size="small" >复制</el-button>
+      </template>
     </sys-table>
   </div>
 </template>
@@ -55,7 +58,9 @@
           ],
         },
         tableLoading: true, //table刷新
-        tableData: [],
+        tableData: [
+            { programId: '11' }
+        ],
         tableHeader: [],
       }
     },
@@ -79,13 +84,15 @@
         self.tableLoading = true;
         setTimeout(() => {
             self.tableLoading = false;
+            this.tableData = JSON.parse(JSON.stringify(this.tableData))
             this.tableHeader = [
               {"columnValue": "programId", "columnName": "项目号"},
-              {"columnValue": "programName", "columnName": "项目名称",},
-              {"columnValue": "programCode", "columnName": "设计号"}
             ]
         }, 500)
       },
+      copyPro(val) {
+
+      }
     },
     mounted() {
         this.getProgramId();
