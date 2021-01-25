@@ -26,10 +26,10 @@
                 <p v-show="node.finalT">温度：{{node.finalT}}℃</p>
             </div>
 
-            <div class="guide-leftTop" v-show="mouseEnter"></div>
+            <!-- <div class="guide-leftTop" v-show="mouseEnter"></div>
             <div class="guide-rightTop" v-show="mouseEnter"></div>
             <div class="guide-leftBottom" v-show="mouseEnter"></div>
-            <div class="guide-rightBottom" v-show="mouseEnter"></div>
+            <div class="guide-rightBottom" v-show="mouseEnter"></div> -->
         </div>
         <div class="node-del" v-show="mouseEnter" @click.stop="deleteNode">
             <i class="el-icon-circle-close"></i>
@@ -95,20 +95,20 @@ export default {
         },
         // 鼠标移动后抬起
         changeNodeSite() {
-            // this.$emit("changeNodeSite", {
-            //     nodeId: this.node.id,
-            //     left: this.$refs.node.style.left,
-            //     top: this.$refs.node.style.top,
-            // });
-            let position = this.calcPosstion();
-            this.$refs.node.style.left = position.left;
-            this.$refs.node.style.top = position.top;
-
             this.$emit("changeNodeSite", {
                 nodeId: this.node.id,
-                left: position.left,
-                top: position.top,
+                left: this.$refs.node.style.left,
+                top: this.$refs.node.style.top,
             });
+            // let position = this.calcPosstion();
+            // this.$refs.node.style.left = position.left;
+            // this.$refs.node.style.top = position.top;
+
+            // this.$emit("changeNodeSite", {
+            //     nodeId: this.node.id,
+            //     left: position.left,
+            //     top: position.top,
+            // });
         },
         // 计算元素位置
         calcPosstion(){
