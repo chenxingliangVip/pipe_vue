@@ -172,6 +172,19 @@
           this.$message.warning("请选择一列数据！");
         }
       },
+
+      updateAuthProgramId(){
+        let self = this;
+        self.$http({
+          url: "/pipe/programId/addAuthProgramIds",
+          method: "post",
+        }).then(resp => {
+          if (!resp.success) {
+            self.$message.error("调用项目号接口失败！");
+          }
+        });
+      },
+
       authProgramId(){
         let self = this;
         let auth = this.$refs.addPid.getPIds();
@@ -298,6 +311,7 @@
     },
     mounted() {
       this.getList(); //显示table
+      this.updateAuthProgramId();
     },
     components: {
       Add,

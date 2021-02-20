@@ -1,5 +1,5 @@
 <template>
-  <div class="appcontainer" v-loading="loading" >
+  <div class="appcontainer" v-loading="loading">
     <div class="flow-menu">
       <div>
         <div class="menu-item" v-for="(item, index) in menueList" :key="index" :class="{'isDraggable': !isEdit}"
@@ -85,14 +85,14 @@
             <div class="clearBoth"></div>
           </div>
         </div>
-        <div  class="flow-detail drag_main" @click="togglePanel" id="flowParent"  @mousewheel.prevent="rollImg">
+        <div class="flow-detail drag_main" @click="togglePanel" id="flowParent" @mousewheel.prevent="rollImg">
           <div @mousedown="dragMove"
-            id="flowContent"
-            ref="flowContent"
-            @drop="drop($event)"
-            @dragover="allowDrop($event)"
-            @click="editFlow()"
-            @dblclick="isConnect=false"
+               id="flowContent"
+               ref="flowContent"
+               @drop="drop($event)"
+               @dragover="allowDrop($event)"
+               @click="editFlow()"
+               @dblclick="isConnect=false"
           >
             <flowNode
               v-for="node in data.nodeList"
@@ -127,7 +127,7 @@
     <!-- 警告弹框 -->
     <div class="zll-dialog">
       <popout title="警告" :visible.sync="warnDialog" v-show="warnDialog">
-        <WarnAlert ref="warn" slot="content"></WarnAlert>
+        <WarnAlert ref="warn" slot="content" :warningData="warningData"></WarnAlert>
       </popout>
     </div>
     <!-- 材料损耗系数弹框 -->
@@ -192,8 +192,9 @@
     <div v-show="isProgress" class="zl-progress">
       <div class="zl_steps">
         <el-steps :active="actives">
-          <el-step v-for="(item,index) in steps"  :title="item.name" :key="index" :description="item.descr"></el-step>
+          <el-step v-for="(item,index) in steps" :title="item.name" :key="index" :description="item.descr"></el-step>
         </el-steps>
+        <el-button @click="stopCompute" type="danger" style="margin-left: 45%;color:white;margin-top: 5%">终止计算</el-button>
       </div>
     </div>
   </div>
@@ -221,10 +222,11 @@
     name: "flowMain",
     data() {
       return {
-        connectionMap:{},
+        warningData: [],
+        connectionMap: {},
         isProgress: false,
-        steps:[],
-        actives:1,
+        steps: [],
+        actives: 1,
         downPath: "",
         //图形是否编辑
         isEdit: false,
@@ -250,7 +252,7 @@
           groundHeat: '',
           airHeat: '',
         },
-        hotValue:0.0,
+        hotValue: 0.0,
         name: '',
         type: '',
         loading: false,
@@ -423,7 +425,7 @@
         currentConnect: "", //当前的连接线
         currentLine: "", //当前连接线数据
         editType: "", //编辑的类型,
-        computeCount:0,
+        computeCount: 0,
       };
     },
     components: {
@@ -470,7 +472,8 @@
             self.$nextTick(() => {
               self.init();
             });
-            self.name = "中圣集团 "+node_info.programName+" ";
+            // self.name = "中圣集团 " + node_info.programName + " ";
+            self.name =  node_info.programName + " ";
             self.editFlow();
             setTimeout(() => {
               self.loading = false
@@ -491,33 +494,43 @@
         }, 500)
       }
 
-      self.$eventBus.$on("getHotValue",function (data) {
-          self.hotValue = data;
+      self.$eventBus.$on("getHotValue", function (data) {
+        self.hotValue = data;
       })
     },
     methods: {
+      stopCompute(){
+        this.$confirm("确定停止计算吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+          closeOnClickModal: false,
+        }).then(() => {
 
+        }).catch(() => {
+        });
+      },
       dragMove(e) {
         let odiv = e.target;    //获取目标元素
         //算出鼠标相对元素的位置
         let disX = e.clientX - odiv.offsetLeft;
         let disY = e.clientY - odiv.offsetTop;
-        document.onmousemove = (e)=>{    //鼠标按下并移动的事件
-            //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-            let left = e.clientX - disX;
-            let top = e.clientY - disY;
+        document.onmousemove = (e) => {    //鼠标按下并移动的事件
+          //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+          let left = e.clientX - disX;
+          let top = e.clientY - disY;
 
-            //绑定元素位置到positionX和positionY上面
-            // this.positionX = top;
-            // this.positionY = left;
+          //绑定元素位置到positionX和positionY上面
+          // this.positionX = top;
+          // this.positionY = left;
 
-            //移动当前元素
-            odiv.style.left = left + 'px';
-            odiv.style.top = top + 'px';
+          //移动当前元素
+          odiv.style.left = left + 'px';
+          odiv.style.top = top + 'px';
         };
         document.onmouseup = (e) => {
-            document.onmousemove = null;
-            document.onmouseup = null;
+          document.onmousemove = null;
+          document.onmouseup = null;
         };
       },
       rollImg() {
@@ -530,7 +543,7 @@
         //     this.$refs.flowContent.style.zoom = zoom + "%";
         // }
         // return false;
-     },
+      },
       init() {
         document.oncontextmenu = function () {
           return false;
@@ -569,8 +582,6 @@
           });
           // 连线
           _this.jsPlumb.bind("connection", function (evt) {
-            console.log("connection", _this.jsPlumb);
-            console.log("jump", evt);
             let from = evt.source.id;
             let to = evt.target.id;
             let line_id = _this.getUUID();
@@ -595,7 +606,7 @@
                 hotParam: "",
                 pipeName: from + to,
               };
-              this.connectionMap[line_id] = evt.connection;
+              _this.connectionMap[line_id] = evt.connection;
               let json = {};
               json.designer = _this.programInfo.designer;
               json.checker = _this.programInfo.checker;
@@ -618,12 +629,12 @@
             }
 
             let labelNew = from + to;
-              // + '<div class="label_txt">'
-              // + '<p>流量：</p>'
-              // + '<p>末端压力：</p>'
-              // + '<p>末端温度：</p>'
-              // + '<p>末端流速：</p>'
-              // + '</div>'
+            // + '<div class="label_txt">'
+            // + '<p>流量：</p>'
+            // + '<p>末端压力：</p>'
+            // + '<p>末端温度：</p>'
+            // + '<p>末端流速：</p>'
+            // + '</div>'
             evt.connection.getOverlay("label-1").setLabel(labelNew);
             // evt.connection.getOverlay("label-1").setLabel(from + to);
             setTimeout(function () {
@@ -725,14 +736,14 @@
           );
           this.connectionMap[line.id] = connection;
           let labelNew = line.label;
-              // + '<div class="label_txt">'
-              // + '<p>流量</p>'
-              // + '<p>末端压力</p>'
-              // + '<p>末端温度：</p>'
-              // + '<p>末端流速：</p>'
-              // + '</div>'
-        //   connection.getOverlay("label-1").setLabel(line.label); //初始化label
-            connection.getOverlay("label-1").setLabel(labelNew); //初始化label
+          // + '<div class="label_txt">'
+          // + '<p>流量</p>'
+          // + '<p>末端压力</p>'
+          // + '<p>末端温度：</p>'
+          // + '<p>末端流速：</p>'
+          // + '</div>'
+          //   connection.getOverlay("label-1").setLabel(line.label); //初始化label
+          connection.getOverlay("label-1").setLabel(labelNew); //初始化label
         }
         this.$nextTick(function () {
           this.loadEasyFlowFinish = true;
@@ -803,11 +814,11 @@
           this.$refs.nodeForm.init(this.data, nodeId);
         });
       },
-      updateLine(upLine){
+      updateLine(upLine) {
         let _this = this;
-        for(let i = 0;i<_this.data.lineList.length;i++){
+        for (let i = 0; i < _this.data.lineList.length; i++) {
           if (_this.data.lineList[i].id == upLine.id) {
-            _this.data.lineList[i] = Object.assign({},JSON.parse(JSON.stringify(upLine)));
+            _this.data.lineList[i] = Object.assign({}, JSON.parse(JSON.stringify(upLine)));
             return;
           }
         }
@@ -820,7 +831,7 @@
             _this.currentLine = item;
             _this.editType = "line";
             _this.$nextTick(function () {
-              _this.$refs.lineForm.init(item,_this.data.lineList);
+              _this.$refs.lineForm.init(item, _this.data.lineList);
             });
             return;
           }
@@ -939,9 +950,9 @@
         return true;
       },
 
-      computeOneLine(line){
+      computeOneLine(line) {
         this.computeCount = 1;
-        this.steps = [{name:line.pipeName,descr:"正在计算中..."},{name:"结束",descr:""}];
+        this.steps = [{name: line.pipeName, descr: "正在计算中..."}, {name: "结束", descr: ""}];
         this.lineCompute(line);
       },
 
@@ -969,8 +980,8 @@
             pipeG[key] = pipeG[key] + v;
           }
         }
-        for(let k in pipeG){
-          if(pipeG[k] > 0){
+        for (let k in pipeG) {
+          if (pipeG[k] > 0) {
             index = k;
             break;
           }
@@ -1026,7 +1037,7 @@
             contentType: "application/json",
           }).then(resp => {
             console.log(resp);
-            this.computeCount = this.computeCount -1;
+            this.computeCount = this.computeCount - 1;
             let pipe = {pipeNum: line.pipeName, pipeWidth: line.pipeWidth, pipeLength: line.pipeSize};
             line.lineResult.pipeParams = pipe;
             let pr = {};
@@ -1116,10 +1127,10 @@
             material.materialType = line.pipeOutside;
             material.materialLen = line.pipeSize;
             line.lineResult.pipeTotals = material;
-            let liusdu = this.getFloat(line.lineResult.pipeResults.liuSu[index].ew,1);
+            let liusdu = this.getFloat(line.lineResult.pipeResults.liuSu[index].ew, 1);
             endNode.liuL = pipeG[index];
-            endNode.finalPressure = this.getFloat(line.lineResult.pipeResults.yaLi[index].ep,3);
-            endNode.finalT = this.getFloat(line.lineResult.pipeResults.degrees[index].et,1);
+            endNode.finalPressure = this.getFloat(line.lineResult.pipeResults.yaLi[index].ep, 3);
+            endNode.finalT = this.getFloat(line.lineResult.pipeResults.degrees[index].et, 1);
             // let m_array = [];
             // for (let _d of line.pipeLineMaterials) {
             //   let dd = {};
@@ -1130,14 +1141,14 @@
             // }
             // line.lineResult.materials = m_array;
             console.log((startTime - new Date()) / 1000);
-            self.steps[self.actives-1].descr = "计算完成";
+            self.steps[self.actives - 1].descr = "计算完成";
             self.steps[self.actives].descr = "计算中....";
             self.actives++;
             let connection = self.connectionMap[line.id];
 
-            let labelNew = line.label + '<div class="label_txt">' + '<p>流量:'+endNode.liuL+'</p>' + '<p>末端压力:'+endNode.finalPressure+'</p>' + '<p>末端温度:'+endNode.finalT+'</p>' + '<p>末端流速:'+liusdu+'</p>' + '</div>';
+            let labelNew = line.label + '<div class="label_txt">' + '<p>流量:' + endNode.liuL + '</p>' + '<p>末端压力:' + endNode.finalPressure + '</p>' + '<p>末端温度:' + endNode.finalT + '</p>' + '<p>末端流速:' + liusdu + '</p>' + '</div>';
             connection.getOverlay("label-1").setLabel(labelNew); //初始化label
-            if(self.computeCount <= 0){
+            if (self.computeCount <= 0) {
               self.isProgress = false;
             }
             self.$message.success('计算成功!');
@@ -1147,9 +1158,9 @@
           });
         })
       },
-      getFloat(num, n){
+      getFloat(num, n) {
         n = n ? parseInt(n) : 0;
-        if(n <= 0) {
+        if (n <= 0) {
           return Math.round(num);
         }
         num = Math.round(num * Math.pow(10, n)) / Math.pow(10, n); //四舍五入
@@ -1295,9 +1306,9 @@
           cancelButtonText: "取消",
           type: "warning",
         }).then(() => {
-          if(user.roleType == 1){
+          if (user.roleType == 1) {
             self.$router.push({path: "/User"});
-          }else {
+          } else {
             self.$router.push({path: "/MyProjectList"});
           }
         }).catch(() => {
@@ -1308,7 +1319,17 @@
         this.addDialog = true;
       },
       warnAlert() {
-        this.warnDialog = true;
+        this.warningData = [];
+        if (this.data && this.data.nodeList ) {
+          for (let n of this.data.nodeList) {
+            if (n.Type == 3 && n.finalPressure &&n.finalT) {
+              if(parseFloat(n.finalPressure) < parseFloat(n.pressure)||parseFloat(n.finalT) < parseFloat(n.temperature)){
+                this.warningData.push(n);
+              }
+            }
+          }
+          this.warnDialog = true;
+        }
       },
       getFormData(data) {//获取设计数据
         let self = this;
@@ -1325,7 +1346,8 @@
             let code = resp.result;
             let tip = data.programName + " ";
             self.$message.success("新建项目成功！");
-            self.name = '中圣集团 ' + tip;
+            // self.name = '中圣集团 ' + tip;
+            self.name = tip;
             self.isEdit = true;
           }
           self.addDialog = false
@@ -1344,10 +1366,10 @@
         this.$refs.lossMaterial.init(lossTable);
       },
 
-      getLossData(){
+      getLossData() {
         let existLoss = this.$refs.lossMaterial.getTable();
         let existMap = {};
-        for(let loss of existLoss){
+        for (let loss of existLoss) {
           let materialName = loss.materialName;
           existMap[materialName] = loss.loss;
         }
@@ -1358,12 +1380,17 @@
           let pipeLineMaterials = _line.pipeLineMaterials;
           for (let m of pipeLineMaterials) {
             if (m.materialName) {
-              let loss = existMap[m.materialName]||"0.0";
+              let loss = existMap[m.materialName] || "0.0";
               let val = lossMap[m.materialName];
-              if (val && (_line.pipeName !=val.pipeName)) {
+              if (val && (_line.pipeName != val.pipeName)) {
                 val.materialLen = (parseFloat(val.materialLen) + parseFloat(pipeSize)) + "";
               } else {
-                lossMap[m.materialName] = {pipeName:_line.pipeName,materialName: m.materialName, materialLen: pipeSize, loss: loss};
+                lossMap[m.materialName] = {
+                  pipeName: _line.pipeName,
+                  materialName: m.materialName,
+                  materialLen: pipeSize,
+                  loss: loss
+                };
               }
             }
           }
@@ -1398,7 +1425,7 @@
         let yl = "";
         for (let _link of this.data.lineList) {
           if (_link.to == data.id) {
-            this.$refs.userResult.init(_link,data);
+            this.$refs.userResult.init(_link, data);
             // let pipeResults = _link.lineResult.pipeResults;
             // if (pipeResults) {
             //   for (let i = 0; i < 24; i++) {
@@ -1451,7 +1478,7 @@
         let nodeArray = [];
         for (let n of this.data.nodeList) {
           nodeMap[n.id] = n;
-          if(from_id == n.id && n.Type =='3'){
+          if (from_id == n.id && n.Type == '3') {
             nodeArray.push(n);
           }
         }
@@ -1517,7 +1544,7 @@
             if (!this.validateLine(line)) {
               return;
             }
-            this.steps.push({name:line.pipeName,descr:""});
+            this.steps.push({name: line.pipeName, descr: ""});
             let nodeArray = this.getPipeG(line);
             if (nodeArray.length == 0) {
               this.$message.error("管道" + line.pipeName + "没有用户！");
@@ -1531,7 +1558,7 @@
               }
             }
           }
-          this.steps.push({name:"结束",descr:""});
+          this.steps.push({name: "结束", descr: ""});
           this.steps[0].descr = "计算中...";
           if (val == '设计检查') {
             this.$message.success("检查通过！");
@@ -1571,40 +1598,40 @@
         }
       },
 
-      getNewArray(indexs,array){
-         let new_Array = [];
-         for(let index of indexs){
-           new_Array.push(array[index]);
-         }
-         return new_Array;
+      getNewArray(indexs, array) {
+        let new_Array = [];
+        for (let index of indexs) {
+          new_Array.push(array[index]);
+        }
+        return new_Array;
       },
-      getEffectArray(line){
-         let pipeG = line.pipeG;
-         let pipeResults = line.lineResult.pipeResults;
-         let totalUser = line.lineResult.totalUser;
-         let userResults = line.lineResult.userResults;
-         let i = 0;
-         let zeros = [];
-         for(let key in pipeG){
-            let v = pipeG[key];
-            if(v != 0){
-              zeros.push(i);
-            }
-            i++;
-         }
-         console.log(zeros);
-        pipeResults.LiuLiang = this.getNewArray(zeros,pipeResults.LiuLiang);
-        pipeResults.degrees= this.getNewArray(zeros,pipeResults.degrees);
-        pipeResults.liuSu= this.getNewArray(zeros,pipeResults.liuSu);
-        pipeResults.startDegrees= this.getNewArray(zeros,pipeResults.startDegrees);
-        pipeResults.startLiuSu= this.getNewArray(zeros,pipeResults.startLiuSu);
-        pipeResults.startYaLi= this.getNewArray(zeros,pipeResults.startYaLi);
-        pipeResults.yaLi= this.getNewArray(zeros,pipeResults.yaLi);
-        totalUser.cls= this.getNewArray(zeros,totalUser.cls);
-        userResults.LiuLiang= this.getNewArray(zeros,userResults.LiuLiang);
-        userResults.YaLi= this.getNewArray(zeros,userResults.YaLi);
-        userResults.lengls= this.getNewArray(zeros,userResults.lengls);
-        userResults.wendu= this.getNewArray(zeros,userResults.wendu);
+      getEffectArray(line) {
+        let pipeG = line.pipeG;
+        let pipeResults = line.lineResult.pipeResults;
+        let totalUser = line.lineResult.totalUser;
+        let userResults = line.lineResult.userResults;
+        let i = 0;
+        let zeros = [];
+        for (let key in pipeG) {
+          let v = pipeG[key];
+          if (v != 0) {
+            zeros.push(i);
+          }
+          i++;
+        }
+        console.log(zeros);
+        pipeResults.LiuLiang = this.getNewArray(zeros, pipeResults.LiuLiang);
+        pipeResults.degrees = this.getNewArray(zeros, pipeResults.degrees);
+        pipeResults.liuSu = this.getNewArray(zeros, pipeResults.liuSu);
+        pipeResults.startDegrees = this.getNewArray(zeros, pipeResults.startDegrees);
+        pipeResults.startLiuSu = this.getNewArray(zeros, pipeResults.startLiuSu);
+        pipeResults.startYaLi = this.getNewArray(zeros, pipeResults.startYaLi);
+        pipeResults.yaLi = this.getNewArray(zeros, pipeResults.yaLi);
+        totalUser.cls = this.getNewArray(zeros, totalUser.cls);
+        userResults.LiuLiang = this.getNewArray(zeros, userResults.LiuLiang);
+        userResults.YaLi = this.getNewArray(zeros, userResults.YaLi);
+        userResults.lengls = this.getNewArray(zeros, userResults.lengls);
+        userResults.wendu = this.getNewArray(zeros, userResults.wendu);
       },
       handleGenerator() {
         let self = this;
@@ -1612,8 +1639,8 @@
           this.$message.error("没有找到管道！");
           return;
         }
-        let data = Object.assign({},JSON.parse(JSON.stringify(this.data)));
-        for(let line of data.lineList){
+        let data = Object.assign({}, JSON.parse(JSON.stringify(this.data)));
+        for (let line of data.lineList) {
           this.getEffectArray(line);
         }
         let firstResult = Object.assign({}, data.lineList[0].lineResult);
@@ -1713,7 +1740,7 @@
           const img = canvas.toDataURL("image/jpeg").replace("data:image/jpeg;base64,", "");
           const finalImageSrc = "data:image/jpeg;base64," + img;
           firstResult.imageUrl = finalImageSrc;
-          firstResult.hotValue = self.hotValue+"";
+          firstResult.hotValue = self.hotValue + "";
           self.$nextTick(() => {
             self.$http({
               url: "/pipe/file/exportExcelData",
@@ -1758,10 +1785,12 @@
     // background: -webkit-linear-gradient(top,transparent 39px,#dedede 40px),-webkit-linear-gradient(left,transparent 39px,#dedede 40px);
     // background-size: 40px 40px;
   }
-    .drag_main {
-        position: relative;
-        overflow: hidden;
-    }
+
+  .drag_main {
+    position: relative;
+    overflow: hidden;
+  }
+
   #flowContent {
     width: 200%;
     height: 200%;
