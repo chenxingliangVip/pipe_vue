@@ -194,7 +194,7 @@
         <el-steps :active="actives">
           <el-step v-for="(item,index) in steps" :title="item.name" :key="index" :description="item.descr"></el-step>
         </el-steps>
-        <el-button @click="stopCompute" type="danger" style="margin-left: 45%;color:white;margin-top: 5%">终止计算</el-button>
+        <!--<el-button @click="stopCompute" type="danger" style="margin-left: 45%;color:white;margin-top: 5%">终止计算</el-button>-->
       </div>
     </div>
   </div>
