@@ -606,12 +606,30 @@ li{
     align-items: center;
     justify-content: center;
     .zl_steps {
-        width: 1200px;
+        width: 600px;
         .el-step__title.is-process {
             color: #fff;
         }
         .el-step__description.is-process {
             color: #fff;
+        }
+        .el-step.is-horizontal .el-step__line {
+            height: 8px;
+            top: 8px;
+            background: linear-gradient(to right, #2196f3, #ffffff);
+        }
+        .el-step__line-inner {
+            border-width: 0px !important;
+        }
+        .el-step__icon {
+            width: 30px;
+            height: 30px;
+        }
+        .el-step__title.is-finish {
+            color: #ffeb3b;
+        }
+        .el-step__description.is-finish {
+            color: #ffeb3b;
         }
     }
     .close {

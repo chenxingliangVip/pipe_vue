@@ -56,7 +56,12 @@
         </el-col>
         <el-col :span="3">
           <div class="echart">
-            <img src="@/assets/img/ceng.png">
+            <img src="@/assets/img/ceng1.png" v-if="line.degreeLevel == 1">
+            <img src="@/assets/img/ceng2.png" v-if="line.degreeLevel == 2">
+            <img src="@/assets/img/ceng3.png" v-if="line.degreeLevel == 3">
+            <img src="@/assets/img/ceng4.png" v-if="line.degreeLevel == 4">
+            <img src="@/assets/img/ceng5.png" v-if="line.degreeLevel == 5">
+            <img src="@/assets/img/ceng.png" v-if="line.degreeLevel == 6">
           </div>
         </el-col>
         <el-col :span="8">
