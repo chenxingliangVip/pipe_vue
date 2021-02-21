@@ -144,7 +144,7 @@
           <edit-node ref="nodeForm" v-show="editType=='node'" :isShowEchart="isShowEchart" @LoadSet="getLoad"
                      @showLog="showLog"></edit-node>
           <edit-line ref="lineForm" v-show="editType=='line'" @line-save="lineLabelSave"
-                     @lineCompute="lineCompute" @checkResult="checkLog" @updateLine="updateLine"></edit-line>
+                     @lineCompute="computeOneLine" @checkResult="checkLog" @updateLine="updateLine"></edit-line>
         </div>
       </div>
     </div>
@@ -1036,6 +1036,11 @@
             dataType: 'json',
             contentType: "application/json",
           }).then(resp => {
+            if(!resp.success){
+              self.isProgress = false;
+              self.$message.error('计算失败，请检查参数!');
+              return;
+            }
             console.log(resp);
             this.computeCount = this.computeCount - 1;
             let pipe = {pipeNum: line.pipeName, pipeWidth: line.pipeWidth, pipeLength: line.pipeSize};
@@ -1324,12 +1329,22 @@
           for (let n of this.data.nodeList) {
             if (n.Type == 3 && n.finalPressure &&n.finalT) {
               if(parseFloat(n.finalPressure) < parseFloat(n.pressure)||parseFloat(n.finalT) < parseFloat(n.temperature)){
+                this.$set(n,'pressColor','');
+                this.$set(n,'tempColor','');
+                if(parseFloat(n.finalPressure) < parseFloat(n.pressure)){
+                  n.pressColor = 'red';
+                }
+                if(parseFloat(n.finalT) < parseFloat(n.temperature)){
+                  n.tempColor = 'red';
+                }
                 this.warningData.push(n);
               }
             }
           }
           this.warnDialog = true;
         }
+        console.log("warnDialog")
+        console.log(this.warningData)
       },
       getFormData(data) {//获取设计数据
         let self = this;

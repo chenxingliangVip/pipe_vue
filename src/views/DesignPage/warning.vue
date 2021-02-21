@@ -13,16 +13,16 @@
           <td width="20%">
             {{ item.name }}
           </td>
-          <td width="20%">
+          <td width="20%" >
             {{ item.temperature }}
           </td>
-          <td width="20%">
+          <td width="20%" :style="{color: item.tempColor}">
             {{ item.finalT }}
           </td>
-          <td width="20%">
-            {{ item.temperature }}
+          <td width="20%" >
+            {{ item.pressure }}
           </td>
-          <td width="20%">
+          <td width="20%" :style="{color: item.pressColor}">
             {{ item.finalPressure }}
           </td>
         </tr>
