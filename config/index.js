@@ -12,7 +12,7 @@ module.exports = {
         proxyTable: {
             '/api': {
                 // target: "http://localhost:8080",//接口域名un
-                target: "http://192.168.1.124:8087",//接口域名
+                target: "http://localhost:8080",//接口域名
                 "changeOrigin": true,//是否跨域
                 timeout: 600000,
                 pathRewrite: {

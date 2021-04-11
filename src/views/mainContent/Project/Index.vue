@@ -56,7 +56,7 @@
               data.authEndTime = data.programAuth.programTime || "";
             }
             this.tableHeader = [
-              {"columnValue": "id", "columnName": "项目号", width: 150},
+              {"columnValue": "programId", "columnName": "项目号", width: 150},
               {"columnValue": "programName", "columnName": "项目名称",},
               {"columnValue": "designer", "columnName": "设计人", width: 150},
               {"columnValue": "author", "columnName": "授权访问", width: 150},

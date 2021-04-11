@@ -104,7 +104,7 @@
 <style scoped lang="scss">
   $baseColor: #1397de;
   .Login {
-    background-image: url(../assets/img/banner_bg2.png);
+    background-image: url(../assets/img/pipe_logo.jpg);
     height: 100%;
     background-size: cover;
     width: 100%;

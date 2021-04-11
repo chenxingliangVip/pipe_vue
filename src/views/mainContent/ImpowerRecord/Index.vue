@@ -3,24 +3,24 @@
     <h1 class="header_h1">授权记录</h1>
     <div class="Search_Top_Input">
         <div class="search_list" style="width: calc(100%) !important">
+            <!--<div class="input_flex">-->
+                <!--<el-input clearable v-model="searchInput1" placeholder="客户名称"></el-input>-->
+            <!--</div>-->
             <div class="input_flex">
-                <el-input clearable v-model="searchInput1" placeholder="客户名称"></el-input>
+                <el-input clearable v-model="queryForm.programName" placeholder="项目名称"></el-input>
             </div>
             <div class="input_flex">
-                <el-input clearable v-model="searchInput2" placeholder="项目名称"></el-input>
+                <el-input clearable v-model="queryForm.programId" placeholder="项目号"></el-input>
             </div>
             <div class="input_flex">
-                <el-input clearable v-model="searchInput3" placeholder="项目号"></el-input>
+                <el-input clearable v-model="queryForm.programCode" placeholder="设计号"></el-input>
             </div>
             <div class="input_flex">
-                <el-input clearable v-model="searchInput4" placeholder="设计号"></el-input>
-            </div>
-            <div class="input_flex">
-                <el-input clearable v-model="searchInput5" placeholder="被授权人"></el-input>
+                <el-input clearable v-model="queryForm.name" placeholder="被授权人"></el-input>
             </div>
             <div class="input_flex search">
-                <span class="zll-search">搜索</span>
-                <span class="zll-search-reset">重置</span>
+                <span class="zll-search" @click="getList">搜索</span>
+                <!--<span class="zll-search-reset">重置</span>-->
             </div>
         </div>
     </div>
@@ -30,8 +30,10 @@
       :tableData="tableData"
       :tableLoading="tableLoading"
       :tableHeader="tableHeader"
-      :isOperate="false"
     >
+      <template slot-scope="scope" slot="operate">
+        <el-button @click="getPower(scope.row)" type="text" size="small">查看</el-button>
+      </template>
     </sys-table>
   </div>
 </template>
@@ -44,23 +46,30 @@
         tableLoading: true, //table刷新
         tableData: [],
         tableHeader: [],
-        searchInput1: "",
-        searchInput2: "",
-        searchInput3: "",
-        searchInput4: "",
-        searchInput5: "",
+        queryForm:{
+           programName:"",
+           programId:"",
+           programCode:"",
+           name:"",
+           id:""
+         }
       }
     },
     methods: {
+      getPower(val) { //立即授权
+        let type = "save";
+        let name = "DesignPage";
+        this.$router.push({ name ,query: {type:type,id:val.id }});
+      },
       getList() {
         let self = this;
         let user = JSON.parse(getToken());
-        let id = user.id;
+        self.queryForm.id =  user.id;
         self.tableLoading = true;
         self.$http({
           url: "/pipe/program/queryAuthPipeProgramList",
           method: "post",
-          params:{id:id}
+          params:self.queryForm
         }).then(resp => {
           if (resp.success) {
             self.tableLoading = false;

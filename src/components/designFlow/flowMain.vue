@@ -58,7 +58,7 @@
             <!--<img src="@/assets/img/open2.png">-->
             <!--<span>编辑</span>-->
             <!--</div>-->
-            <div class="nav-item" v-show="isEdit" @click="copyProgram"><!-- 可打开 -->
+            <div class="nav-item" v-show="isEdit||is_copy" @click="copyProgram"><!-- 可打开 -->
               <img src="@/assets/img/open.png">
               <span>复制</span>
             </div>
@@ -194,7 +194,8 @@
         <el-steps :active="actives">
           <el-step v-for="(item,index) in steps" :title="item.name" :key="index" :description="item.descr"></el-step>
         </el-steps>
-        <!--<el-button @click="stopCompute" type="danger" style="margin-left: 45%;color:white;margin-top: 5%">终止计算</el-button>-->
+        <img title="停止计算" src="@/assets/img/stop.png" style="margin-left: 45%;margin-top: 10%;cursor: pointer"
+             @click="stopCompute">
       </div>
     </div>
   </div>
@@ -215,6 +216,7 @@
   import LogResult from "@/views/DesignPage/LogResult.vue";
   import ProjectInfo from "@/views/DesignPage/ProjectInfo/index.vue";
   import {getToken} from '@/utils/auth' // 验权
+  import {getUuid} from '@/utils/util'
   import html2canvas from 'html2canvas';
   import canvg from "canvg";
 
@@ -222,6 +224,8 @@
     name: "flowMain",
     data() {
       return {
+        request: null,
+        aborted: false,
         warningData: [],
         connectionMap: {},
         isProgress: false,
@@ -231,6 +235,7 @@
         //图形是否编辑
         isEdit: false,
         newBuild: true,
+        is_copy: false,
         programEdit: false,
         programInfo: {
           id: "",
@@ -426,6 +431,8 @@
         currentLine: "", //当前连接线数据
         editType: "", //编辑的类型,
         computeCount: 0,
+
+        abortMap: {}
       };
     },
     components: {
@@ -454,6 +461,9 @@
           self.isEdit = true;
           self.programEdit = true;
         } else {
+          if (type == 'save') {
+            self.is_copy = true;
+          }
           self.newBuild = false;
         }
         self.$http({
@@ -467,13 +477,21 @@
               self.programInfo[key] = node_info[key];
             }
             self.data = JSON.parse(node_info.nodeInfo);
+            // for (let m = 0; m < self.data.nodeList.length; m++) {
+            //   let top = self.data.nodeList[m].top;
+            //   let left = self.data.nodeList[m].left;
+            //   console.log(top)
+            //   console.log(left)
+            //   self.data.nodeList[m].top = top;
+            //   self.data.nodeList[m].left = left;
+            // }
             console.log("init------------------");
             console.log(self.data);
             self.$nextTick(() => {
               self.init();
             });
             // self.name = "中圣集团 " + node_info.programName + " ";
-            self.name =  node_info.programName + " ";
+            self.name = node_info.programName + " ";
             self.editFlow();
             setTimeout(() => {
               self.loading = false
@@ -499,14 +517,22 @@
       })
     },
     methods: {
-      stopCompute(){
-        this.$confirm("确定停止计算吗?", "提示", {
+      stopCompute() {
+        let self = this;
+        self.$confirm("确定停止计算吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
           closeOnClickModal: false,
         }).then(() => {
-
+          self.$http({
+            url: "/pipe/program/queryStopPipeProgram",
+            method: "post",
+            params: {uuid: self.programInfo.uuid}
+          }).then(resp => {
+            self.aborted = true;
+            self.isProgress = false;
+          });
         }).catch(() => {
         });
       },
@@ -567,7 +593,6 @@
           _this.jsPlumb.bind("contextmenu", function (conn, originalEvent) {
             clearTimeout(this.timer);
             // console.log("dblclick", conn);
-
             _this.$confirm("确定删除所点击的线吗?", "提示", {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
@@ -839,12 +864,13 @@
       },
       //删除线
       delLine(conn) {
-        this.$confirm("确定删除所点击的线吗?", "提示", {
+        let self = this;
+        self.$confirm("确定删除所点击的线吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         }).then(() => {
-          this.jsPlumb.deleteConnection(conn);
+          self.jsPlumb.deleteConnection(conn);
         }).catch(() => {
         });
       },
@@ -953,82 +979,89 @@
       computeOneLine(line) {
         this.computeCount = 1;
         this.steps = [{name: line.pipeName, descr: "正在计算中..."}, {name: "结束", descr: ""}];
-        this.lineCompute(line);
+        this.actives = 1;
+        let uuid = getUuid();
+        console.log(uuid)
+        this.aborted = false;
+        this.lineCompute(line, uuid);
       },
 
-      lineCompute(line) {
-        console.log(line)
-        if (!this.validateLine(line)) {
-          return;
-        }
-        let nodeArray = this.getPipeG(line);
-        if (nodeArray.length == 0) {
-          this.$message.error("管道" + line.pipeName + "没有用户！");
-          return;
-        }
-        let pipeG = {};
-        let index = 0;
-        for (let _u of nodeArray) {
-          let table = _u.table;
-          if (!table) {
-            this.$message.error("管道" + line.pipeName + "24小时负载设置出错！");
+      lineCompute(line, uuid) {
+        let self = this;
+        let request = new Promise((resolve, reject) => {
+          if (self.aborted) {
             return;
           }
-          for (let key in table) {
-            pipeG[key] = pipeG[key] ? pipeG[key] : 0;
-            let v = parseFloat(table[key] ? table[key] : 0);
-            pipeG[key] = pipeG[key] + v;
+          self.programInfo.uuid = uuid;
+          console.log(line)
+          if (!self.validateLine(line)) {
+            return null;
           }
-        }
-        for (let k in pipeG) {
-          if (pipeG[k] > 0) {
-            index = k;
-            break;
+          let nodeArray = self.getPipeG(line);
+          if (nodeArray.length == 0) {
+            self.$message.error("管道" + line.pipeName + "没有用户！");
+            return null;
           }
-        }
-        line.pipeG = pipeG;
-        let startTime = new Date();
-        let from_id = line.from;
-        let from_to = line.to;
-        let nodes = this.data.nodeList;
-        let endNode = {};
-        for (let n of nodes) {
-          if (n.id == from_to) {
-            endNode = n;
-          }
-        }
-        for (let n of nodes) {
-          if (from_id == n.id) {
-            if (!n.pressure && n.Type == '1') {
-              this.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
+          let pipeG = {};
+          let index = 0;
+          for (let _u of nodeArray) {
+            let table = _u.table;
+            if (!table) {
+              self.$message.error("管道" + line.pipeName + "24小时负载设置出错！");
               return;
             }
-            if (!n.temperature && n.Type == '1') {
-              this.$message.error("热源" + n.name + "T0温度不可知！");
+            for (let key in table) {
+              pipeG[key] = pipeG[key] ? pipeG[key] : 0;
+              let v = parseFloat(table[key] ? table[key] : 0);
+              pipeG[key] = pipeG[key] + v;
             }
-            if (n.Type == '1') {
-              let tMap = {};
-              let pMap = {};
-              for (let i = 0; i < 24; i++) {
-                tMap[i + ""] = n.temperature;
-                pMap[i + ""] = n.pressure;
-              }
-              line.initT0 = tMap;
-              line.initP0 = pMap;
-            } else {
-              if (!line.initT0 || !line.initP0) {
-                this.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
+          }
+          for (let k in pipeG) {
+            if (pipeG[k] > 0) {
+              index = k;
+              break;
+            }
+          }
+          line.pipeG = pipeG;
+          let startTime = new Date();
+          let from_id = line.from;
+          let from_to = line.to;
+          let nodes = self.data.nodeList;
+          let endNode = {};
+          for (let n of nodes) {
+            if (n.id == from_to) {
+              endNode = n;
+            }
+          }
+          for (let n of nodes) {
+            if (from_id == n.id) {
+              if (!n.pressure && n.Type == '1') {
+                self.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
                 return;
               }
+              if (!n.temperature && n.Type == '1') {
+                self.$message.error("热源" + n.name + "T0温度不可知！");
+              }
+              if (n.Type == '1') {
+                let tMap = {};
+                let pMap = {};
+                for (let i = 0; i < 24; i++) {
+                  tMap[i + ""] = n.temperature;
+                  pMap[i + ""] = n.pressure;
+                }
+                line.initT0 = tMap;
+                line.initP0 = pMap;
+              } else {
+                if (!line.initT0 || !line.initP0) {
+                  self.$message.error("管道" + line.pipeName + "未计算出起始点温度和压力！");
+                  return;
+                }
+              }
+              break;
             }
-            break;
           }
-        }
-        this.programInfo.pipeLine = line;
-        // let loading = this.fullScreenLoading();
-        this.isProgress = true;
-        let self = this;
-        return new Promise((resolve, reject) => {
+          self.programInfo.pipeLine = line;
+          self.isProgress = true;
           self.$http({
             url: "/pipe/program/queryComputeAir",
             method: "post",
@@ -1036,12 +1069,19 @@
             dataType: 'json',
             contentType: "application/json",
           }).then(resp => {
-            if(!resp.success){
+            if (this.aborted) {
+              return;
+            }
+            if (!resp.success) {
               self.isProgress = false;
               self.$message.error('计算失败，请检查参数!');
               return;
             }
             console.log(resp);
+            let resultKey = resp.result[0].uuid;
+            // if(resultKey != self.programInfo.uuid){
+            //    return;
+            // }
             this.computeCount = this.computeCount - 1;
             let pipe = {pipeNum: line.pipeName, pipeWidth: line.pipeWidth, pipeLength: line.pipeSize};
             line.lineResult.pipeParams = pipe;
@@ -1151,9 +1191,9 @@
             self.actives++;
             let connection = self.connectionMap[line.id];
 
-            let labelNew = line.label + '<div class="label_txt">' + '<p>流量:' + endNode.liuL + '</p>' + '<p>末端压力:' + endNode.finalPressure + '</p>' + '<p>末端温度:' + endNode.finalT + '</p>' + '<p>末端流速:' + liusdu + '</p>' + '</div>';
+            let labelNew = line.label + '<div class="label_txt">' + '<p>流量:' + endNode.liuL + '</p>' + '<p>末端压力:' + endNode.finalPressure + '</p>' + '<p>末端温度:' + endNode.finalT + '</p>' + '<p>末端流速:' + liusdu + '</p>' + '<p>管道外径:' + line.pipeOutside + '</p>' + '</div>';
             connection.getOverlay("label-1").setLabel(labelNew); //初始化label
-            if (self.computeCount <= 0) {
+            if (self.computeCount <= 0 || self.steps[self.data.lineList.length - 1].descr == "计算完成") {
               self.isProgress = false;
             }
             self.$message.success('计算成功!');
@@ -1162,6 +1202,7 @@
             reject(err)
           });
         })
+        return request;
       },
       getFloat(num, n) {
         n = n ? parseInt(n) : 0;
@@ -1325,16 +1366,16 @@
       },
       warnAlert() {
         this.warningData = [];
-        if (this.data && this.data.nodeList ) {
+        if (this.data && this.data.nodeList) {
           for (let n of this.data.nodeList) {
-            if (n.Type == 3 && n.finalPressure &&n.finalT) {
-              if(parseFloat(n.finalPressure) < parseFloat(n.pressure)||parseFloat(n.finalT) < parseFloat(n.temperature)){
-                this.$set(n,'pressColor','');
-                this.$set(n,'tempColor','');
-                if(parseFloat(n.finalPressure) < parseFloat(n.pressure)){
+            if (n.Type == 3 && n.finalPressure && n.finalT) {
+              if (parseFloat(n.finalPressure) < parseFloat(n.pressure) || parseFloat(n.finalT) < parseFloat(n.temperature)) {
+                this.$set(n, 'pressColor', '');
+                this.$set(n, 'tempColor', '');
+                if (parseFloat(n.finalPressure) < parseFloat(n.pressure)) {
                   n.pressColor = 'red';
                 }
-                if(parseFloat(n.finalT) < parseFloat(n.temperature)){
+                if (parseFloat(n.finalT) < parseFloat(n.temperature)) {
                   n.tempColor = 'red';
                 }
                 this.warningData.push(n);
@@ -1390,30 +1431,69 @@
         }
         let lossTable = [];
         let lossMap = {};
+        let refValue = 0.0;
+        let fsValue = 0.0;
+        let outValue = 0.0;
         for (let _line of this.data.lineList) {
           let pipeSize = _line.pipeSize;
           let pipeLineMaterials = _line.pipeLineMaterials;
+          console.log(pipeLineMaterials)
+          let i = 0;
+          let fsLoss = existMap['防水层'];
+          let refLoss = existMap['反射层'];
+          let outLoss = existMap['外护层'];
           for (let m of pipeLineMaterials) {
             if (m.materialName) {
               let loss = existMap[m.materialName] || "0.0";
+              let materialLen = parseFloat(pipeSize);
+              let d1 = parseFloat(_line.pipeOutside);
+              for (let m = 0; m < i; m++) {
+                d1 += parseFloat(pipeLineMaterials[m].lineWidth) * 2;
+              }
+              let d2 = parseFloat(pipeLineMaterials[i].lineWidth) * 2 + d1;
+              let dis_d = d2 * d2 / (1000 * 1000) - d1 * d1 / (1000 * 1000);
+              let v = (3.14159 / 4.0) * dis_d * materialLen * parseFloat(loss);
+              //防水层
+              if (i == pipeLineMaterials.length - 1) {
+                fsValue = materialLen * parseFloat(fsLoss) * 3.14159 * d2 / 1000 + fsValue;
+                outValue = materialLen * parseFloat(outLoss) * 3.14159 * (d2 / 1000 + 0.012) + outValue;
+              }
+              if (m.reflect == 1 && i != pipeLineMaterials.length - 1) {
+                refValue = materialLen * parseFloat(refLoss) * 3.14159 * d2 / 1000 + refValue;
+              }
               let val = lossMap[m.materialName];
-              if (val && (_line.pipeName != val.pipeName)) {
-                val.materialLen = (parseFloat(val.materialLen) + parseFloat(pipeSize)) + "";
+              if (val) {
+                val.materialLarge = val.materialLarge + v;
+                // val.fsArea = val.fsArea + fsArea;
+                // val.outArea = val.outArea + outArea;
+                // val.reArea = val.reArea + reArea;
               } else {
                 lossMap[m.materialName] = {
                   pipeName: _line.pipeName,
                   materialName: m.materialName,
                   materialLen: pipeSize,
+                  materialLarge: v,
                   loss: loss
                 };
               }
             }
+            i++;
           }
         }
         for (let key in lossMap) {
           let obj = lossMap[key];
+          obj.materialLarge = obj.materialLarge.toFixed(2);
+          // obj.fsArea = obj.fsArea.toFixed(2);
+          // obj.outArea = obj.outArea.toFixed(2);
+          // obj.reArea = obj.reArea.toFixed(2);
           lossTable.push(obj);
         }
+        let reobj = {materialName: '反射层', materialLarge: refValue.toFixed(2), loss: existMap['反射层'] || '0.0'};
+        let fsobj = {materialName: '防水层', materialLarge: fsValue.toFixed(2), loss: existMap['防水层'] || '0.0'};
+        let outobj = {materialName: '外护层', materialLarge: outValue.toFixed(2), loss: existMap['外护层'] || '0.0'};
+        lossTable.push(reobj);
+        lossTable.push(fsobj);
+        lossTable.push(outobj);
         return lossTable;
       },
 
@@ -1555,11 +1635,12 @@
             }
           }
           this.steps = [];
+          this.actives = 1;
           for (let line of lineList) {
             if (!this.validateLine(line)) {
               return;
             }
-            this.steps.push({name: line.pipeName, descr: ""});
+            // this.steps.push({name: line.pipeName, descr: ""});
             let nodeArray = this.getPipeG(line);
             if (nodeArray.length == 0) {
               this.$message.error("管道" + line.pipeName + "没有用户！");
@@ -1573,14 +1654,16 @@
               }
             }
           }
-          this.steps.push({name: "结束", descr: ""});
-          this.steps[0].descr = "计算中...";
+
+          // this.steps.push({name: "结束", descr: ""});
+          // this.steps[0].descr = "计算中...";
           if (val == '设计检查') {
             this.$message.success("检查通过！");
           }
           this.navList[2].isShow = true;
         }
         if (val == '管网计算' && this.navList[2].isShow == true) {
+          this.aborted = false;
           this.computeCount = lineList.length;
           let firstLines = [];
           for (let n of firstNodes) {
@@ -1590,16 +1673,39 @@
               }
             }
           }
-
+          let sortLks = [];
+          sortLks.push(firstLines[0]);
+          this.sortLinks(firstLines[0], lineList, sortLks);
+          for (let line of sortLks) {
+            this.steps.push({name: line.pipeName, descr: ""});
+          }
+          this.steps.push({name: "结束", descr: ""});
+          this.steps[0].descr = "计算中...";
+          let uuid = getUuid();
           for (let link of firstLines) {
-            this.computeAnyLine(link, lineList);
+            this.computeAnyLine(link, lineList, uuid);
           }
         }
         if (val == "统计分析") {
           this.handleGenerator();
         }
       },
-      async computeAnyLine(link, lineList) {
+
+      sortLinks(link, lineList, sortList) {
+        let to = link.to;
+        let compare = [];
+        for (let l of lineList) {
+          if (l.from == to) {
+            compare.push(l);
+            sortList.push(l);
+          }
+        }
+        for (let c of compare) {
+          this.sortLinks(c, lineList, sortList);
+        }
+      },
+
+      async computeAnyLine(link, lineList, uuid) {
         let to = link.to;
         let compare = [];
         for (let l of lineList) {
@@ -1607,9 +1713,10 @@
             compare.push(l);
           }
         }
-        let res = await this.lineCompute(link);
+
+        let res = await this.lineCompute(link, uuid);
         for (let c of compare) {
-          this.computeAnyLine(c, lineList);
+          this.computeAnyLine(c, lineList, uuid);
         }
       },
 
@@ -1642,11 +1749,16 @@
         pipeResults.startLiuSu = this.getNewArray(zeros, pipeResults.startLiuSu);
         pipeResults.startYaLi = this.getNewArray(zeros, pipeResults.startYaLi);
         pipeResults.yaLi = this.getNewArray(zeros, pipeResults.yaLi);
-        totalUser.cls = this.getNewArray(zeros, totalUser.cls);
-        userResults.LiuLiang = this.getNewArray(zeros, userResults.LiuLiang);
-        userResults.YaLi = this.getNewArray(zeros, userResults.YaLi);
-        userResults.lengls = this.getNewArray(zeros, userResults.lengls);
-        userResults.wendu = this.getNewArray(zeros, userResults.wendu);
+        if (totalUser) {
+          totalUser.cls = this.getNewArray(zeros, totalUser.cls);
+        }
+        if (userResults) {
+          userResults.LiuLiang = this.getNewArray(zeros, userResults.LiuLiang);
+          userResults.YaLi = this.getNewArray(zeros, userResults.YaLi);
+          userResults.lengls = this.getNewArray(zeros, userResults.lengls);
+          userResults.wendu = this.getNewArray(zeros, userResults.wendu);
+        }
+
       },
       handleGenerator() {
         let self = this;
@@ -1673,11 +1785,16 @@
 
         let totalUser = Object.assign({}, firstResult.totalUser);
         firstResult.totalUser = [];
-        firstResult.totalUser.push(totalUser);
+        if (firstResult.totalUser) {
+          firstResult.totalUser.push(totalUser);
+        }
 
         let userResults = Object.assign({}, firstResult.userResults);
         firstResult.userResults = [];
-        firstResult.userResults.push(userResults);
+        if (firstResult.userResults) {
+          firstResult.userResults.push(userResults);
+        }
+
 
         // if (firstResult.materials.length == 0) {
         //   this.$message.error("请先计算所有的管道！");
@@ -1704,9 +1821,11 @@
           firstResult.pipeParams.push(lineResult.pipeParams);
           firstResult.pipeResults.push(lineResult.pipeResults);
           firstResult.pipeTotals.push(lineResult.pipeTotals);
-          if (lineResult.totalUser.userName) {
+          if (lineResult.totalUser && lineResult.totalUser.userName) {
             firstResult.totalUser.push(lineResult.totalUser);
-            firstResult.userResults.push(lineResult.userResults);
+            if (lineResult.userResults) {
+              firstResult.userResults.push(lineResult.userResults);
+            }
           }
         }
         for (let i = 0; i < firstResult.totalUser.length; i++) {

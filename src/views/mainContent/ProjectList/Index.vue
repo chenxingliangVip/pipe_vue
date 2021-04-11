@@ -72,13 +72,16 @@
       getPower(val) { //立即授权
         let type = "see";
         let createUser = val.createUser;
-        let userId = val.programAuth.userId;
+        let programAuths = val.programAuths;
         let user = JSON.parse(getToken());
         if(user.id == createUser){
           type = "all";
-        }
-        if(user.id == userId){
-          type = "save";
+        }else if(programAuths.length >0 ){
+            for(let auth of programAuths ){
+              if(auth.userId == user.id ){
+                type = "save";
+              }
+            }
         }
         let name = "DesignPage";
         this.$router.push({ name ,query: {type: type,id:val.id }});
